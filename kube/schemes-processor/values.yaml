@@ -1,0 +1,18 @@
+# Default values for schemes.
+replicaCount: 1
+image: schemes-processor:latest
+pullPolicy: IfNotPresent
+antiAffinity:
+  weight: 80
+  apps:
+    - portal
+    - identity
+service:
+  name: schemes-processor
+  type: NodePort
+  externalPort: 80
+  internalPort: 80
+env:
+  ASPNETCORE_ENVIRONMENT: Production
+  PORTAL_URL: http://midnight-lizard.online
+  IDENTITY_URL: http://identity.midnight-lizard.online

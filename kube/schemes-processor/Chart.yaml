@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Midnight Lizard Color Schemes Commands API
+name: schemes-processor
+version: 0.1.0
