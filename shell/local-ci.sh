@@ -1,10 +1,11 @@
 #!/bin/sh
 set -e
-TAG=1
+TAG=$(date +"%Y-%m-%d--%H-%M-%S")
 PROJ=schemes-processor
 REGISTRY=localhost:5000
 IMAGE=$REGISTRY/$PROJ:$TAG
 eval $(docker-machine env default --shell bash)
+    #--no-cache \
 docker build -t $IMAGE \
     --build-arg DOTNET_CONFIG=Build \
     --build-arg INSTALL_CLRDBG="apt-get update \

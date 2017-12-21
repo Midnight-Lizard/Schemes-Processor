@@ -13,7 +13,7 @@ RUN dotnet publish -c ${DOTNET_CONFIG} -o ./results
 #				IMAGE	BUILD				#
 #===========================================#
 FROM microsoft/aspnetcore:2-jessie as image
-ARG INSTALL_CLRDBG=echo "no debugger installed"
+ARG INSTALL_CLRDBG
 RUN bash -c "${INSTALL_CLRDBG}"
 WORKDIR /app
 EXPOSE 80

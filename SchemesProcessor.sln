@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{08486B82-701B-4747-A389-77F2B72E4D77}"
 	ProjectSection(SolutionItems) = preProject
@@ -30,6 +30,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "kube", "kube\", "{85107B92-
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "57489"
+		SlnRelativePath = "kube\"
 	EndProjectSection
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "shell", "shell\", "{E398777E-2A1E-4F73-8D2F-3F455C2DA45A}"
@@ -50,7 +51,14 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "shell", "shell\", "{E398777
 		Release.AspNetCompiler.FixedNames = "false"
 		Release.AspNetCompiler.Debug = "False"
 		VWDPort = "57494"
+		SlnRelativePath = "shell\"
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MidnightLizard.Schemes.Application", "application\MidnightLizard.Schemes.Application.csproj", "{71391EC4-208A-4EAD-951C-B402A7738390}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MidnightLizard.Schemes.Domain", "domain\MidnightLizard.Schemes.Domain.csproj", "{C6812E4C-2D95-4D6B-9C01-D2AE0D7E40B2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MidnightLizard.Schemes.Infrastructure", "infrastructure\MidnightLizard.Schemes.Infrastructure.csproj", "{3425344F-DB01-4993-A3FC-0C2C3F3EAF5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -70,6 +78,18 @@ Global
 		{E398777E-2A1E-4F73-8D2F-3F455C2DA45A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E398777E-2A1E-4F73-8D2F-3F455C2DA45A}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{E398777E-2A1E-4F73-8D2F-3F455C2DA45A}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{71391EC4-208A-4EAD-951C-B402A7738390}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71391EC4-208A-4EAD-951C-B402A7738390}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71391EC4-208A-4EAD-951C-B402A7738390}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71391EC4-208A-4EAD-951C-B402A7738390}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6812E4C-2D95-4D6B-9C01-D2AE0D7E40B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6812E4C-2D95-4D6B-9C01-D2AE0D7E40B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6812E4C-2D95-4D6B-9C01-D2AE0D7E40B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6812E4C-2D95-4D6B-9C01-D2AE0D7E40B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3425344F-DB01-4993-A3FC-0C2C3F3EAF5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3425344F-DB01-4993-A3FC-0C2C3F3EAF5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3425344F-DB01-4993-A3FC-0C2C3F3EAF5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3425344F-DB01-4993-A3FC-0C2C3F3EAF5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
