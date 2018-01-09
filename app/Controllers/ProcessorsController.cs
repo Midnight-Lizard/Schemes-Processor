@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MidnightLizard.Schemes.Domain.Scheme;
 using MidnightLizard.Schemes.Processor.Processors;
 
 namespace MidnightLizard.Schemes.Processor.Controllers
@@ -11,16 +12,24 @@ namespace MidnightLizard.Schemes.Processor.Controllers
     public class ProcessorsController : Controller
     {
         private readonly ICommandProcessor commandProcessor;
+        private readonly ISchemesRepository fuck;
 
-        public ProcessorsController(ICommandProcessor commandProcessor)
+        public ProcessorsController(ICommandProcessor commandProcessor, ISchemesRepository fuck)
         {
             this.commandProcessor = commandProcessor;
+            this.fuck = fuck;
         }
 
         [HttpPost]
         public void Start([FromBody]string value)
         {
             this.commandProcessor.Start();
+        }
+
+        [HttpPost]
+        public void Save([FromBody]SchemeAggregateRoot scheme)
+        {
+            this.fuck.Save(scheme);
         }
     }
 }

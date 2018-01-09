@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Common
+namespace MidnightLizard.Schemes.Domain.Scheme
 {
-    public class Command: Message
+    public class SchemePublishRequested
     {
     }
 }

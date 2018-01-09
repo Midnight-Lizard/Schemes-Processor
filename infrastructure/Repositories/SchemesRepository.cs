@@ -5,7 +5,7 @@ using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Repositories
 {
-    public class SchemesRepository
+    public class SchemesRepository : ISchemesRepository
     {
         private readonly ElasticSearchConfig config;
         private readonly ElasticClient elasticClient;
@@ -28,9 +28,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Repositories
 
         public void Save(SchemeAggregateRoot scheme)
         {
-            this.elasticClient.Update<SchemeAggregateRoot, SchemeAggregateRoot>("", u => u.Id(1)
-      .Doc(new { Country = "United States" })
-      .DocAsUpsert());
+            this.elasticClient.Update<SchemeAggregateRoot, object>(
+                new DocumentPath<SchemeAggregateRoot>(scheme.Id),
+                u => u
+                    .Doc(new { scheme.PublisherId })
+                    .DocAsUpsert());
         }
     }
 }

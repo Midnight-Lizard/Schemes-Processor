@@ -16,3 +16,4 @@ env:
   ASPNETCORE_ENVIRONMENT: Production
   PORTAL_URL: http://midnight-lizard.online
   IDENTITY_URL: http://identity.midnight-lizard.online
+  ELASTIC_SEARCH_CLIENT_URL: mles-elasticsearch-client.default.svc.cluster.local:9200

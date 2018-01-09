@@ -8,7 +8,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MidnightLizard.Schemes.Domain.Scheme;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
+using MidnightLizard.Schemes.Infrastructure.Repositories;
 using MidnightLizard.Schemes.Processor.Processors;
 
 namespace MidnightLizard.Schemes.Processor
@@ -28,6 +30,7 @@ namespace MidnightLizard.Schemes.Processor
             services.AddOptions();
             services.Configure<ElasticSearchConfig>(Configuration);
             services.AddSingleton<ICommandProcessor, CommandProcessor>();
+            services.AddTransient<ISchemesRepository, SchemesRepository>();
             services.AddMvc();
         }
 
