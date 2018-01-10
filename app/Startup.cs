@@ -27,8 +27,14 @@ namespace MidnightLizard.Schemes.Processor
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddOptions();
-            services.Configure<ElasticSearchConfig>(Configuration);
+            // services.AddOptions();
+            // services.Configure<ElasticSearchConfig>(Configuration);
+            services.AddSingleton<ElasticSearchConfig>(x =>
+            {
+                var esConfig = new ElasticSearchConfig();
+                Configuration.Bind(esConfig);
+                return esConfig;
+            });
             services.AddSingleton<ICommandProcessor, CommandProcessor>();
             services.AddTransient<ISchemesRepository, SchemesRepository>();
             services.AddMvc();
