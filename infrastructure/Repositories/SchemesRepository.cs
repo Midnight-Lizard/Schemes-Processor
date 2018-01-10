@@ -12,16 +12,15 @@ namespace MidnightLizard.Schemes.Infrastructure.Repositories
 
         public SchemesRepository(ElasticSearchConfig config)
         {
-            this.config = config;
+            this.config = config ?? throw new ArgumentNullException(nameof(config));
 
             var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
 
             elasticClient = new ElasticClient(
                 new ConnectionSettings(node)
-                    .DefaultIndex("schemes")
                     .InferMappingFor<SchemeAggregateRoot>(map => map
                         .IdProperty(to => to.Id)
-                        .IndexName("snapshot")
+                        .IndexName("scheme-snapshots")
                         .TypeName("scheme"))
             );
         }
@@ -31,7 +30,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Repositories
             this.elasticClient.Update<SchemeAggregateRoot, object>(
                 new DocumentPath<SchemeAggregateRoot>(scheme.Id),
                 u => u
-                    .Doc(new { scheme.PublisherId })
+                    .Doc(new { scheme.PublisherId, scheme.ColorScheme })
                     .DocAsUpsert());
         }
     }
