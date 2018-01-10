@@ -27,9 +27,17 @@ namespace MidnightLizard.Schemes.Processor.Controllers
         }
 
         [HttpPost]
-        public void Save([FromBody]SchemeAggregateRoot scheme)
+        public IActionResult Save([FromBody]SchemeAggregateRoot scheme)
         {
-            this.fuck.Save(scheme);
+            if (ModelState.IsValid)
+            {
+                this.fuck.Save(scheme);
+                return Ok();
+            }
+            else
+            {
+                return BadRequest(ModelState);
+            }
         }
     }
 }
