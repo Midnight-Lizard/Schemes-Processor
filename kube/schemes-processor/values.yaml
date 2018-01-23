@@ -1,7 +1,17 @@
-# Default values for schemes.
-replicaCount: 1
 image: schemes-processor:latest
 pullPolicy: IfNotPresent
+preStopPath: /status/stop
+livenessProbe:
+  path: /status/isalive
+  initialDelaySeconds: 60
+  periodSeconds: 60
+  timeoutSeconds: 10
+readinessProbe:
+  path: /status/isready
+  initialDelaySeconds: 30
+  periodSeconds: 20
+  timeoutSeconds: 5
+replicaCount: 1
 antiAffinity:
   weight: 80
   apps:
@@ -17,3 +27,14 @@ env:
   PORTAL_URL: http://midnight-lizard.online
   IDENTITY_URL: http://identity.midnight-lizard.online
   ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
+  SCHEMES_EVENTS_TOPIC: schemes-events-a
+  SCHEMES_REQUESTS_TOPIC: schemes-requests-a
+  KAFKA_CONSUMER_CONFIG: |-
+    {
+      "group.id": "command-processor",
+      "bootstrap.servers": "bootstrap.kafka:9092",
+      "partition.assignment.strategy": "range",
+      "enable.auto.commit": false,
+      "auto.commit.interval.ms": 1000,
+      "auto.offset.reset": "latest"
+    }

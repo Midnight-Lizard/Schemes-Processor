@@ -15,4 +15,11 @@ docker build -t $IMAGE \
     ../
 kubectl config set-context minikube
 docker push $IMAGE
-./helm-deploy.sh -i $IMAGE -r $PROJ -c ../kube/$PROJ -s env.ASPNETCORE_ENVIRONMENT=Development
+./helm-deploy.sh -i $IMAGE -r $PROJ -c ../kube/$PROJ \
+    -s env.ASPNETCORE_ENVIRONMENT=Development \
+    -s livenessProbe.initialDelaySeconds=90 \
+    -s livenessProbe.periodSeconds=90 \
+    -s livenessProbe.timeoutSeconds=60 \
+    -s readinessProbe.initialDelaySeconds=20 \
+    -s readinessProbe.periodSeconds=10 \
+    -s readinessProbe.timeoutSeconds=20

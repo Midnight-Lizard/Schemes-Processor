@@ -32,7 +32,7 @@
                     "./shell/kube-debug.sh"
                 ],
                 "quoteArgs": false,
-                "debuggerPath": "/vsdbg/vsdbg" // path to installed debugger inside a container
+                "debuggerPath": "/vsdbg/vsdbg" // path to debugger installed inside a container
             }
         }
     ]

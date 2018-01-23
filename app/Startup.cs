@@ -12,6 +12,7 @@ using MidnightLizard.Schemes.Domain.Scheme;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Repositories;
 using MidnightLizard.Schemes.Processor.Processors;
+using Newtonsoft.Json;
 
 namespace MidnightLizard.Schemes.Processor
 {
@@ -35,7 +36,22 @@ namespace MidnightLizard.Schemes.Processor
                 Configuration.Bind(esConfig);
                 return esConfig;
             });
-            services.AddSingleton<ICommandProcessor, CommandProcessor>();
+            services.AddSingleton<KafkaConfig>(x =>
+            {
+                return new KafkaConfig
+                {
+                    KAFKA_CONSUMER_CONFIG = JsonConvert
+                        .DeserializeObject<Dictionary<string, object>>(
+                            Configuration.GetValue<string>(nameof(KafkaConfig.KAFKA_CONSUMER_CONFIG))),
+
+                    SCHEMES_EVENTS_TOPIC = Configuration.GetValue<string>(
+                        nameof(KafkaConfig.SCHEMES_EVENTS_TOPIC)),
+
+                    SCHEMES_REQUESTS_TOPIC = Configuration.GetValue<string>(
+                        nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
+                };
+            });
+            services.AddSingleton<ISchemesProcessor, SchemesProcessor>();
             services.AddTransient<ISchemesRepository, SchemesRepository>();
             services.AddMvc();
         }

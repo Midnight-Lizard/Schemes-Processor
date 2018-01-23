@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Scheme
 {
-    public class ColorSchemeValueObject : ValueObject
+    public class ColorSchemeValueObject : ValueObject, IColorScheme
     {
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
@@ -45,6 +45,11 @@ namespace MidnightLizard.Schemes.Domain.Scheme
         public int scrollbarContrast { get; set; }
         public int scrollbarLightnessLimit { get; set; }
         public int scrollbarGrayHue { get; set; }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         public override bool Equals(object other)
         {
