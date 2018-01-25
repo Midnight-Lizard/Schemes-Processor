@@ -1,6 +1,5 @@
 image: schemes-processor:latest
 pullPolicy: IfNotPresent
-preStopPath: /status/stop
 livenessProbe:
   path: /status/isalive
   initialDelaySeconds: 60
@@ -29,12 +28,21 @@ env:
   ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
   SCHEMES_EVENTS_TOPIC: schemes-events-a
   SCHEMES_REQUESTS_TOPIC: schemes-requests-a
-  KAFKA_CONSUMER_CONFIG: |-
+  KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
-      "group.id": "command-processor",
+      "group.id": "schemes-events-processor",
       "bootstrap.servers": "bootstrap.kafka:9092",
       "partition.assignment.strategy": "range",
       "enable.auto.commit": false,
       "auto.commit.interval.ms": 1000,
-      "auto.offset.reset": "latest"
+      "auto.offset.reset": "earliest"
+    }
+  KAFKA_REQUESTS_CONSUMER_CONFIG: |-
+    {
+      "group.id": "schemes-requests-processor",
+      "bootstrap.servers": "bootstrap.kafka:9092",
+      "partition.assignment.strategy": "range",
+      "enable.auto.commit": false,
+      "auto.commit.interval.ms": 1000,
+      "auto.offset.reset": "earliest"
     }
