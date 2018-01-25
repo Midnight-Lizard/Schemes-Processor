@@ -41,11 +41,6 @@ spec:
           ports:
             - containerPort: {{ .Values.service.internalPort }}
               protocol: TCP
-          lifecycle:
-            preStop:
-              httpGet:
-                path: {{ .Values.preStopPath }}
-                port: {{ .Values.service.internalPort }}
           livenessProbe:
             httpGet:
               path: {{ .Values.livenessProbe.path }}
