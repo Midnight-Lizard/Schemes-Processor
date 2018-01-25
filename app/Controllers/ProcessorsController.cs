@@ -30,7 +30,7 @@ namespace MidnightLizard.Schemes.Processor.Controllers
         [HttpPost]
         public async Task Start()
         {
-            await this.commandProcessor.Start(appLifetime.ApplicationStopping);
+            await this.commandProcessor.Run(appLifetime.ApplicationStopping);
         }
 
         [HttpPost]
