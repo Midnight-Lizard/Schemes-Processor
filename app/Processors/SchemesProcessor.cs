@@ -11,140 +11,165 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Processor.Processors
 {
-    public interface ISchemesProcessor : IDisposable
+    public interface ISchemesProcessor
     {
         void Pause();
-        Task Start(CancellationToken token);
+        Task Run(CancellationToken token);
     }
 
     public class SchemesProcessor : ISchemesProcessor
     {
         protected bool isRunning = false;
-        protected bool assignedRequestsPartitionsArePaused = false;
-        protected Message<string, string> lastConsumedMessage;
+        protected Message<string, string> lastConsumedEvent;
+        protected Message<string, string> lastConsumedRequest;
         protected readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
-        protected readonly HashSet<TopicPartition> assignedEventsPartitions = new HashSet<TopicPartition>();
-        protected readonly HashSet<TopicPartition> assignedRequestsPartitions = new HashSet<TopicPartition>();
+        protected List<TopicPartition> assignedEventsPartitions;
         protected readonly ILogger<SchemesProcessor> logger;
         private readonly KafkaConfig kafkaConfig;
-        protected readonly Consumer<string, string> consumer;
+        protected Consumer<string, string> eventsConsumer;
+        protected Consumer<string, string> requestsConsumer;
         protected CancellationToken cancellationToken;
 
         public SchemesProcessor(ILogger<SchemesProcessor> logger, KafkaConfig config)
         {
             this.logger = logger;
             this.kafkaConfig = config;
-            this.consumer = new Consumer<string, string>(
-                config.KAFKA_CONSUMER_CONFIG,
-                new StringDeserializer(Encoding.UTF8),
-                new StringDeserializer(Encoding.UTF8));
-            this.consumer.OnOffsetsCommitted += ConsumerOnOffsetsCommitted;
-            this.consumer.OnPartitionsAssigned += ConsumerOnPartitionsAssigned;
-            this.consumer.OnPartitionsRevoked += ConsumerOnPartitionsRevoked;
-            this.consumer.OnMessage += ConsumerOnMessage;
-            this.consumer.OnError += ConsumerOnError;
         }
 
-        public async Task Start(CancellationToken token)
+        public async Task Run(CancellationToken token)
         {
-            this.cancellationToken = token;
-            this.cancellationToken.Register(this.Dispose);
-            this.isRunning = true;
-            this.consumer.Subscribe(new[] {
-                 kafkaConfig.SCHEMES_EVENTS_TOPIC,
-                 kafkaConfig.SCHEMES_REQUESTS_TOPIC });
-            while (this.isRunning && !this.cancellationToken.IsCancellationRequested)
+            if (this.cancellationToken != token)
             {
-                ValidateTopicPriority();
-                if (!this.cancellationToken.IsCancellationRequested)
+                this.cancellationToken = token;
+                token.Register(async () =>
                 {
-                    this.consumer.Poll(timeout);
-                }
-                if (this.lastConsumedMessage != null)
-                {
-                    await this.consumer.CommitAsync(this.lastConsumedMessage);
-                    this.lastConsumedMessage = null;
-                }
-            }
-            this.isRunning = false;
-        }
-
-        private void ValidateTopicPriority()
-        {
-            if (assignedEventsPartitions.Count > 0)
-            {
-                bool hasNewEvents = false;
-                try
-                {
-                    var currentEventPositions = this.consumer.Committed(assignedEventsPartitions, timeout);
-                    if (!currentEventPositions.Exists(pos => pos.Error.HasError))
+                    while (this.isRunning)
                     {
-                        foreach (var curPos in currentEventPositions)
+                        await Task.Delay(timeout);
+                    }
+                });
+            }
+
+            if (!this.isRunning)
+            {
+                this.isRunning = true;
+                using (Consumer<string, string>
+                    eventsConsumer = new Consumer<string, string>(
+                        this.kafkaConfig.KAFKA_EVENTS_CONSUMER_CONFIG,
+                        new StringDeserializer(Encoding.UTF8),
+                        new StringDeserializer(Encoding.UTF8)),
+                    requestsConsumer = new Consumer<string, string>(
+                        this.kafkaConfig.KAFKA_REQUESTS_CONSUMER_CONFIG,
+                        new StringDeserializer(Encoding.UTF8),
+                        new StringDeserializer(Encoding.UTF8)))
+                {
+                    this.eventsConsumer = eventsConsumer;
+                    this.requestsConsumer = requestsConsumer;
+
+                    this.eventsConsumer.OnOffsetsCommitted += ConsumerOnOffsetsCommitted;
+                    this.eventsConsumer.OnPartitionsAssigned += EventsConsumerOnPartitionsAssigned;
+                    this.eventsConsumer.OnPartitionsRevoked += EventsConsumerOnPartitionsRevoked;
+                    this.eventsConsumer.OnMessage += EventsConsumerOnMessage;
+                    this.eventsConsumer.OnError += ConsumerOnError;
+
+                    this.requestsConsumer.OnOffsetsCommitted += ConsumerOnOffsetsCommitted;
+                    // this.requestsConsumer.OnPartitionsAssigned += RequestsConsumerOnPartitionsAssigned;
+                    // this.requestsConsumer.OnPartitionsRevoked += RequestsConsumerOnPartitionsRevoked;
+                    this.requestsConsumer.OnMessage += RequestsConsumerOnMessage;
+                    this.requestsConsumer.OnError += ConsumerOnError;
+
+                    this.eventsConsumer.Subscribe(kafkaConfig.SCHEMES_EVENTS_TOPIC);
+                    this.requestsConsumer.Subscribe(kafkaConfig.SCHEMES_REQUESTS_TOPIC);
+
+                    while (this.isRunning && !this.cancellationToken.IsCancellationRequested)
+                    {
+                        if (HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
                         {
-                            try
+                            this.eventsConsumer.Poll(timeout);
+                            if (this.lastConsumedEvent != null)
                             {
-                                var finPos = this.consumer.QueryWatermarkOffsets(curPos.TopicPartition, timeout);
-                                if (finPos.High != 0 && (curPos.Offset < finPos.High || finPos.High == Offset.Invalid))
-                                {
-                                    hasNewEvents = true;
-                                    break;
-                                }
+                                await this.eventsConsumer.CommitAsync(this.lastConsumedEvent);
+                                this.lastConsumedEvent = null;
                             }
-                            catch (Exception ex)
+                        }
+                        else
+                        {
+                            this.requestsConsumer.Poll(timeout);
+                            if (this.lastConsumedRequest != null)
                             {
-                                this.logger.LogError(ex, "Failed to obtain watermark offsets");
-                                hasNewEvents = true; // since I'm not sure
-                                break;
+                                await this.requestsConsumer.CommitAsync(this.lastConsumedRequest);
+                                this.lastConsumedRequest = null;
                             }
                         }
                     }
-                    else
-                    {
-                        hasNewEvents = true; // since I'm not sure
-                    }
                 }
-                catch (Exception ex)
-                {
-                    this.logger.LogError(ex, "Failed to obtain commited offsets for events topic");
-                    hasNewEvents = true; // since I'm not sure
-                }
-                if (hasNewEvents && !this.assignedRequestsPartitionsArePaused)
-                {
-                    this.consumer.Pause(this.assignedRequestsPartitions);
-                    this.assignedRequestsPartitionsArePaused = true;
-                }
-                else if (!hasNewEvents && this.assignedRequestsPartitionsArePaused)
-                {
-                    this.assignedRequestsPartitionsArePaused = false;
-                    this.consumer.Resume(this.assignedRequestsPartitions);
-                }
+                this.isRunning = false;
             }
         }
 
-        private void ConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
+        private bool HasNewMessages(Consumer<string, string> consumer, List<TopicPartition> partitions)
         {
-            this.consumer.Unassign();
-            assignedEventsPartitions.Clear();
-            assignedRequestsPartitions.Clear();
+            if (partitions == null || partitions.Count == 0) return true;
+            try
+            {
+                var currentEventPositions = consumer.Committed(partitions, timeout);
+                if (!currentEventPositions.Exists(pos => pos.Error.HasError))
+                {
+                    foreach (var curPos in currentEventPositions)
+                    {
+                        try
+                        {
+                            var finPos = consumer.QueryWatermarkOffsets(curPos.TopicPartition, timeout);
+                            if (finPos.High != 0 && (curPos.Offset < finPos.High || finPos.High == Offset.Invalid))
+                            {
+                                return true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            this.logger.LogError(ex, "Failed to obtain watermark offsets");
+                            return true; // since I'm not sure
+                        }
+                    }
+                }
+                else
+                {
+                    return true; // since I'm not sure
+                }
+            }
+            catch (Exception ex)
+            {
+                this.logger.LogError(ex, "Failed to obtain commited offsets");
+                return true; // since I'm not sure
+            }
+            return false;
         }
 
-        private void ConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
+        private void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
+        {
+            this.eventsConsumer.Unassign();
+            assignedEventsPartitions = null;
+        }
+
+        private void RequestsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
+        {
+            this.requestsConsumer.Unassign();
+        }
+
+        private void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
         {
             if (!this.cancellationToken.IsCancellationRequested)
             {
-                this.consumer.Assign(partitions);
-                partitions.ForEach(p =>
-                {
-                    if (p.Topic == kafkaConfig.SCHEMES_EVENTS_TOPIC)
-                    {
-                        assignedEventsPartitions.Add(p);
-                    }
-                    else
-                    {
-                        assignedRequestsPartitions.Add(p);
-                    }
-                });
-                ValidateTopicPriority();
+                this.eventsConsumer.Assign(partitions);
+                assignedEventsPartitions = partitions;
+            }
+        }
+
+        private void RequestsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
+        {
+            if (!this.cancellationToken.IsCancellationRequested)
+            {
+                this.requestsConsumer.Assign(partitions);
             }
         }
 
@@ -153,24 +178,21 @@ namespace MidnightLizard.Schemes.Processor.Processors
             this.logger.LogError($"ConsumerOnError: {e}");
         }
 
-        private void ConsumerOnMessage(object sender, Message<string, string> msg)
+        private void EventsConsumerOnMessage(object sender, Message<string, string> msg)
         {
             this.logger.LogInformation($"ConsumerOnMessage: [{msg.Key}]=[{msg.Value}]");
-            this.lastConsumedMessage = msg;
+            this.lastConsumedEvent = msg;
+        }
+
+        private void RequestsConsumerOnMessage(object sender, Message<string, string> msg)
+        {
+            this.logger.LogInformation($"ConsumerOnMessage: [{msg.Key}]=[{msg.Value}]");
+            this.lastConsumedRequest = msg;
         }
 
         private void ConsumerOnOffsetsCommitted(object sender, CommittedOffsets offsets)
         {
             this.logger.LogInformation("ConsumerOnOffsetsCommitted: " + string.Join("\n", offsets.Offsets.Select(o => o.ToString())));
-        }
-
-        public async void Dispose()
-        {
-            while (this.isRunning)
-            {
-                await Task.Delay(timeout);
-            };
-            this.consumer.Dispose();
         }
 
         public void Pause()
