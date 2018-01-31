@@ -20,7 +20,7 @@ namespace MidnightLizard.Schemes.Processor.AutofacModules
             builder.RegisterType<Mediator>().As<IMediator>().InstancePerLifetimeScope();
 
             // Register all the Command classes (they implement IAsyncRequestHandler) in assembly holding the Commands
-            builder.RegisterAssemblyTypes(typeof(AggregateRequestHandler<>).GetTypeInfo().Assembly)
+            builder.RegisterAssemblyTypes(typeof(AggregateRequestHandler<,,>).GetTypeInfo().Assembly)
                 .Where(handler => !handler.IsAbstract)
                 .AsClosedTypesOf(typeof(IRequestHandler<,>));
 
