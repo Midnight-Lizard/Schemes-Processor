@@ -5,7 +5,6 @@ FROM microsoft/aspnetcore-build:2-jessie as dotnet-build
 ARG DOTNET_CONFIG=Release
 COPY *.sln /build/
 COPY /app/MidnightLizard.Schemes.Processor.csproj /build/app/
-COPY /application/MidnightLizard.Schemes.Application.csproj /build/application/
 COPY /domain/MidnightLizard.Schemes.Domain.csproj /build/domain/
 COPY /infrastructure/MidnightLizard.Schemes.Infrastructure.csproj /build/infrastructure/
 WORKDIR /build
