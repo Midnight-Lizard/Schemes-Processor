@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MidnightLizard.Schemes.Domain.Scheme;
-using MidnightLizard.Schemes.Infrastructure.Configuration;
-using MidnightLizard.Schemes.Infrastructure.Repositories;
-using MidnightLizard.Schemes.Processor.Processors;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
+using MidnightLizard.Schemes.Infrastructure.Queue;
+using MidnightLizard.Schemes.Infrastructure.Snapshot;
 using Newtonsoft.Json;
 
 namespace MidnightLizard.Schemes.Processor
@@ -26,7 +28,7 @@ namespace MidnightLizard.Schemes.Processor
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // services.AddOptions();
             // services.Configure<ElasticSearchConfig>(Configuration);
@@ -55,9 +57,14 @@ namespace MidnightLizard.Schemes.Processor
                         nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
                 };
             });
-            services.AddSingleton<ISchemesProcessor, SchemesProcessor>();
-            services.AddTransient<ISchemesRepository, SchemesRepository>();
+            services.AddTransient<ISchemesSnapshot, SchemesSnapshot>();
             services.AddMvc();
+
+            // Autofac - last part!
+            var container = new ContainerBuilder();
+            container.Populate(services);
+
+            return new AutofacServiceProvider(container.Build());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

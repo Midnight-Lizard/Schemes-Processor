@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Publisher
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class PublisherId : EntityId<Guid>
+    public class PublicSchemeId : EntityId<Guid>
     {
     }
 }

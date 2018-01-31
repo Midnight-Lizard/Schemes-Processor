@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Scheme
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class ColorSchemeValueObject : ValueObject, IColorScheme
+    public class ColorScheme : ValueObject, IColorScheme
     {
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
@@ -53,7 +53,7 @@ namespace MidnightLizard.Schemes.Domain.Scheme
 
         public override bool Equals(object other)
         {
-            if (other != null && other is ColorSchemeValueObject otherColorScheme)
+            if (other != null && other is ColorScheme otherColorScheme)
             {
                 return
                     otherColorScheme.backgroundContrast == this.backgroundContrast &&
@@ -96,6 +96,48 @@ namespace MidnightLizard.Schemes.Domain.Scheme
                     otherColorScheme.useDefaultSchedule == this.useDefaultSchedule;
             }
             return false;
+        }
+
+        protected override IEnumerable<object> GetPropertyValues()
+        {
+            yield return colorSchemeId;
+            yield return colorSchemeName;
+            yield return runOnThisSite;
+            yield return restoreColorsOnCopy;
+            yield return blueFilter;
+            yield return useDefaultSchedule;
+            yield return scheduleStartHour;
+            yield return scheduleFinishHour;
+            yield return backgroundSaturationLimit;
+            yield return backgroundContrast;
+            yield return backgroundLightnessLimit;
+            yield return backgroundGraySaturation;
+            yield return backgroundGrayHue;
+            yield return textSaturationLimit;
+            yield return textContrast;
+            yield return textLightnessLimit;
+            yield return textGraySaturation;
+            yield return textGrayHue;
+            yield return textSelectionHue;
+            yield return linkSaturationLimit;
+            yield return linkContrast;
+            yield return linkLightnessLimit;
+            yield return linkDefaultSaturation;
+            yield return linkDefaultHue;
+            yield return linkVisitedHue;
+            yield return borderSaturationLimit;
+            yield return borderContrast;
+            yield return borderLightnessLimit;
+            yield return borderGraySaturation;
+            yield return borderGrayHue;
+            yield return imageLightnessLimit;
+            yield return imageSaturationLimit;
+            yield return backgroundImageLightnessLimit;
+            yield return backgroundImageSaturationLimit;
+            yield return scrollbarSaturationLimit;
+            yield return scrollbarContrast;
+            yield return scrollbarLightnessLimit;
+            yield return scrollbarGrayHue;
         }
     }
 }

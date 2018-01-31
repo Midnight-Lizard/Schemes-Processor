@@ -4,18 +4,27 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public class Event
+    public class DomainEvent
     {
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private set; }
         public string Type { get; protected set; }
         public Guid CorrelationId { get; protected set; }
-        public Guid AggregateId { get; protected set; }
-        public Version Version { get; protected set; } = new Version(1, 0, 0);
+        public EntityId AggregateId { get; protected set; }
+        public Version Version { get; protected set; }
         public int Offset { get; protected set; }
+        public int RequestOffset { get; protected set; }
         public DateTime Timestamp { get; protected set; }
 
-        public Event()
+        public DomainEvent()
         {
+            Id = Guid.NewGuid();
+            Version = new Version(1, 0, 0);
+        }
+
+        public DomainEvent(Guid correlationId)
+            : this()
+        {
+            CorrelationId = correlationId;
         }
     }
 }

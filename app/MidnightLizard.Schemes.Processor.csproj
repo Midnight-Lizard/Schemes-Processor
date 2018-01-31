@@ -10,8 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.0" />
+    <PackageReference Include="MediatR" Version="4.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,7 +21,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\application\MidnightLizard.Schemes.Application.csproj" />
+    <ProjectReference Include="..\domain\MidnightLizard.Schemes.Domain.csproj" />
+    <ProjectReference Include="..\infrastructure\MidnightLizard.Schemes.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

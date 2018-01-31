@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Scheme
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class SchemePublishedEvent : Event, IColorScheme
+    public class SchemePublishRequest : SchemeDomainRequest, IColorScheme
     {
-        public int PublisherId { get; private set; }
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
         public bool runOnThisSite { get; set; }

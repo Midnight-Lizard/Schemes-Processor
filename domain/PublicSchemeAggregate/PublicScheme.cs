@@ -1,22 +1,22 @@
 ﻿using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Publisher;
+using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Scheme
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class SchemeAggregateRoot : AggregateRoot<Guid>
+    public class PublicScheme : AggregateRoot<PublicSchemeId>
     {
         public PublisherId PublisherId { get; set; }
-        public ColorSchemeValueObject ColorScheme { get; set; }
+        public ColorScheme ColorScheme { get; set; }
 
         public void Publish(
             PublisherId publisherId,
             Guid correlationId,
-            ColorSchemeValueObject colorScheme)
+            ColorScheme colorScheme)
         {
-            if (publisherId == PublisherId)
+            if (PublisherId.IsDefault || PublisherId == publisherId)
             {
                 if (!colorScheme.Equals(ColorScheme))
                 {

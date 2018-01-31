@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Scheme
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     interface IColorScheme
     {
