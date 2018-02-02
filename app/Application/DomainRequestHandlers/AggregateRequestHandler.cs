@@ -9,21 +9,39 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
-    public abstract class AggregateRequestHandler<TAggregate, TRequest, TAggregateId> : IRequestHandler<TRequest, DomainRequestResult>
+    public abstract class AggregateRequestHandler<TAggregate, TRequest, TAggregateId> :
+        IRequestHandler<TRequest, DomainResult>
         where TRequest : DomainRequest<TAggregateId>
         where TAggregate : AggregateRoot<TAggregateId>
         where TAggregateId : EntityId
     {
-        protected AggregateRequestHandler()
+        protected readonly IDomainEventsDispatcher<TAggregateId> domainEventsDispatcher;
+        private readonly IDomainEventsAccessor<TAggregateId> eventsAccessor;
+
+        protected AggregateRequestHandler(
+            IDomainEventsDispatcher<TAggregateId> domainEventsDispatcher,
+            IDomainEventsAccessor<TAggregateId> eventsAccessor)
         {
+            this.domainEventsDispatcher = domainEventsDispatcher;
+            this.eventsAccessor = eventsAccessor;
         }
 
-        public virtual async Task DispatchDomainEvents()
+        protected virtual async Task<List<DomainResult>> DispatchDomainEvents(TAggregate aggregate)
         {
-
+            var results = new List<DomainResult>();
+            foreach (var @event in aggregate.Events)
+            {
+                results.Add(await this.domainEventsDispatcher.DispatchEvent(@event));
+            }
+            return results;
         }
 
-        public abstract Task<TAggregate> GetAggregate(TAggregateId id);
-        public abstract Task<DomainRequestResult> Handle(TRequest request, CancellationToken cancellationToken);
+        protected virtual async Task<DomainEventsResult<TAggregateId>> ReadDomainEvents(TAggregateId id, int offset)
+        {
+            return await this.eventsAccessor.Read(id, offset);
+        }
+
+        protected abstract Task<AggregateResult<TAggregate>> GetAggregate(TAggregateId id);
+        public abstract Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken);
     }
 }

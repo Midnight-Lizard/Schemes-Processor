@@ -6,12 +6,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="**/*.Spec.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MediatR" Version="4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Test' ">
+      <ItemGroup>
+        <PackageReference Include="Moq" Version="4.8.1" />
+        <PackageReference Include="xunit" Version="2.3.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+        <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+        <ProjectReference Include="..\tests\MidnightLizard.Schemes.Tests.csproj" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)'!='Test' ">
+      <ItemGroup>
+        <Compile Remove="**/*.Spec.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
 
 </Project>

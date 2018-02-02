@@ -7,5 +7,14 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class PublicSchemeId : EntityId<Guid>
     {
+        public PublicSchemeId()
+        {
+            Value = Guid.NewGuid();
+        }
+
+        public PublicSchemeId(Guid value)
+        {
+            Value = value;
+        }
     }
 }

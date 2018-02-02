@@ -12,13 +12,25 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         AggregateRequestHandler<PublicScheme, TRequest, PublicSchemeId>
         where TRequest : SchemeDomainRequest
     {
-        protected SchemeRequestHandler() : base()
+        protected readonly ISnapshot<PublicScheme, PublicSchemeId> schemesSnapshot;
+
+        protected SchemeRequestHandler(
+            IDomainEventsDispatcher<PublicSchemeId> eventsDispatcher,
+            ISnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
+            IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
+            base(eventsDispatcher, eventsAccessor)
         {
+            this.schemesSnapshot = schemesSnapshot;
         }
 
-        public override Task<PublicScheme> GetAggregate(PublicSchemeId id)
+        protected override async Task<AggregateResult<PublicScheme>> GetAggregate(PublicSchemeId id)
         {
-            throw new NotImplementedException();
+            var result = await this.schemesSnapshot.Read(id);
+            if (!result.HasError)
+            {
+
+            }
+            return result;
         }
     }
 }

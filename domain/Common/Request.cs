@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public abstract class DomainRequest<TAggregateId> : IRequest<DomainRequestResult>
+    public abstract class DomainRequest<TAggregateId> : IRequest<DomainResult>
         where TAggregateId : EntityId
     {
         public virtual string Type { get; protected set; }

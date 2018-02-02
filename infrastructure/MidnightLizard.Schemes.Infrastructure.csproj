@@ -7,14 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="**/*.Spec.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\domain\MidnightLizard.Schemes.Domain.csproj" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
     <PackageReference Include="NEST" Version="5.6.0" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition=" '$(Configuration)'=='Test' ">
+      <ItemGroup>
+        <PackageReference Include="Moq" Version="4.8.1" />
+        <PackageReference Include="xunit" Version="2.3.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+        <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+        <ProjectReference Include="..\tests\MidnightLizard.Schemes.Tests.csproj" />
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)'!='Test' ">
+      <ItemGroup>
+        <Compile Remove="**/*.Spec.cs" />
+      </ItemGroup>
+    </When>
+  </Choose>
 
 </Project>

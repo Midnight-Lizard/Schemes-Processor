@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class SchemePublishedEvent : DomainEvent, IColorScheme
+    public class SchemePublishedEvent : SchemeDomainEvent, IColorScheme
     {
         public int PublisherId { get; private set; }
         public string colorSchemeId { get; set; }

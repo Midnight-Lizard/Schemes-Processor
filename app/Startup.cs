@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
 using MidnightLizard.Schemes.Infrastructure.Queue;
@@ -57,7 +58,7 @@ namespace MidnightLizard.Schemes.Processor
                         nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
                 };
             });
-            services.AddTransient<ISchemesSnapshot, SchemesSnapshot>();
+            services.AddTransient<ISnapshot<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
             services.AddMvc();
 
             // Autofac - last part!

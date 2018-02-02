@@ -8,8 +8,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class PublicScheme : AggregateRoot<PublicSchemeId>
     {
-        public PublisherId PublisherId { get; set; }
-        public ColorScheme ColorScheme { get; set; }
+        public PublisherId PublisherId { get; protected set; }
+        public ColorScheme ColorScheme { get; protected set; }
 
         public void Publish(
             PublisherId publisherId,

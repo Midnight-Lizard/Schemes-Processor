@@ -1,11 +1,12 @@
 using System;
+using System.Threading.Tasks;
+using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
 using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
-    public class SchemesSnapshot : ISchemesSnapshot
+    public class SchemesSnapshot : ISnapshot<PublicScheme, PublicSchemeId>
     {
         private readonly ElasticSearchConfig config;
         private readonly ElasticClient elasticClient;
@@ -25,20 +26,25 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             );
         }
 
-        public PublicScheme Read(Guid id)
+        public Task<AggregateResult<PublicScheme>> Read(PublicSchemeId id)
         {
             throw new NotImplementedException();
         }
 
-        public void Save(PublicScheme scheme)
+        public async Task<DomainResult> Save(PublicScheme scheme)
         {
-            this.elasticClient.Update<PublicScheme, object>(
+            var result = await this.elasticClient.UpdateAsync<PublicScheme, object>(
                 new DocumentPath<PublicScheme>(scheme.Id.Value),
                 u => u.Doc(new
                 {
                     scheme.PublisherId,
                     scheme.ColorScheme
                 }).DocAsUpsert());
+            return new DomainResult(!result.IsValid,
+                result.OriginalException,
+                result.OriginalException != null
+                    ? result.OriginalException.Message
+                    : result.ServerError?.Error.Reason);
         }
     }
 }

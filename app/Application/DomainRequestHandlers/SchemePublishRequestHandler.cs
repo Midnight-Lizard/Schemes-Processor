@@ -10,7 +10,15 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
     public class SchemePublishRequestHandler : SchemeRequestHandler<SchemePublishRequest>
     {
-        public async override Task<DomainRequestResult> Handle(SchemePublishRequest request, CancellationToken cancellationToken)
+        protected SchemePublishRequestHandler(
+            IDomainEventsDispatcher<PublicSchemeId> domainEventsDispatcher,
+            ISnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
+            IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
+            base(domainEventsDispatcher, schemesSnapshot, eventsAccessor)
+        {
+        }
+
+        public async override Task<DomainResult> Handle(SchemePublishRequest request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
