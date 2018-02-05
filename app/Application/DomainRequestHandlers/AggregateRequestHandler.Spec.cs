@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Schemes.Tests;
@@ -116,12 +118,12 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         public async Task Should_call_DomainEventsAccessor_and_return_its_results(
             )
         {
-            var testSchemeId = new PublicSchemeId();
+            var testScheme = new PublicScheme();
             this.eventsAccessorStub
-                .Setup(d => d.Read(testSchemeId, 0))
+                .Setup(d => d.Read(testScheme))
                 .ReturnsAsync(new DomainEventsResult<PublicSchemeId>(testEvents));
-            var results = await this.ReadDomainEvents(testSchemeId, 0);
-            eventsAccessorStub.Verify(d => d.Read(testSchemeId, 0), Times.Once);
+            var results = await this.ReadDomainEvents(testScheme);
+            eventsAccessorStub.Verify(d => d.Read(testScheme), Times.Once);
             Assert.Equal(this.testEvents.Count, results.Events.Count);
         }
 

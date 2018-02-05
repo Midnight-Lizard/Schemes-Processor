@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using System;
@@ -61,7 +63,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
         }
 
-        protected virtual async Task<Dictionary<DomainEvent<TAggregateId>, DomainResult>> DispatchDomainEvents(TAggregate aggregate
+        protected virtual async Task<Dictionary<DomainEvent<TAggregateId>, DomainResult>> DispatchDomainEvents(IDomainEvents<TAggregateId> aggregate
             )
         {
             var results = new Dictionary<DomainEvent<TAggregateId>, DomainResult>();
@@ -77,10 +79,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             return results;
         }
 
-        protected virtual async Task<DomainEventsResult<TAggregateId>> ReadDomainEvents(TAggregateId id, int offset
+        protected virtual async Task<DomainEventsResult<TAggregateId>> ReadDomainEvents(IAggregateOffset<TAggregateId> aggregateOffset
             )
         {
-            return await this.eventsAccessor.Read(id, offset);
+            return await this.eventsAccessor.Read(aggregateOffset);
         }
     }
 }
