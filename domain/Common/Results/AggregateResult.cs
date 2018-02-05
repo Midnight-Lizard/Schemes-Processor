@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.Common
+namespace MidnightLizard.Schemes.Domain.Common.Results
 {
     public class AggregateResult<TAggregate, TAggregateId> : DomainResult
         where TAggregate : AggregateRoot<TAggregateId>
