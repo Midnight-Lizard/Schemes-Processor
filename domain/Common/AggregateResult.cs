@@ -4,7 +4,9 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public class AggregateResult<TAggregate> : DomainResult
+    public class AggregateResult<TAggregate, TAggregateId> : DomainResult
+        where TAggregate : AggregateRoot<TAggregateId>
+        where TAggregateId : DomainEntityId
     {
         public TAggregate Aggregate { get; }
 

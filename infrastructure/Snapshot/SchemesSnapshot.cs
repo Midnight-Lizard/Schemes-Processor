@@ -26,7 +26,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             );
         }
 
-        public Task<AggregateResult<PublicScheme>> Read(PublicSchemeId id)
+        public Task<AggregateResult<PublicScheme, PublicSchemeId>> Read(PublicSchemeId id)
         {
             throw new NotImplementedException();
         }

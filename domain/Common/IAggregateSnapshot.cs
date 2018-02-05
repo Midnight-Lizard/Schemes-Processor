@@ -11,6 +11,6 @@ namespace MidnightLizard.Schemes.Domain.Common
     {
         Task<DomainResult> Save(TAggregate scheme);
 
-        Task<AggregateResult<TAggregate>> Read(TAggregateId id);
+        Task<AggregateResult<TAggregate, TAggregateId>> Read(TAggregateId id);
     }
 }

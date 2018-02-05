@@ -132,7 +132,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             var testSchemeId = new PublicSchemeId();
             var cacheEntryStub = new Mock<ICacheEntry>();
-            var expectedResult = new AggregateResult<PublicScheme>(new PublicScheme());
+            var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>(new PublicScheme());
 
             this.memoryCacheStub.Setup(s => s.TryGetValue(testSchemeId, out It.Ref<object>.IsAny)).Returns(false);
             this.memoryCacheStub.Setup(s => s.CreateEntry(testSchemeId)).Returns(cacheEntryStub.Object).Verifiable();
@@ -154,7 +154,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             )
         {
             var testSchemeId = new PublicSchemeId();
-            var expectedResult = new AggregateResult<PublicScheme>("error");
+            var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
 
             this.memoryCacheStub.Setup(s => s.TryGetValue(testSchemeId, out It.Ref<object>.IsAny)).Returns(false);
             this.snapshotStub.Setup(s => s.Read(testSchemeId)).ReturnsAsync(expectedResult).Verifiable();
@@ -173,7 +173,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             )
         {
             var testSchemeId = new PublicSchemeId();
-            var expectedResult = new AggregateResult<PublicScheme>(new PublicScheme());
+            var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>(new PublicScheme());
             this.testCacheConfig.AGGREGATES_CACHE_ENABLED = false;
 
             this.memoryCacheStub.Setup(s => s.TryGetValue(testSchemeId, out It.Ref<object>.IsAny)).Returns(false);

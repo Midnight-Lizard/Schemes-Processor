@@ -40,13 +40,13 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         public abstract Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken);
 
-        protected virtual async Task<AggregateResult<TAggregate>> GetAggregateSnapshot(TAggregateId id
+        protected virtual async Task<AggregateResult<TAggregate, TAggregateId>> GetAggregateSnapshot(TAggregateId id
             )
         {
             if (this.cacheConfig.Value.AGGREGATES_CACHE_ENABLED &&
                 this.memoryCache.TryGetValue(id, out TAggregate aggregate))
             {
-                return new AggregateResult<TAggregate>(aggregate);
+                return new AggregateResult<TAggregate, TAggregateId>(aggregate);
             }
             else
             {

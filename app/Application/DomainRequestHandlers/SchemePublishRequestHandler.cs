@@ -26,7 +26,11 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         public async override Task<DomainResult> Handle(SchemePublishRequest request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var snapshotResult = await this.GetAggregateSnapshot(request.AggregateId);
+
+            //this.ReadDomainEvents(request.AggregateId,snapshotResult.Aggregate.o)
+
+            return DomainResult.Ok;
         }
     }
 }
