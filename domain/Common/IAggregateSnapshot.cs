@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public interface ISnapshot<TAggregate, TAggregateId>
-        where TAggregateId : EntityId
+    public interface IAggregateSnapshot<TAggregate, TAggregateId>
+        where TAggregateId : DomainEntityId
         where TAggregate : AggregateRoot<TAggregateId>
     {
         Task<DomainResult> Save(TAggregate scheme);

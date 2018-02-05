@@ -15,6 +15,11 @@ namespace MidnightLizard.Schemes.Domain.Common
             Aggregate = aggregate;
         }
 
+        public AggregateResult(string errorMessage) : base(errorMessage)
+        {
+
+        }
+
         public AggregateResult(Exception ex) : base(ex)
         {
         }

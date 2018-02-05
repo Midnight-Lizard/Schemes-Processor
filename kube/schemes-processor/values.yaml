@@ -28,6 +28,9 @@ env:
   ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
   SCHEMES_EVENTS_TOPIC: schemes-events-a
   SCHEMES_REQUESTS_TOPIC: schemes-requests-a
+  AGGREGATES_CACHE_ENABLED: true
+  AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS: 10
+  AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS: 60
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
       "group.id": "schemes-events-processor",

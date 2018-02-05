@@ -6,7 +6,7 @@ using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
-    public class SchemesSnapshot : ISnapshot<PublicScheme, PublicSchemeId>
+    public class SchemesSnapshot : IAggregateSnapshot<PublicScheme, PublicSchemeId>
     {
         private readonly ElasticSearchConfig config;
         private readonly ElasticClient elasticClient;

@@ -12,6 +12,12 @@ namespace MidnightLizard.Schemes.Domain.Common
 
         public DomainResult() { }
 
+        public DomainResult(string errorMessage)
+        {
+            HasError = true;
+            ErrorMessage = errorMessage;
+        }
+
         public DomainResult(Exception ex)
         {
             HasError = true;

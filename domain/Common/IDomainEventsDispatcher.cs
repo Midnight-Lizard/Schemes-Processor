@@ -10,7 +10,7 @@ namespace MidnightLizard.Schemes.Domain.Common
     /// </summary>
     /// <typeparam name="TAggregateId">Type of Aggregate ID to wich this event is related</typeparam>
     public interface IDomainEventsDispatcher<TAggregateId>
-        where TAggregateId : EntityId
+        where TAggregateId : DomainEntityId
     {
         Task<DomainResult> DispatchEvent(DomainEvent<TAggregateId> @event);
     }

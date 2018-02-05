@@ -10,7 +10,7 @@ namespace MidnightLizard.Schemes.Domain.Common
     /// </summary>
     /// <typeparam name="TAggregateId">Type of Aggregate ID events of wich this accessor processing</typeparam>
     public interface IDomainEventsAccessor<TAggregateId>
-        where TAggregateId : EntityId
+        where TAggregateId : DomainEntityId
     {
         Task<DomainEventsResult<TAggregateId>> Read(TAggregateId id, int offset);
         Task<DomainResult> Write(DomainEvent<TAggregateId> @event);

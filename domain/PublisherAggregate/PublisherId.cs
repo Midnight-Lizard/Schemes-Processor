@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublisherAggregate
 {
-    public class PublisherId : EntityId<Guid>
+    public class PublisherId : DomainEntityId<Guid>
     {
     }
 }

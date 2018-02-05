@@ -15,6 +15,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
+using MidnightLizard.Schemes.Processor.Configuration;
 using Newtonsoft.Json;
 
 namespace MidnightLizard.Schemes.Processor
@@ -31,8 +32,10 @@ namespace MidnightLizard.Schemes.Processor
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
-            // services.AddOptions();
-            // services.Configure<ElasticSearchConfig>(Configuration);
+            services.AddOptions();
+
+            services.Configure<AggregatesCacheConfig>(Configuration);
+
             services.AddSingleton<ElasticSearchConfig>(x =>
             {
                 var esConfig = new ElasticSearchConfig();
@@ -58,7 +61,9 @@ namespace MidnightLizard.Schemes.Processor
                         nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
                 };
             });
-            services.AddTransient<ISnapshot<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
+            services.AddTransient<IAggregateSnapshot<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
+
+            services.AddMemoryCache();
             services.AddMvc();
 
             // Autofac - last part!

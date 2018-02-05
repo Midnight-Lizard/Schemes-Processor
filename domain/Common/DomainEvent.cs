@@ -6,8 +6,8 @@ using System.Text.RegularExpressions;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public class DomainEvent<TAggregateId> : IRequest<DomainResult>
-        where TAggregateId : EntityId
+    public class DomainEvent<TAggregateId> : IRequest<DomainResult>, IEquatable<DomainEvent<TAggregateId>>
+        where TAggregateId : DomainEntityId
     {
         public string Type { get; protected set; }
         public Guid Id { get; private set; }
@@ -29,6 +29,23 @@ namespace MidnightLizard.Schemes.Domain.Common
             : this()
         {
             CorrelationId = correlationId;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj != null &&
+               obj is DomainEvent<TAggregateId> other &&
+               other.Id == this.Id;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+
+        public bool Equals(DomainEvent<TAggregateId> other)
+        {
+            return other != null && other.Id == this.Id;
         }
     }
 }

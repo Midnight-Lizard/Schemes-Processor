@@ -4,9 +4,9 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public abstract class EntityId { }
+    public abstract class DomainEntityId { }
 
-    public class EntityId<T> : EntityId
+    public class DomainEntityId<T> : DomainEntityId
         where T : IComparable, IComparable<T>, IEquatable<T>
     {
         public bool IsDefault

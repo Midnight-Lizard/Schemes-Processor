@@ -5,7 +5,7 @@ using System.Text;
 namespace MidnightLizard.Schemes.Domain.Common
 {
     public class DomainEventsResult<TAggregateId> : DomainResult
-        where TAggregateId : EntityId
+        where TAggregateId : DomainEntityId
     {
         public List<DomainEvent<TAggregateId>> Events { get; }
 

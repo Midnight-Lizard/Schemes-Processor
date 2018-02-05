@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class PublicSchemeId : EntityId<Guid>
+    public class PublicSchemeId : DomainEntityId<Guid>
     {
         public PublicSchemeId()
         {

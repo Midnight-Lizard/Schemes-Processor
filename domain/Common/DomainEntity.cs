@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public class Entity<TId> where TId : EntityId
+    public class DomainEntity<TId> where TId : DomainEntityId
     {
         public TId Id { get; set; }
         public List<DomainEvent<TId>> Events { get; } = new List<DomainEvent<TId>>();

@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 namespace MidnightLizard.Schemes.Domain.Common
 {
     public abstract class DomainRequest<TAggregateId> : IRequest<DomainResult>
-        where TAggregateId : EntityId
+        where TAggregateId : DomainEntityId
     {
         public virtual string Type { get; protected set; }
         public Guid Id { get; protected set; }

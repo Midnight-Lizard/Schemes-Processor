@@ -1,5 +1,8 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
+using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Processor.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +11,16 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
-    public class SchemePublishRequestHandler : SchemeRequestHandler<SchemePublishRequest>
+    public class SchemePublishRequestHandler :
+        AggregateRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
     {
         protected SchemePublishRequestHandler(
+            IOptions<AggregatesCacheConfig> cacheConfig,
+            IMemoryCache memoryCache,
             IDomainEventsDispatcher<PublicSchemeId> domainEventsDispatcher,
-            ISnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
+            IAggregateSnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
             IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
-            base(domainEventsDispatcher, schemesSnapshot, eventsAccessor)
+            base(cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
         {
         }
 
