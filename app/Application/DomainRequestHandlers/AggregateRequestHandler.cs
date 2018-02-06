@@ -46,7 +46,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         protected abstract void HandleDomainRequest(TAggregate aggregate, TRequest request, CancellationToken cancellationToken);
 
-        public virtual async Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken)
+        public virtual async Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken
+            )
         {
             var someResult = await GetAggregate(request.AggregateId);
             if (someResult.HasError) return someResult;
@@ -108,12 +109,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             return results;
         }
 
-        protected virtual async Task<DomainEventsResult<TAggregateId>> ReadDomainEvents(IAggregateOffset<TAggregateId> aggregateOffset
-            )
-        {
-            return await this.eventsAccessor.Read(aggregateOffset);
-        }
-
         protected virtual async Task<DomainResult> GetAggregate(TAggregateId aggregateId
             )
         {
@@ -122,22 +117,17 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             var aggregate = snapshotResult.Aggregate;
 
-            var eventsResult = await ReadDomainEvents(aggregate);
+            var eventsResult = await this.eventsAccessor.Read(aggregate);
             if (eventsResult.HasError) return eventsResult;
 
             aggregate.ReplayDomainEvents(eventsResult.Events, this.mapper);
 
             if (eventsResult.Events.Count > this.aggregatesConfig.Value.AGGREGATES_MAX_EVENTS_COUNT)
             {
-                SaveAggregateSnapshot(aggregate);
+                await aggregateSnapshot.Save(aggregate);
             }
 
             return snapshotResult;
-        }
-
-        protected virtual void SaveAggregateSnapshot(TAggregate aggregate)
-        {
-            throw new NotImplementedException();
         }
     }
 }

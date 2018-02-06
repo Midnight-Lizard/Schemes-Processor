@@ -43,7 +43,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 AGGREGATES_CACHE_ENABLED = true,
                 AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS = 10,
-                AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS = 60
+                AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS = 60,
+                AGGREGATES_MAX_EVENTS_COUNT = 1
             };
 
         public AggregateRequestHandlerSpec(
@@ -73,6 +74,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             throw new NotImplementedException();
         }
+
+        #region DispatchDomainEvents
 
         [It(nameof(DispatchDomainEvents),
             nameof(Should_call_DomainEventsDispatcher_for_each_Event_in_Aggregate_and_return_a_List_of_results))]
@@ -113,19 +116,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             schemeStub.Verify();
         }
 
-        [It(nameof(ReadDomainEvents),
-            nameof(Should_call_DomainEventsAccessor_and_return_its_results))]
-        public async Task Should_call_DomainEventsAccessor_and_return_its_results(
-            )
-        {
-            var testScheme = new PublicScheme();
-            this.eventsAccessorStub
-                .Setup(d => d.Read(testScheme))
-                .ReturnsAsync(new DomainEventsResult<PublicSchemeId>(testEvents));
-            var results = await this.ReadDomainEvents(testScheme);
-            eventsAccessorStub.Verify(d => d.Read(testScheme), Times.Once);
-            Assert.Equal(this.testEvents.Count, results.Events.Count);
-        }
+        #endregion
+
+        #region GetAggregateSnapshot
 
         [It(nameof(GetAggregateSnapshot),
             nameof(Should_restore_SchemesAggregate_from_Snapshot_and_cache_it_in_memory))]
@@ -189,5 +182,118 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.memoryCacheStub.Verify(s => s.TryGetValue(testSchemeId, out It.Ref<object>.IsAny), Times.Never);
             this.memoryCacheStub.Verify(s => s.CreateEntry(testSchemeId), Times.Never);
         }
+
+        #endregion
+
+        #region GetAggregate
+
+        [It(nameof(GetAggregate),
+            nameof(Should_return_Error_when_Snapshot_returns_Error))]
+        public async Task Should_return_Error_when_Snapshot_returns_Error()
+        {
+            var testSchemeId = new PublicSchemeId();
+            var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
+            this.cacheConfigStub.SetupGet(s => s.Value).Returns(this.testCacheConfig);
+            this.snapshotStub.Setup(s => s.Read(testSchemeId)).ReturnsAsync(expectedResult).Verifiable();
+
+            var result = await this.GetAggregate(testSchemeId);
+
+            Assert.Equal(expectedResult, result);
+
+            this.snapshotStub.Verify();
+        }
+
+        [It(nameof(GetAggregate),
+            nameof(Should_return_Error_when_ReadDomainEvents_returns_Error))]
+        public async Task Should_return_Error_when_ReadDomainEvents_returns_Error()
+        {
+            var testScheme = new PublicScheme();
+            var expectedResult = new DomainEventsResult<PublicSchemeId>("error");
+            var cacheEntryStub = new Mock<ICacheEntry>();
+
+            this.cacheConfigStub
+                .SetupGet(s => s.Value)
+                .Returns(this.testCacheConfig);
+
+            this.snapshotStub.Setup(s => s.Read(testScheme.Id))
+                .ReturnsAsync(new AggregateResult<PublicScheme, PublicSchemeId>(testScheme))
+                .Verifiable();
+
+            this.eventsAccessorStub
+                .Setup(d => d.Read(testScheme))
+                .ReturnsAsync(expectedResult);
+
+            this.memoryCacheStub
+                .Setup(s => s.CreateEntry(testScheme.Id))
+                .Returns(cacheEntryStub.Object).Verifiable();
+
+            cacheEntryStub
+                .SetupSet(s => s.SlidingExpiration = TimeSpan.FromSeconds(this.testCacheConfig.AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS))
+                .Verifiable();
+
+            var result = await this.GetAggregate(testScheme.Id);
+
+            Assert.Equal(expectedResult, result);
+            this.snapshotStub.Verify();
+            this.memoryCacheStub.Verify();
+            cacheEntryStub.Verify();
+        }
+
+        [It(nameof(GetAggregate),
+            nameof(Should_save_AggregateSnapshot_if_it_has_enough_Events))]
+        public async Task Should_save_AggregateSnapshot_if_it_has_enough_Events()
+        {
+            var testSchemeStub = new Mock<PublicScheme>();
+            var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>(testSchemeStub.Object);
+            var cacheEntryStub = new Mock<ICacheEntry>();
+
+            this.cacheConfigStub
+                .SetupGet(s => s.Value)
+                .Returns(this.testCacheConfig);
+
+            this.snapshotStub.Setup(s => s.Read(testSchemeStub.Object.Id))
+                .ReturnsAsync(expectedResult)
+                .Verifiable();
+
+            this.snapshotStub.Setup(s => s.Save(testSchemeStub.Object))
+                .ReturnsAsync(DomainResult.Ok)
+                .Verifiable();
+
+            this.eventsAccessorStub
+                .Setup(d => d.Read(testSchemeStub.Object))
+                .ReturnsAsync(new DomainEventsResult<PublicSchemeId>(this.testEvents));
+
+            this.memoryCacheStub
+                .Setup(s => s.CreateEntry(testSchemeStub.Object.Id))
+                .Returns(cacheEntryStub.Object).Verifiable();
+
+            cacheEntryStub
+                .SetupSet(s => s.SlidingExpiration = TimeSpan.FromSeconds(this.testCacheConfig.AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS))
+                .Verifiable();
+
+            var result = await this.GetAggregate(testSchemeStub.Object.Id);
+
+            Assert.Equal(expectedResult, result);
+            this.snapshotStub.Verify();
+            this.memoryCacheStub.Verify();
+            cacheEntryStub.Verify();
+            testSchemeStub.Verify(s => s.ReplayDomainEvents(this.testEvents, this.mapper), Times.Once);
+        }
+
+        #endregion
+
+        #region Handle
+
+        public async Task Should_return_Error_if_GetAggregate_returns_Error()
+        {
+
+        }
+
+        public async Task Should_remove_Aggregate_from_MemoryCache_if_events_dispatch_failed()
+        {
+
+        }
+
+        #endregion
     }
 }
