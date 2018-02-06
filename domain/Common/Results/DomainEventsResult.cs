@@ -16,12 +16,11 @@ namespace MidnightLizard.Schemes.Domain.Common.Results
             Events = events;
         }
 
-        public DomainEventsResult(Exception ex) : base(ex)
-        {
-        }
+        public DomainEventsResult(string errorMessage) : base(errorMessage) { }
 
-        public DomainEventsResult(bool hasError, Exception ex, string errorMessage) : base(hasError, ex, errorMessage)
-        {
-        }
+        public DomainEventsResult(Exception ex) : base(ex) { }
+
+        public DomainEventsResult(bool hasError, Exception ex, string errorMessage)
+            : base(hasError, ex, errorMessage) { }
     }
 }
