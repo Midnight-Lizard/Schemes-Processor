@@ -10,7 +10,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
         where TAggregateId : DomainEntityId
         where TAggregate : AggregateRoot<TAggregateId>
     {
-        Task<DomainResult> Save(TAggregate scheme);
+        Task<DomainResult> Save(TAggregate aggregate);
 
         Task<AggregateResult<TAggregate, TAggregateId>> Read(TAggregateId id);
     }
