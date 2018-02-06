@@ -1,4 +1,5 @@
 ﻿using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,6 +8,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class SchemePublishRequest : SchemeDomainRequest, IColorScheme
     {
+        public PublisherId publisherId { get; set; }
+
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
         public bool runOnThisSite { get; set; }

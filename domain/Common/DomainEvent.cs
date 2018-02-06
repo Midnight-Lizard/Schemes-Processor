@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public class DomainEvent<TAggregateId> : IRequest<DomainResult>, IEquatable<DomainEvent<TAggregateId>>
+    public abstract class DomainEvent<TAggregateId> : IRequest<DomainResult>, IEquatable<DomainEvent<TAggregateId>>
         where TAggregateId : DomainEntityId
     {
         public string Type { get; protected set; }

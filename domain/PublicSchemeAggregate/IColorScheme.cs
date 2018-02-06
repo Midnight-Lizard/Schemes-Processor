@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    interface IColorScheme
+    public interface IColorScheme
     {
         string colorSchemeId { get; set; }
         string colorSchemeName { get; set; }

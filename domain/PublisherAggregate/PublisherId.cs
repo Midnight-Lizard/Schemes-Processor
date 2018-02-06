@@ -7,5 +7,8 @@ namespace MidnightLizard.Schemes.Domain.PublisherAggregate
 {
     public class PublisherId : DomainEntityId<Guid>
     {
+        public PublisherId() { }
+
+        public PublisherId(Guid id) : base(id) { }
     }
 }

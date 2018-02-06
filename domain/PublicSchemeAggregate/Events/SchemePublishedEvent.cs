@@ -7,7 +7,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class SchemePublishedEvent : SchemeDomainEvent, IColorScheme
     {
-        public int PublisherId { get; private set; }
+        public Guid PublisherId { get; private set; }
+
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
         public bool runOnThisSite { get; set; }

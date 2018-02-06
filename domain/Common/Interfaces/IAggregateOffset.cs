@@ -7,6 +7,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
     public interface IAggregateOffset<TAggregateId> : IIdentified<TAggregateId>
          where TAggregateId : DomainEntityId
     {
-        int Offset { get; }
+        int EventOffset { get; }
+        int RequestOffset { get; }
     }
 }

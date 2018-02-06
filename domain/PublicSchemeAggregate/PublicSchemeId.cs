@@ -7,14 +7,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class PublicSchemeId : DomainEntityId<Guid>
     {
-        public PublicSchemeId()
+        public PublicSchemeId() : base()
         {
-            Value = Guid.NewGuid();
         }
 
-        public PublicSchemeId(Guid value)
+        public PublicSchemeId(Guid value) : base(value)
         {
-            Value = value;
         }
     }
 }

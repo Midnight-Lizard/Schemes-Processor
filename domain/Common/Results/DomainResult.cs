@@ -6,6 +6,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Results
 {
     public class DomainResult
     {
+        public bool HasResult { get; protected set; } = true;
         public bool HasError { get; protected set; }
         public string ErrorMessage { get; protected set; }
         public Exception Exception { get; protected set; }
@@ -37,10 +38,17 @@ namespace MidnightLizard.Schemes.Domain.Common.Results
             HasError = false
         };
 
-        public static DomainResult Error = new DomainResult
+        public static DomainResult UnknownError = new DomainResult
         {
             HasError = true,
-            ErrorMessage = "Internal server error"
+            ErrorMessage = "Unknown error"
+        };
+
+        public static DomainResult Skipped = new DomainResult
+        {
+            HasError = false,
+            HasResult = false,
+            ErrorMessage = "Action has been skipped"
         };
     }
 }

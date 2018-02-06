@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,8 +35,8 @@ namespace MidnightLizard.Schemes.Processor
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-
-            services.Configure<AggregatesCacheConfig>(Configuration);
+            services.AddAutoMapper();
+            services.Configure<AggregatesConfig>(Configuration);
 
             services.AddSingleton<ElasticSearchConfig>(x =>
             {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using AutoMapper;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
@@ -17,31 +18,19 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         AggregateRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
     {
         protected SchemePublishRequestHandler(
-            IOptions<AggregatesCacheConfig> cacheConfig,
+            IMapper mapper,
+            IOptions<AggregatesConfig> cacheConfig,
             IMemoryCache memoryCache,
             IDomainEventsDispatcher<PublicSchemeId> domainEventsDispatcher,
             IAggregateSnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
             IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
-            base(cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
+            base(mapper, cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
         {
         }
 
-        public async override Task<DomainResult> Handle(SchemePublishRequest request, CancellationToken cancellationToken)
+        protected override void HandleDomainRequest(PublicScheme aggregate, SchemePublishRequest request, CancellationToken cancellationToken)
         {
-            var snapshotResult = await this.GetAggregateSnapshot(request.AggregateId);
-            if (snapshotResult.HasError) return snapshotResult;
-
-            var aggregate = snapshotResult.Aggregate;
-
-            var eventsResult = await this.ReadDomainEvents(aggregate);
-
-            // TODO: snapshotResult.Aggregate.ApplyEvents
-
-            // TODO: do something actual
-
-            var dispatchResults = await this.DispatchDomainEvents(aggregate);
-
-            return DomainResult.Ok;
+            aggregate.Publish(request.publisherId, request.CorrelationId, this.mapper.Map<IColorScheme, ColorScheme>(request));
         }
     }
 }

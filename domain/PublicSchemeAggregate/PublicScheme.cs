@@ -1,4 +1,5 @@
 ﻿using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;
@@ -6,10 +7,10 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
-    public class PublicScheme : AggregateRoot<PublicSchemeId>
+    public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
-        public PublisherId PublisherId { get; protected set; }
-        public ColorScheme ColorScheme { get; protected set; }
+        public PublisherId PublisherId { get; private set; }
+        public ColorScheme ColorScheme { get; private set; }
 
         public void Publish(
             PublisherId publisherId,
