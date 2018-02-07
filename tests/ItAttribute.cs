@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
@@ -12,7 +13,7 @@ namespace MidnightLizard.Schemes.Tests
     /// </summary>
     public class ItAttribute : FactAttribute
     {
-        public ItAttribute(string fullName) : base()
+        public ItAttribute(string it, [CallerMemberName]string should = "") : base()
         {
             //DisplayName = Regex.Replace(Regex.Replace(Regex.Replace(
             //    displayName, @"((?:[A-Z])+[^A-Z]*)", "$1 "), "_", " "), "  ", " ")
@@ -22,12 +23,7 @@ namespace MidnightLizard.Schemes.Tests
             //    .Split(displayName, @"_|((?:[A-Z])+[^A-Z_]*)")
             //    .Select(x => x.Trim()));
 
-            DisplayName = fullName.Replace("__", ".").Replace("_", " ");
-        }
-
-        public ItAttribute(string it, string should) : this($"{it} - {should}")
-        {
-
+            DisplayName = $"{it} - {should}".Replace("__", ".").Replace("_", " ");
         }
 
     }

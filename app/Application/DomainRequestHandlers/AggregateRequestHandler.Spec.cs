@@ -98,8 +98,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                      .ReturnsAsync(DomainResult.Ok);
             }
 
-            [It(nameof(DispatchDomainEvents),
-                nameof(Should_call_Aggregate__ReleaseEvents))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_call_Aggregate__ReleaseEvents(
                 )
             {
@@ -107,8 +106,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.testSchemeStub.Verify();
             }
 
-            [It(nameof(DispatchDomainEvents),
-                nameof(Should_return_successful_results))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_return_successful_results(
                 )
             {
@@ -116,8 +114,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.All(results, result => Assert.False(result.Value.HasError));
             }
 
-            [It(nameof(DispatchDomainEvents),
-                nameof(Should_return_results_for_each_Event_returned_from_Aggregate__ReleaseEvents))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_return_results_for_each_Event_returned_from_Aggregate__ReleaseEvents(
                 )
             {
@@ -125,8 +122,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(this.testEvents.Count, results.Count);
             }
 
-            [It(nameof(DispatchDomainEvents),
-                nameof(Should_call_DispatchEvent_for_each_Event_returned_from_Aggregate__ReleaseEvents))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_call_DispatchEvent_for_each_Event_returned_from_Aggregate__ReleaseEvents(
                 )
             {
@@ -136,8 +132,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     Times.Exactly(this.testEvents.Count));
             }
 
-            [It(nameof(DispatchDomainEvents),
-               nameof(Should_stop_dispatching_events_if_error_returned_by_EventsDispatcher))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_stop_dispatching_events_if_error_returned_by_EventsDispatcher(
                )
             {
@@ -151,8 +146,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 dispatcherStub.Verify(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()), Times.Once);
             }
 
-            [It(nameof(DispatchDomainEvents),
-               nameof(Should_update_EventOffset_of_Aggregate))]
+            [It(nameof(DispatchDomainEvents))]
             public async Task Should_update_EventOffset_of_Aggregate(
                )
             {
@@ -178,8 +172,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.cacheConfigStub.SetupGet(s => s.Value).Returns(this.testCacheConfig);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_return_AggregateResult_from_Snapshot))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_return_AggregateResult_from_Snapshot(
                 )
             {
@@ -187,8 +180,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(this.snapshotReadResult, result);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-               nameof(Should_call_AggregateSnapshot__Read_with_specified_AggregateId))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_call_AggregateSnapshot__Read_with_specified_AggregateId(
                )
             {
@@ -196,8 +188,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-               nameof(Should_create_a_new_MemoryCacheEntry_for_specified_AggregateId))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_create_a_new_MemoryCacheEntry_for_specified_AggregateId(
                )
             {
@@ -205,8 +196,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Once);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_set_up_correct_SlidingExpiration_for_a_new_MemoryCacheEntry))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_set_up_correct_SlidingExpiration_for_a_new_MemoryCacheEntry(
                 )
             {
@@ -216,8 +206,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     Times.Once);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_set_up_correct_AbsoluteExpiration_for_a_new_MemoryCacheEntry))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_set_up_correct_AbsoluteExpiration_for_a_new_MemoryCacheEntry(
                 )
             {
@@ -231,8 +220,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     Times.Once);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_return_Error_if_AggregateSnapshot_returns_Error))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_return_Error_if_AggregateSnapshot_returns_Error(
                 )
             {
@@ -243,8 +231,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(this.snapshotReadResult, result);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_not_cache_if_AggregateSnapshot_returns_Error))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_not_cache_if_AggregateSnapshot_returns_Error(
                 )
             {
@@ -255,8 +242,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Never);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_not_read_from_MemoryCache_if_it_is_disabled))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_not_read_from_MemoryCache_if_it_is_disabled(
                 )
             {
@@ -267,8 +253,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.memoryCacheStub.Verify(s => s.TryGetValue(testScheme.Id, out It.Ref<object>.IsAny), Times.Never);
             }
 
-            [It(nameof(GetAggregateSnapshot),
-                nameof(Should_not_write_to_MemoryCache_if_it_is_disabled))]
+            [It(nameof(GetAggregateSnapshot))]
             public async Task Should_not_write_to_MemoryCache_if_it_is_disabled(
                 )
             {
@@ -308,8 +293,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     .Returns(cacheEntryStub.Object);
             }
 
-            [It(nameof(GetAggregate),
-                nameof(Should_return_Error_when_Snapshot_returns_Error))]
+            [It(nameof(GetAggregate))]
             public async Task Should_return_Error_when_Snapshot_returns_Error()
             {
                 this.snapshotReadResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
@@ -319,8 +303,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(this.snapshotReadResult, result);
             }
 
-            [It(nameof(GetAggregate),
-                nameof(Should_return_Error_when_ReadDomainEvents_returns_Error))]
+            [It(nameof(GetAggregate))]
             public async Task Should_return_Error_when_ReadDomainEvents_returns_Error()
             {
                 this.eventsReadResult = new DomainEventsResult<PublicSchemeId>("error");
@@ -330,24 +313,21 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(this.eventsReadResult, result);
             }
 
-            [It(nameof(GetAggregate),
-                nameof(Should_call_AggregateSnapshot__Read))]
+            [It(nameof(GetAggregate))]
             public async Task Should_call_AggregateSnapshot__Read()
             {
                 var result = await this.GetAggregate(testScheme.Id);
                 this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
             }
 
-            [It(nameof(GetAggregate),
-                nameof(Should_call_Aggregate__ReplayDomainEvents))]
+            [It(nameof(GetAggregate))]
             public async Task Should_call_Aggregate__ReplayDomainEvents()
             {
                 var result = await this.GetAggregate(testScheme.Id);
                 this.testSchemeStub.Verify(s => s.ReplayDomainEvents(this.testEvents, this.mapper), Times.Once);
             }
 
-            [It(nameof(GetAggregate),
-                nameof(Should_save_AggregateSnapshot_if_it_has_enough_Events))]
+            [It(nameof(GetAggregate))]
             public async Task Should_save_AggregateSnapshot_if_it_has_enough_Events()
             {
                 var result = await this.GetAggregate(this.testScheme.Id);
@@ -399,8 +379,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     .ReturnsAsync(new AggregateResult<PublicScheme, PublicSchemeId>(this.testScheme));
             }
 
-            [It(nameof(Handle),
-                nameof(Should_return_Error_if_GetAggregate_returns_Error))]
+            [It(nameof(Handle))]
             public async Task Should_return_Error_if_GetAggregate_returns_Error()
             {
                 var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
@@ -411,8 +390,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(expectedResult, result);
             }
 
-            [It(nameof(Handle),
-                nameof(Should_call_HandleDomainRequest))]
+            [It(nameof(Handle))]
             public async Task Should_call_HandleDomainRequest()
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
@@ -420,8 +398,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(1, this.handleDomainRequest_CallCount);
             }
 
-            [It(nameof(Handle),
-                nameof(Should_call_DispatchDomainEvents))]
+            [It(nameof(Handle))]
             public async Task Should_call_DispatchDomainEvents()
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
@@ -429,8 +406,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(1, this.dispatchDomainEvents_CallCount);
             }
 
-            [It(nameof(Handle),
-                nameof(Should_return_Error_from_DispatchDomainEvents))]
+            [It(nameof(Handle))]
             public async Task Should_return_Error_from_DispatchDomainEvents()
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
@@ -440,8 +416,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 Assert.Equal(DomainResult.UnknownError, result);
             }
 
-            [It(nameof(Handle),
-                nameof(Should_remove_Aggregate_from_MemoryCache_if_failed_to_DispatchEvent))]
+            [It(nameof(Handle))]
             public async Task Should_remove_Aggregate_from_MemoryCache_if_failed_to_DispatchEvent()
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
