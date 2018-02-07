@@ -179,7 +179,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(GetAggregateSnapshot),
-                nameof(Should_set_up_correct_SlidingExpiration_for_a_new_MemoryCacheEntry))]
+                nameof(Should_return_AggregateResult_from_Snapshot))]
             public async Task Should_return_AggregateResult_from_Snapshot(
                 )
             {
@@ -217,13 +217,17 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(GetAggregateSnapshot),
-                nameof(Should_set_up_some_AbsoluteExpiration_for_a_new_MemoryCacheEntry))]
-            public async Task Should_set_up_some_AbsoluteExpiration_for_a_new_MemoryCacheEntry(
+                nameof(Should_set_up_correct_AbsoluteExpiration_for_a_new_MemoryCacheEntry))]
+            public async Task Should_set_up_correct_AbsoluteExpiration_for_a_new_MemoryCacheEntry(
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
+                var now = DateTimeOffset.Now;
                 this.cacheEntryStub.VerifySet(
-                    s => s.AbsoluteExpiration = It.IsAny<DateTimeOffset>(),
+                    s => s.AbsoluteExpiration = It.IsInRange(
+                        now,
+                        now.AddSeconds(this.testCacheConfig.AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS),
+                        Range.Exclusive),
                     Times.Once);
             }
 
