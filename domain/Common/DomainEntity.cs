@@ -8,6 +8,6 @@ namespace MidnightLizard.Schemes.Domain.Common
     public class DomainEntity<TId> : IIdentified<TId>
         where TId : DomainEntityId
     {
-        public TId Id { get; protected set; }
+        public virtual TId Id { get; protected set; }
     }
 }
