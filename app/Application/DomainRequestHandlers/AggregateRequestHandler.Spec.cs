@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
@@ -111,7 +112,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
-                Assert.All(results, result => Assert.False(result.Value.HasError));
+                results.Values.Should().NotContain(val => val.HasError);
             }
 
             [It(nameof(DispatchDomainEvents))]
@@ -119,7 +120,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
-                Assert.Equal(this.testEvents.Count, results.Count);
+                results.Should().HaveCount(this.testEvents.Count);
             }
 
             [It(nameof(DispatchDomainEvents))]
@@ -142,7 +143,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var results = await this.DispatchDomainEvents(this.testScheme);
 
-                Assert.Single(results, r => r.Value.HasError);
+                results.Values.Should().ContainSingle(r => r.HasError);
                 dispatcherStub.Verify(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()), Times.Once);
             }
 
@@ -177,7 +178,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
-                Assert.Equal(this.snapshotReadResult, result);
+                result.Should().BeSameAs(this.snapshotReadResult);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -228,7 +229,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
 
-                Assert.Equal(this.snapshotReadResult, result);
+                result.Should().BeSameAs(this.snapshotReadResult);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -301,7 +302,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregate(testScheme.Id);
 
-                Assert.Equal(this.snapshotReadResult, result);
+                result.Should().BeSameAs(this.snapshotReadResult);
             }
 
             [It(nameof(GetAggregate))]
@@ -312,7 +313,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregate(testScheme.Id);
 
-                Assert.Equal(this.eventsReadResult, result);
+                result.Should().BeSameAs(this.eventsReadResult);
             }
 
             [It(nameof(GetAggregate))]
@@ -393,7 +394,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
-                Assert.Equal(expectedResult, result);
+                result.Should().BeSameAs(expectedResult);
             }
 
             [It(nameof(Handle))]
@@ -402,7 +403,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
-                Assert.Equal(1, this.handleDomainRequest_CallCount);
+                this.handleDomainRequest_CallCount.Should().Be(1);
             }
 
             [It(nameof(Handle))]
@@ -411,7 +412,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
-                Assert.Equal(1, this.dispatchDomainEvents_CallCount);
+                this.dispatchDomainEvents_CallCount.Should().Be(1);
             }
 
             [It(nameof(Handle))]
@@ -422,7 +423,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
-                Assert.Equal(DomainResult.UnknownError, result);
+                result.Should().BeSameAs(this.dispatchEventResult);
             }
 
             [It(nameof(Handle))]
