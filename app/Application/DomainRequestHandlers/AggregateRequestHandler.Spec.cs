@@ -182,7 +182,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             [It(nameof(GetAggregateSnapshot))]
             public async Task Should_call_AggregateSnapshot__Read_with_specified_AggregateId(
-               )
+                )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
                 this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
@@ -190,7 +190,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             [It(nameof(GetAggregateSnapshot))]
             public async Task Should_create_a_new_MemoryCacheEntry_for_specified_AggregateId(
-               )
+                )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
                 this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Once);
@@ -294,7 +294,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_return_Error_when_Snapshot_returns_Error()
+            public async Task Should_return_Error_when_Snapshot_returns_Error(
+                )
             {
                 this.snapshotReadResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
 
@@ -304,7 +305,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_return_Error_when_ReadDomainEvents_returns_Error()
+            public async Task Should_return_Error_when_ReadDomainEvents_returns_Error(
+                )
             {
                 this.eventsReadResult = new DomainEventsResult<PublicSchemeId>("error");
 
@@ -314,21 +316,24 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_call_AggregateSnapshot__Read()
+            public async Task Should_call_AggregateSnapshot__Read(
+                )
             {
                 var result = await this.GetAggregate(testScheme.Id);
                 this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_call_Aggregate__ReplayDomainEvents()
+            public async Task Should_call_Aggregate__ReplayDomainEvents(
+                )
             {
                 var result = await this.GetAggregate(testScheme.Id);
                 this.testSchemeStub.Verify(s => s.ReplayDomainEvents(this.testEvents, this.mapper), Times.Once);
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_save_AggregateSnapshot_if_it_has_enough_Events()
+            public async Task Should_save_AggregateSnapshot_if_it_has_enough_Events(
+                )
             {
                 var result = await this.GetAggregate(this.testScheme.Id);
                 this.snapshotStub.Verify(s => s.Save(this.testScheme), Times.Once);
@@ -380,7 +385,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(Handle))]
-            public async Task Should_return_Error_if_GetAggregate_returns_Error()
+            public async Task Should_return_Error_if_GetAggregate_returns_Error(
+                )
             {
                 var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
                 this.snapshotStub.Setup(s => s.Read(this.testScheme.Id)).ReturnsAsync(expectedResult);
@@ -391,7 +397,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(Handle))]
-            public async Task Should_call_HandleDomainRequest()
+            public async Task Should_call_HandleDomainRequest(
+                )
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
@@ -399,7 +406,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(Handle))]
-            public async Task Should_call_DispatchDomainEvents()
+            public async Task Should_call_DispatchDomainEvents(
+                )
             {
                 var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
 
@@ -407,7 +415,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(Handle))]
-            public async Task Should_return_Error_from_DispatchDomainEvents()
+            public async Task Should_return_Error_from_DispatchDomainEvents(
+                )
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
@@ -417,7 +426,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             }
 
             [It(nameof(Handle))]
-            public async Task Should_remove_Aggregate_from_MemoryCache_if_failed_to_DispatchEvent()
+            public async Task Should_remove_Aggregate_from_MemoryCache_if_failed_to_DispatchEvent(
+                )
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
