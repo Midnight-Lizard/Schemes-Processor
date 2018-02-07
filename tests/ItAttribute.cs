@@ -12,7 +12,7 @@ namespace MidnightLizard.Schemes.Tests
     /// </summary>
     public class ItAttribute : FactAttribute
     {
-        public ItAttribute(string it, string should) : base()
+        public ItAttribute(string fullName) : base()
         {
             //DisplayName = Regex.Replace(Regex.Replace(Regex.Replace(
             //    displayName, @"((?:[A-Z])+[^A-Z]*)", "$1 "), "_", " "), "  ", " ")
@@ -22,7 +22,12 @@ namespace MidnightLizard.Schemes.Tests
             //    .Split(displayName, @"_|((?:[A-Z])+[^A-Z_]*)")
             //    .Select(x => x.Trim()));
 
-            DisplayName = it + " - " + should.Replace("_", " ");
+            DisplayName = fullName.Replace("__", ".").Replace("_", " ");
+        }
+
+        public ItAttribute(string it, string should) : this($"{it} - {should}")
+        {
+
         }
 
     }

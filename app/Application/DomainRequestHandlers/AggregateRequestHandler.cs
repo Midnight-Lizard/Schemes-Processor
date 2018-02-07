@@ -30,14 +30,14 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         protected AggregateRequestHandler(
             IMapper mapper,
-            IOptions<AggregatesConfig> cacheConfig,
+            IOptions<AggregatesConfig> aggConfig,
             IMemoryCache memoryCache,
             IDomainEventsDispatcher<TAggregateId> eventsDispatcher,
             IAggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot,
             IDomainEventsAccessor<TAggregateId> eventsAccessor)
         {
             this.mapper = mapper;
-            this.aggregatesConfig = cacheConfig;
+            this.aggregatesConfig = aggConfig;
             this.memoryCache = memoryCache;
             this.eventsDispatcher = eventsDispatcher;
             this.aggregateSnapshot = aggregateSnapshot;
@@ -49,16 +49,22 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         public virtual async Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken
             )
         {
-            var someResult = await GetAggregate(request.AggregateId);
+            var someResult = await this.GetAggregate(request.AggregateId);
             if (someResult.HasError) return someResult;
             if (someResult is AggregateResult<TAggregate, TAggregateId> aggResult)
             {
                 var aggregate = aggResult.Aggregate;
 
-                HandleDomainRequest(aggregate, request, cancellationToken);
+                this.HandleDomainRequest(aggregate, request, cancellationToken);
 
-                var dispatchResults = await DispatchDomainEvents(aggregate);
-                return dispatchResults.Values.FirstOrDefault(result => result.HasError) ?? DomainResult.Ok;
+                var dispatchResults = await this.DispatchDomainEvents(aggregate);
+                var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
+                if (error != null)
+                {
+                    this.memoryCache.Remove(aggregate.Id);
+                    return error;
+                }
+                return DomainResult.Ok;
 
             }
             return new DomainResult($"{nameof(GetAggregate)} returned a wrong type of result: {someResult?.GetType().FullName ?? "null"}");
@@ -99,6 +105,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     if (result.HasError)
                     {
                         hasError = true;
+                    }
+                    else
+                    {
+                        aggregate.ApplyEventOffset(@event);
                     }
                 }
                 else

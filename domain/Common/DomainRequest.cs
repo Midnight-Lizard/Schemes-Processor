@@ -26,5 +26,10 @@ namespace MidnightLizard.Schemes.Domain.Common
             var reg = new Regex("");
             Type = string.Join("-", Regex.Split(this.GetType().Name, @"((?:[A-Z])+[^A-Z]*)")).ToLower();
         }
+
+        public DomainRequest(TAggregateId id) : base()
+        {
+            AggregateId = id;
+        }
     }
 }

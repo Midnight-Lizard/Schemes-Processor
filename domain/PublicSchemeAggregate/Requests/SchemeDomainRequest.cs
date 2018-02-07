@@ -7,5 +7,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public abstract class SchemeDomainRequest : DomainRequest<PublicSchemeId>
     {
+        public SchemeDomainRequest() { }
+        public SchemeDomainRequest(PublicSchemeId id) : base(id) { }
     }
 }

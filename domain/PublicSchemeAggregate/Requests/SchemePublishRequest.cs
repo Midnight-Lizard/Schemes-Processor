@@ -8,6 +8,9 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class SchemePublishRequest : SchemeDomainRequest, IColorScheme
     {
+        public SchemePublishRequest() : base() { }
+        public SchemePublishRequest(PublicSchemeId id) : base(id) { }
+
         public PublisherId publisherId { get; set; }
 
         public string colorSchemeId { get; set; }

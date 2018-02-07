@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace MidnightLizard.Schemes.Domain.Common
         public Guid CorrelationId { get; protected set; }
         public TAggregateId AggregateId { get; protected set; }
         public Version Version { get; protected set; }
-        public int Offset { get; protected set; }
+        public int EventOffset { get; protected set; }
         public int RequestOffset { get; protected set; }
         public DateTime Timestamp { get; protected set; }
 

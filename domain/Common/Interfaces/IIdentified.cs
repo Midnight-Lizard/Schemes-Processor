@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common.Interfaces
 {
-    public interface IIdentified<out TId> where TId : DomainEntityId
+    public interface IIdentified<TId> where TId : DomainEntityId
     {
         TId Id { get; }
     }

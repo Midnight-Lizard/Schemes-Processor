@@ -16,6 +16,11 @@ namespace MidnightLizard.Schemes.Domain.Common
         public int EventOffset { get; protected set; }
         public int RequestOffset { get; protected set; }
 
+        public virtual void ApplyEventOffset(DomainEvent<TAggregateId> @event)
+        {
+            EventOffset = @event.EventOffset;
+        }
+
         public abstract void Reduce(DomainEvent<TAggregateId> @event, IMapper mapper);
 
         public virtual IEnumerable<DomainEvent<TAggregateId>> ReleaseEvents()
@@ -30,7 +35,7 @@ namespace MidnightLizard.Schemes.Domain.Common
             foreach (var e in events)
             {
                 this.Reduce(e, mapper);
-                this.EventOffset = e.Offset;
+                this.EventOffset = e.EventOffset;
                 this.RequestOffset = e.RequestOffset;
             }
         }
