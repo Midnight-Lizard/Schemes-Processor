@@ -11,7 +11,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public SchemePublishRequest() : base() { }
         public SchemePublishRequest(PublicSchemeId id) : base(id) { }
 
-        public PublisherId publisherId { get; set; }
+        public PublisherId PublisherId { get; set; }
 
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }

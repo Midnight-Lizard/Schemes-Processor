@@ -12,7 +12,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public PublisherId PublisherId { get; private set; }
         public ColorScheme ColorScheme { get; private set; }
 
-        public void Publish(
+        public virtual void Publish(
             PublisherId publisherId,
             Guid correlationId,
             ColorScheme colorScheme)
