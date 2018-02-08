@@ -22,11 +22,11 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         where TAggregateId : DomainEntityId
     {
         protected readonly IMapper mapper;
-        private readonly IOptions<AggregatesConfig> aggregatesConfig;
-        private readonly IMemoryCache memoryCache;
-        private readonly IDomainEventsDispatcher<TAggregateId> eventsDispatcher;
-        private readonly IAggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot;
-        private readonly IDomainEventsAccessor<TAggregateId> eventsAccessor;
+        protected readonly IOptions<AggregatesConfig> aggregatesConfig;
+        protected readonly IMemoryCache memoryCache;
+        protected readonly IDomainEventsDispatcher<TAggregateId> eventsDispatcher;
+        protected readonly IAggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot;
+        protected readonly IDomainEventsAccessor<TAggregateId> eventsAccessor;
 
         protected AggregateRequestHandler(
             IMapper mapper,

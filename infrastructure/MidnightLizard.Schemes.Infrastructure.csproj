@@ -17,7 +17,7 @@
   <Choose>
     <When Condition=" '$(Configuration)'=='Test' ">
       <ItemGroup>
-        <PackageReference Include="Moq" Version="4.8.1" />
+        <PackageReference Include="NSubstitute" Version="3.1.0" />
         <PackageReference Include="FluentAssertions" Version="5.0.0" />
         <PackageReference Include="xunit" Version="2.3.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />

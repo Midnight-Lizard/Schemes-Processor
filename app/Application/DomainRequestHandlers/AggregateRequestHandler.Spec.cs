@@ -8,31 +8,18 @@ using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Schemes.Tests;
-using Moq;
+using NSubstitute;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
-    public class AggregateRequestHandlerSpec :
-        AggregateRequestHandler<PublicScheme, DomainRequest<PublicSchemeId>, PublicSchemeId>,
-        IClassFixture<Stub<IDomainEventsDispatcher<PublicSchemeId>>>,
-        IClassFixture<Stub<IDomainEventsAccessor<PublicSchemeId>>>,
-        IClassFixture<Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>>>,
-        IClassFixture<Stub<IMemoryCache>>,
-        IClassFixture<Stub<IMapper>>,
-        IClassFixture<Stub<IOptions<AggregatesConfig>>>
+    public class AggregateRequestHandlerSpec : AggregateRequestHandler<PublicScheme, DomainRequest<PublicSchemeId>, PublicSchemeId>
     {
         private int handleDomainRequest_CallCount = 0;
-        private readonly Stub<IOptions<AggregatesConfig>> cacheConfigStub;
-        private readonly Stub<IMemoryCache> memoryCacheStub;
-        private readonly Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub;
-        private readonly Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub;
-        private readonly Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub;
 
         private readonly List<DomainEvent<PublicSchemeId>> testEvents =
             new List<DomainEvent<PublicSchemeId>>
@@ -48,55 +35,45 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS = 60,
                 AGGREGATES_MAX_EVENTS_COUNT = 1
             };
-        private PublicScheme testScheme;
-        private Mock<PublicScheme> testSchemeStub = new Mock<PublicScheme>();
-        private readonly Mock<ICacheEntry> cacheEntryStub = new Mock<ICacheEntry>();
+        private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
+        private readonly ICacheEntry cacheEntry = Substitute.For<ICacheEntry>();
 
-        public AggregateRequestHandlerSpec(
-            Stub<IMapper> mapperStub,
-            Stub<IOptions<AggregatesConfig>> cacheConfigStub,
-            Stub<IMemoryCache> memoryCacheStub,
-            Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub,
-            Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub,
-            Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub) :
-            base(mapperStub.Object, cacheConfigStub.Object, memoryCacheStub.Object, dispatcherStub.Object,
-                 snapshotStub.Object, eventsAccessorStub.Object)
+        public AggregateRequestHandlerSpec() : base(
+            Substitute.For<IMapper>(),
+            Substitute.For<IOptions<AggregatesConfig>>(),
+            Substitute.For<IMemoryCache>(),
+            Substitute.For<IDomainEventsDispatcher<PublicSchemeId>>(),
+            Substitute.For<IAggregateSnapshot<PublicScheme, PublicSchemeId>>(),
+            Substitute.For<IDomainEventsAccessor<PublicSchemeId>>())
         {
-            testSchemeStub.SetupGet(s => s.Id).Returns(new PublicSchemeId());
+            testScheme.Id
+                .Returns(new PublicSchemeId());
 
-            this.testScheme = testSchemeStub.Object;
-
-            this.cacheConfigStub = cacheConfigStub;
-            this.memoryCacheStub = memoryCacheStub;
-            this.dispatcherStub = dispatcherStub;
-            this.snapshotStub = snapshotStub;
-            this.eventsAccessorStub = eventsAccessorStub;
-
-            this.eventsAccessorStub.Reset();
-            this.snapshotStub.Reset();
-            this.dispatcherStub.Reset();
-            this.memoryCacheStub.Reset();
-            this.cacheConfigStub.Reset();
+            this.eventsAccessor.ClearReceivedCalls();
+            this.aggregateSnapshot.ClearReceivedCalls();
+            this.eventsDispatcher.ClearReceivedCalls();
+            this.memoryCache.ClearReceivedCalls();
+            this.aggregatesConfig.ClearReceivedCalls();
         }
 
         protected override void HandleDomainRequest(PublicScheme aggregate, DomainRequest<PublicSchemeId> request, CancellationToken cancellationToken
             )
         {
-            Assert.Equal(aggregate, this.testScheme);
-            Assert.Equal(aggregate.Id, request.AggregateId);
+            aggregate.Should().BeSameAs(this.testScheme);
+            request.AggregateId.Should().BeSameAs(aggregate.Id);
 
             handleDomainRequest_CallCount++;
         }
 
         public class DispatchDomainEventsSpec : AggregateRequestHandlerSpec
         {
-            public DispatchDomainEventsSpec(Stub<IMapper> mapperStub, Stub<IOptions<AggregatesConfig>> cacheConfigStub, Stub<IMemoryCache> memoryCacheStub, Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub, Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub, Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub
-                ) : base(mapperStub, cacheConfigStub, memoryCacheStub, dispatcherStub, snapshotStub, eventsAccessorStub)
+            public DispatchDomainEventsSpec() : base()
             {
-                this.testSchemeStub.Setup(s => s.ReleaseEvents()).Returns(this.testEvents).Verifiable();
-                this.dispatcherStub
-                     .Setup(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()))
-                     .ReturnsAsync(DomainResult.Ok);
+                this.testScheme.ReleaseEvents()
+                    .Returns(this.testEvents);
+
+                this.eventsDispatcher.DispatchEvent(Arg.Any<SchemePublishedEvent>())
+                    .Returns(DomainResult.Ok);
             }
 
             [It(nameof(DispatchDomainEvents))]
@@ -104,7 +81,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
-                this.testSchemeStub.Verify();
+
+                this.testScheme.Received(1).ReleaseEvents();
             }
 
             [It(nameof(DispatchDomainEvents))]
@@ -112,6 +90,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
+
                 results.Values.Should().NotContain(val => val.HasError);
             }
 
@@ -120,6 +99,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
+
                 results.Should().HaveCount(this.testEvents.Count);
             }
 
@@ -128,23 +108,25 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
-                dispatcherStub.Verify(
-                    d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()),
-                    Times.Exactly(this.testEvents.Count));
+
+                await this.eventsDispatcher
+                    .Received(this.testEvents.Count)
+                    .DispatchEvent(Arg.Any<SchemePublishedEvent>());
             }
 
             [It(nameof(DispatchDomainEvents))]
             public async Task Should_stop_dispatching_events_if_error_returned_by_EventsDispatcher(
                )
             {
-                this.dispatcherStub
-                     .Setup(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()))
-                     .ReturnsAsync(DomainResult.UnknownError);
+                this.eventsDispatcher
+                    .DispatchEvent(Arg.Any<SchemePublishedEvent>())
+                    .Returns(DomainResult.UnknownError);
 
                 var results = await this.DispatchDomainEvents(this.testScheme);
 
                 results.Values.Should().ContainSingle(r => r.HasError);
-                dispatcherStub.Verify(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()), Times.Once);
+                await this.eventsDispatcher.Received(1)
+                    .DispatchEvent(Arg.Any<SchemePublishedEvent>());
             }
 
             [It(nameof(DispatchDomainEvents))]
@@ -153,9 +135,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 var results = await this.DispatchDomainEvents(this.testScheme);
 
-                this.testSchemeStub.Verify(
-                    s => s.ApplyEventOffset(It.IsAny<DomainEvent<PublicSchemeId>>()),
-                    Times.Exactly(results.Count(r => !r.Value.HasError)));
+                this.testScheme.Received(results.Count(r => !r.Value.HasError))
+                    .ApplyEventOffset(Arg.Any<SchemePublishedEvent>());
             }
         }
 
@@ -163,14 +144,21 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             private AggregateResult<PublicScheme, PublicSchemeId> snapshotReadResult;
 
-            public GetAggregateSnapshotSpec(Stub<IMapper> mapperStub, Stub<IOptions<AggregatesConfig>> cacheConfigStub, Stub<IMemoryCache> memoryCacheStub, Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub, Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub, Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub
-                ) : base(mapperStub, cacheConfigStub, memoryCacheStub, dispatcherStub, snapshotStub, eventsAccessorStub)
+            public GetAggregateSnapshotSpec() : base()
             {
                 this.snapshotReadResult = new AggregateResult<PublicScheme, PublicSchemeId>(testScheme);
-                this.memoryCacheStub.Setup(s => s.TryGetValue(testScheme.Id, out It.Ref<object>.IsAny)).Returns(false);
-                this.memoryCacheStub.Setup(s => s.CreateEntry(testScheme.Id)).Returns(cacheEntryStub.Object);
-                this.snapshotStub.Setup(s => s.Read(testScheme.Id)).ReturnsAsync(() => this.snapshotReadResult);
-                this.cacheConfigStub.SetupGet(s => s.Value).Returns(this.testCacheConfig);
+
+                this.memoryCache.TryGetValue(testScheme.Id, out var some)
+                    .Returns(false);
+
+                this.memoryCache.CreateEntry(testScheme.Id)
+                    .Returns(cacheEntry);
+
+                this.aggregateSnapshot.Read(testScheme.Id)
+                    .Returns(x => this.snapshotReadResult);
+
+                this.aggregatesConfig.Value
+                    .Returns(this.testCacheConfig);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -178,6 +166,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
+
                 result.Should().BeSameAs(this.snapshotReadResult);
             }
 
@@ -186,7 +175,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
-                this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
+
+                await this.aggregateSnapshot.Received(1).Read(testScheme.Id);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -194,7 +184,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
-                this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Once);
+
+                this.memoryCache.Received(1).CreateEntry(testScheme.Id);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -202,9 +193,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
-                this.cacheEntryStub.VerifySet(
-                    s => s.SlidingExpiration = TimeSpan.FromSeconds(this.testCacheConfig.AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS),
-                    Times.Once);
+
+                this.cacheEntry.Received(1).SlidingExpiration =
+                    TimeSpan.FromSeconds(this.testCacheConfig.AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -212,13 +203,12 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
+
                 var now = DateTimeOffset.Now;
-                this.cacheEntryStub.VerifySet(
-                    s => s.AbsoluteExpiration = It.IsInRange(
-                        now,
-                        now.AddSeconds(this.testCacheConfig.AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS),
-                        Range.Exclusive),
-                    Times.Once);
+
+                this.cacheEntry.Received(1).AbsoluteExpiration =
+                    Arg.Is<DateTimeOffset>(dt => dt > now &&
+                        dt < now.AddSeconds(this.testCacheConfig.AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS));
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -240,7 +230,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
 
-                this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Never);
+                this.memoryCache.DidNotReceive().CreateEntry(Arg.Any<PublicSchemeId>());
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -251,7 +241,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
 
-                this.memoryCacheStub.Verify(s => s.TryGetValue(testScheme.Id, out It.Ref<object>.IsAny), Times.Never);
+                this.memoryCache.DidNotReceiveWithAnyArgs().TryGetValue(testScheme.Id, out var some);
             }
 
             [It(nameof(GetAggregateSnapshot))]
@@ -262,7 +252,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 var result = await this.GetAggregateSnapshot(testScheme.Id);
 
-                this.memoryCacheStub.Verify(s => s.CreateEntry(testScheme.Id), Times.Never);
+                this.memoryCache.DidNotReceiveWithAnyArgs().CreateEntry(null);
             }
         }
 
@@ -271,27 +261,22 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             private AggregateResult<PublicScheme, PublicSchemeId> snapshotReadResult;
             private DomainEventsResult<PublicSchemeId> eventsReadResult;
 
-            public GetAggregateSpec(Stub<IMapper> mapperStub, Stub<IOptions<AggregatesConfig>> cacheConfigStub, Stub<IMemoryCache> memoryCacheStub, Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub, Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub, Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub
-                ) : base(mapperStub, cacheConfigStub, memoryCacheStub, dispatcherStub, snapshotStub, eventsAccessorStub)
+            public GetAggregateSpec() : base()
             {
                 this.snapshotReadResult = new AggregateResult<PublicScheme, PublicSchemeId>(this.testScheme);
                 this.eventsReadResult = new DomainEventsResult<PublicSchemeId>(this.testEvents);
 
-                this.cacheConfigStub
-                    .SetupGet(s => s.Value)
+                this.aggregatesConfig.Value
                     .Returns(this.testCacheConfig);
 
-                this.snapshotStub
-                    .Setup(s => s.Read(testScheme.Id))
-                    .ReturnsAsync(() => this.snapshotReadResult);
+                this.aggregateSnapshot.Read(testScheme.Id)
+                    .Returns(x => this.snapshotReadResult);
 
-                this.eventsAccessorStub
-                    .Setup(d => d.Read(testScheme))
-                    .ReturnsAsync(() => eventsReadResult);
+                this.eventsAccessor.Read(testScheme)
+                    .Returns(x => eventsReadResult);
 
-                this.memoryCacheStub
-                    .Setup(s => s.CreateEntry(this.testScheme.Id))
-                    .Returns(cacheEntryStub.Object);
+                this.memoryCache.CreateEntry(this.testScheme.Id)
+                    .Returns(this.cacheEntry);
             }
 
             [It(nameof(GetAggregate))]
@@ -321,7 +306,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregate(testScheme.Id);
-                this.snapshotStub.Verify(s => s.Read(testScheme.Id), Times.Once);
+
+                await this.aggregateSnapshot.Received(1).Read(testScheme.Id);
             }
 
             [It(nameof(GetAggregate))]
@@ -329,15 +315,17 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var result = await this.GetAggregate(testScheme.Id);
-                this.testSchemeStub.Verify(s => s.ReplayDomainEvents(this.testEvents, this.mapper), Times.Once);
+
+                this.testScheme.Received(1).ReplayDomainEvents(this.testEvents, this.mapper);
             }
 
             [It(nameof(GetAggregate))]
-            public async Task Should_save_AggregateSnapshot_if_it_has_enough_Events(
+            public async Task Should_save_AggregateSnapshot_if_it_has_too_many_Events(
                 )
             {
                 var result = await this.GetAggregate(this.testScheme.Id);
-                this.snapshotStub.Verify(s => s.Save(this.testScheme), Times.Once);
+
+                await this.aggregateSnapshot.Received(1).Save(this.testScheme);
             }
         }
 
@@ -348,41 +336,30 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             protected override Task<Dictionary<DomainEvent<PublicSchemeId>, DomainResult>> DispatchDomainEvents(IEventSourced<PublicSchemeId> aggregate)
             {
-                Assert.Equal(this.testScheme, aggregate);
+                aggregate.Should().BeSameAs(this.testScheme);
                 dispatchDomainEvents_CallCount++;
                 return base.DispatchDomainEvents(aggregate);
             }
 
-            public HandleSpec(Stub<IMapper> mapperStub, Stub<IOptions<AggregatesConfig>> cacheConfigStub, Stub<IMemoryCache> memoryCacheStub, Stub<IDomainEventsDispatcher<PublicSchemeId>> dispatcherStub, Stub<IAggregateSnapshot<PublicScheme, PublicSchemeId>> snapshotStub, Stub<IDomainEventsAccessor<PublicSchemeId>> eventsAccessorStub
-                ) : base(mapperStub, cacheConfigStub, memoryCacheStub, dispatcherStub, snapshotStub, eventsAccessorStub)
+            public HandleSpec() : base()
             {
-
-                this.testSchemeStub
-                    .Setup(s => s.ReleaseEvents())
+                this.testScheme.ReleaseEvents()
                     .Returns(this.testEvents);
 
-                this.dispatcherStub
-                     .Setup(d => d.DispatchEvent(It.IsAny<SchemePublishedEvent>()))
-                     .ReturnsAsync(() => dispatchEventResult);
+                this.eventsDispatcher.DispatchEvent(Arg.Any<SchemePublishedEvent>())
+                    .Returns(x => dispatchEventResult);
 
-                this.cacheConfigStub
-                    .SetupGet(s => s.Value)
+                this.aggregatesConfig.Value
                     .Returns(this.testCacheConfig);
 
-                this.memoryCacheStub
-                    .Setup(s => s.CreateEntry(this.testScheme.Id))
-                    .Returns(cacheEntryStub.Object);
+                this.memoryCache.CreateEntry(this.testScheme.Id)
+                    .Returns(this.cacheEntry);
 
-                this.memoryCacheStub
-                    .Setup(s => s.Remove(this.testScheme.Id));
+                this.eventsAccessor.Read(this.testScheme)
+                    .Returns(new DomainEventsResult<PublicSchemeId>(this.testEvents));
 
-                this.eventsAccessorStub
-                    .Setup(d => d.Read(this.testScheme))
-                    .ReturnsAsync(new DomainEventsResult<PublicSchemeId>(this.testEvents));
-
-                this.snapshotStub
-                    .Setup(s => s.Read(this.testScheme.Id))
-                    .ReturnsAsync(new AggregateResult<PublicScheme, PublicSchemeId>(this.testScheme));
+                this.aggregateSnapshot.Read(this.testScheme.Id)
+                    .Returns(new AggregateResult<PublicScheme, PublicSchemeId>(this.testScheme));
             }
 
             [It(nameof(Handle))]
@@ -390,9 +367,13 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 var expectedResult = new AggregateResult<PublicScheme, PublicSchemeId>("error");
-                this.snapshotStub.Setup(s => s.Read(this.testScheme.Id)).ReturnsAsync(expectedResult);
 
-                var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
+                this.aggregateSnapshot.Read(this.testScheme.Id)
+                    .Returns(expectedResult);
+
+                var result = await this.Handle(
+                    new SchemePublishRequest(this.testScheme.Id),
+                    new CancellationToken());
 
                 result.Should().BeSameAs(expectedResult);
             }
@@ -401,7 +382,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             public async Task Should_call_HandleDomainRequest(
                 )
             {
-                var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
+                var result = await this.Handle(
+                    new SchemePublishRequest(this.testScheme.Id),
+                    new CancellationToken());
 
                 this.handleDomainRequest_CallCount.Should().Be(1);
             }
@@ -410,7 +393,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             public async Task Should_call_DispatchDomainEvents(
                 )
             {
-                var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
+                var result = await this.Handle(
+                    new SchemePublishRequest(this.testScheme.Id),
+                    new CancellationToken());
 
                 this.dispatchDomainEvents_CallCount.Should().Be(1);
             }
@@ -421,7 +406,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
-                var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
+                var result = await this.Handle(
+                    new SchemePublishRequest(this.testScheme.Id),
+                    new CancellationToken());
 
                 result.Should().BeSameAs(this.dispatchEventResult);
             }
@@ -432,9 +419,11 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
-                var result = await this.Handle(new SchemePublishRequest(this.testScheme.Id), new CancellationToken());
+                var result = await this.Handle(
+                    new SchemePublishRequest(this.testScheme.Id),
+                    new CancellationToken());
 
-                this.memoryCacheStub.Verify(s => s.Remove(this.testScheme.Id), Times.Once);
+                this.memoryCache.Received(1).Remove(this.testScheme.Id);
             }
         }
     }
