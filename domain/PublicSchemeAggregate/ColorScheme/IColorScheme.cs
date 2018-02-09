@@ -44,5 +44,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         int scrollbarContrast { get; set; }
         int scrollbarLightnessLimit { get; set; }
         int scrollbarGrayHue { get; set; }
+
+
+        int buttonBackgroundSaturationLimit { get; set; }
+        int buttonBackgroundContrast { get; set; }
+        int buttonBackgroundLightnessLimit { get; set; }
+        int buttonBackgroundGraySaturation { get; set; }
+        int buttonBackgroundGrayHue { get; set; }
     }
 }

@@ -12,21 +12,25 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public PublisherId PublisherId { get; private set; }
         public ColorScheme ColorScheme { get; private set; }
 
-        public virtual void Publish(
-            PublisherId publisherId,
-            Guid correlationId,
-            ColorScheme colorScheme)
-        {
-            if (PublisherId.IsDefault || PublisherId == publisherId)
-            {
-                if (!colorScheme.Equals(ColorScheme))
-                {
+        public PublicScheme() { }
+        public PublicScheme(bool isNew) : base(isNew) { }
 
+        public virtual void Publish(PublisherId publisherId, Guid correlationId, IColorScheme colorScheme)
+        {
+            if (IsNew || PublisherId == publisherId)
+            {
+                // var validatedColorScheme = 
+                if (IsNew || !colorScheme.Equals(ColorScheme))
+                {
+                    PublisherId = publisherId;
+
+
+                    IsNew = false;
                 }
             }
-            else
+            else if (PublisherId != publisherId)
             {
-
+                // access denied event
             }
         }
     }

@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
@@ -132,7 +133,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             aggregate.ReplayDomainEvents(eventsResult.Events, this.mapper);
 
-            if (eventsResult.Events.Count > this.aggregatesConfig.Value.AGGREGATES_MAX_EVENTS_COUNT)
+            if (eventsResult.Events.Count > this.aggregatesConfig.Value.AGGREGATES_MAX_EVENTS_COUNT && !aggregate.IsNew)
             {
                 await aggregateSnapshot.Save(aggregate);
             }

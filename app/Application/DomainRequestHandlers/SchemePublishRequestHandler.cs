@@ -30,8 +30,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         protected override void HandleDomainRequest(PublicScheme aggregate, SchemePublishRequest request, CancellationToken cancellationToken)
         {
-            aggregate.Publish(request.PublisherId, request.CorrelationId,
-                this.mapper.Map<IColorScheme, ColorScheme>(request));
+            aggregate.Publish(request.PublisherId, request.CorrelationId, request);
         }
     }
 }

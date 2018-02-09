@@ -7,6 +7,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class SchemePublishedEvent : SchemeDomainEvent, IColorScheme
     {
+        public override Version CurrentVersion => new Version(1, 0);
+
         public Guid PublisherId { get; private set; }
 
         public string colorSchemeId { get; set; }
@@ -47,5 +49,11 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public int scrollbarContrast { get; set; }
         public int scrollbarLightnessLimit { get; set; }
         public int scrollbarGrayHue { get; set; }
+
+        public int buttonBackgroundSaturationLimit { get; set; }
+        public int buttonBackgroundContrast { get; set; }
+        public int buttonBackgroundLightnessLimit { get; set; }
+        public int buttonBackgroundGraySaturation { get; set; }
+        public int buttonBackgroundGrayHue { get; set; }
     }
 }

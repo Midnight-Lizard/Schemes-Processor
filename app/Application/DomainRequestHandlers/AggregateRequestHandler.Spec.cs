@@ -4,8 +4,10 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Schemes.Tests;
 using NSubstitute;
@@ -46,8 +48,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             Substitute.For<IAggregateSnapshot<PublicScheme, PublicSchemeId>>(),
             Substitute.For<IDomainEventsAccessor<PublicSchemeId>>())
         {
-            testScheme.Id
-                .Returns(new PublicSchemeId());
+            this.testScheme.Id.Returns(new PublicSchemeId());
+            this.testEvents.ForEach(e => e.SetUp(this.testScheme.Id));
 
             this.eventsAccessor.ClearReceivedCalls();
             this.aggregateSnapshot.ClearReceivedCalls();
@@ -327,10 +329,22 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 await this.aggregateSnapshot.Received(1).Save(this.testScheme);
             }
+
+            [It(nameof(GetAggregate))]
+            public async Task Should_not_save_AggregateSnapshot_if_Aggregate_IsNew(
+                )
+            {
+                this.testScheme.IsNew.Returns(true);
+
+                var result = await this.GetAggregate(this.testScheme.Id);
+
+                await this.aggregateSnapshot.DidNotReceiveWithAnyArgs().Save(this.testScheme);
+            }
         }
 
         public class HandleSpec : AggregateRequestHandlerSpec
         {
+            private readonly SchemePublishRequest testRequest = Substitute.For<SchemePublishRequest>();
             private DomainResult dispatchEventResult = DomainResult.Ok;
             private int dispatchDomainEvents_CallCount = 0;
 
@@ -345,6 +359,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.testScheme.ReleaseEvents()
                     .Returns(this.testEvents);
+
+                this.testRequest.PublisherId.Returns(new PublisherId());
+                //this.testRequest.AggregateId.Returns(new PublicSchemeId());
+                this.testRequest.AggregateId.Returns(x => this.testScheme.Id);
 
                 this.eventsDispatcher.DispatchEvent(Arg.Any<SchemePublishedEvent>())
                     .Returns(x => dispatchEventResult);
@@ -371,9 +389,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.aggregateSnapshot.Read(this.testScheme.Id)
                     .Returns(expectedResult);
 
-                var result = await this.Handle(
-                    new SchemePublishRequest(this.testScheme.Id),
-                    new CancellationToken());
+                var result = await this.Handle(this.testRequest, new CancellationToken());
 
                 result.Should().BeSameAs(expectedResult);
             }
@@ -382,9 +398,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             public async Task Should_call_HandleDomainRequest(
                 )
             {
-                var result = await this.Handle(
-                    new SchemePublishRequest(this.testScheme.Id),
-                    new CancellationToken());
+                var result = await this.Handle(this.testRequest, new CancellationToken());
 
                 this.handleDomainRequest_CallCount.Should().Be(1);
             }
@@ -393,9 +407,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             public async Task Should_call_DispatchDomainEvents(
                 )
             {
-                var result = await this.Handle(
-                    new SchemePublishRequest(this.testScheme.Id),
-                    new CancellationToken());
+                var result = await this.Handle(this.testRequest, new CancellationToken());
 
                 this.dispatchDomainEvents_CallCount.Should().Be(1);
             }
@@ -406,9 +418,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
-                var result = await this.Handle(
-                    new SchemePublishRequest(this.testScheme.Id),
-                    new CancellationToken());
+                var result = await this.Handle(this.testRequest, new CancellationToken());
 
                 result.Should().BeSameAs(this.dispatchEventResult);
             }
@@ -419,9 +429,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.dispatchEventResult = DomainResult.UnknownError;
 
-                var result = await this.Handle(
-                    new SchemePublishRequest(this.testScheme.Id),
-                    new CancellationToken());
+                var result = await this.Handle(this.testRequest, new CancellationToken());
 
                 this.memoryCache.Received(1).Remove(this.testScheme.Id);
             }

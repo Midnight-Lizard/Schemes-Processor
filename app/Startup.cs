@@ -15,8 +15,10 @@ using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
+using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
+using MidnightLizard.Schemes.Processor.AutofacModules;
 using MidnightLizard.Schemes.Processor.Configuration;
 using Newtonsoft.Json;
 
@@ -71,6 +73,9 @@ namespace MidnightLizard.Schemes.Processor
             // Autofac - last part!
             var container = new ContainerBuilder();
             container.Populate(services);
+
+            container.RegisterModule(new MediatorModule());
+            container.RegisterModule(new MessageSerializationModule());
 
             return new AutofacServiceProvider(container.Build());
         }

@@ -46,6 +46,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public int scrollbarLightnessLimit { get; set; }
         public int scrollbarGrayHue { get; set; }
 
+        public int buttonBackgroundSaturationLimit { get; set; }
+        public int buttonBackgroundContrast { get; set; }
+        public int buttonBackgroundLightnessLimit { get; set; }
+        public int buttonBackgroundGraySaturation { get; set; }
+        public int buttonBackgroundGrayHue { get; set; }
+
         protected override IEnumerable<object> GetPropertyValues()
         {
             yield return colorSchemeId;
@@ -86,6 +92,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             yield return scrollbarContrast;
             yield return scrollbarLightnessLimit;
             yield return scrollbarGrayHue;
+
+            yield return buttonBackgroundSaturationLimit;
+            yield return buttonBackgroundContrast;
+            yield return buttonBackgroundLightnessLimit;
+            yield return buttonBackgroundGraySaturation;
+            yield return buttonBackgroundGrayHue;
         }
     }
 }
