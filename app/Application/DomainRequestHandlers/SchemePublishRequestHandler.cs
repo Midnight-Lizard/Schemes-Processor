@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
     public class SchemePublishRequestHandler :
-        AggregateRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
+        DomainRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
     {
         protected SchemePublishRequestHandler(
             IOptions<AggregatesConfig> cacheConfig,

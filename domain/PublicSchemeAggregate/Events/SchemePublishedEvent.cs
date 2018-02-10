@@ -8,7 +8,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class SchemePublishedEvent : SchemeDomainEvent
     {
-        public override Version LatestVersion => new Version(1, 0);
+        public override Version LatestVersion() => new Version(1, 0);
 
         public PublisherId PublisherId { get; private set; }
 
