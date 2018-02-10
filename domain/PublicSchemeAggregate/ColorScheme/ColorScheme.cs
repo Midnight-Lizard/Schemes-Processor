@@ -1,4 +1,6 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using MidnightLizard.Schemes.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
