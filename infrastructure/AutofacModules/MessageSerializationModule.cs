@@ -22,7 +22,7 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
                 .Keyed<IMessageDeserializer<BaseMessage>>(t =>
                     t.GetGenericArguments()[0].Name +
-                    t.GetCustomAttribute<MessageVersionAttribute>().Version.ToString(2));
+                    t.GetCustomAttribute<MessageVersionAttribute>().Version.ToString());
         }
     }
 }

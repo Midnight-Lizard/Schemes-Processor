@@ -9,29 +9,34 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
+        public override Version Version() => new Version(1, 2);
         public PublisherId PublisherId { get; private set; }
         public ColorScheme ColorScheme { get; private set; }
 
         public PublicScheme() { }
         public PublicScheme(bool isNew) : base(isNew) { }
 
-        public virtual void Publish(PublisherId publisherId, Guid correlationId, IColorScheme colorScheme)
+        public virtual void Publish(PublisherId publisherId, ColorScheme colorScheme)
         {
-            if (IsNew || PublisherId == publisherId)
+            if (this.IsNew() || this.PublisherId == publisherId)
             {
                 // var validatedColorScheme = 
-                if (IsNew || !colorScheme.Equals(ColorScheme))
+                if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
                 {
-                    PublisherId = publisherId;
+                    AddSchemePublishedEvent(colorScheme);
 
-
-                    IsNew = false;
+                    this.isNew = false;
                 }
             }
-            else if (PublisherId != publisherId)
+            else if (this.PublisherId != publisherId)
             {
                 // access denied event
             }
+        }
+
+        private void AddSchemePublishedEvent(ColorScheme colorScheme)
+        {
+            this.AddDomainEvent(new SchemePublishedEvent(this.Id, this.PublisherId, colorScheme));
         }
     }
 }

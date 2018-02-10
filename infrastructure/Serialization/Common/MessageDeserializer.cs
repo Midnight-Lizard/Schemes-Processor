@@ -21,11 +21,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization
 
         public virtual MessageResult Deserialize(string message)
         {
-            var msg = JsonConvert.DeserializeObject<(string Type, string Version)>(message);
+            var msg = JsonConvert.DeserializeObject<(string Type, string Version, string Payload)>(message);
             var key = msg.Type + msg.Version;
             if (this.deserializers.TryGetValue(key, out var deserializer))
             {
-                return new MessageResult(deserializer.ParseMessage(message));
+                return new MessageResult(deserializer.DeserializeMessagePayload(msg.Payload));
 
             }
             return new MessageResult($"Deserializer for message type {msg.Type} and version {msg.Version} is not found.");

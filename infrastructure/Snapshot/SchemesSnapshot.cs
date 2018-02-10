@@ -8,7 +8,7 @@ using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
-    public class SchemesSnapshot : IAggregateSnapshot<PublicScheme, PublicSchemeId>
+    public class SchemesSnapshot : IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>
     {
         private readonly ElasticSearchConfig config;
         private readonly ElasticClient elasticClient;
@@ -23,30 +23,34 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 new ConnectionSettings(node)
                     .InferMappingFor<PublicScheme>(map => map
                         .IdProperty(to => to.Id)
-                        .IndexName("scheme-snapshots")
+                        .IndexName("scheme-snapshot")
                         .TypeName("scheme"))
             );
         }
 
-        public Task<AggregateResult<PublicScheme, PublicSchemeId>> Read(PublicSchemeId id)
+        public async Task<AggregateSnapshot<PublicScheme, PublicSchemeId>> Read(PublicSchemeId id)
         {
-            throw new NotImplementedException();
+            var result = await this.elasticClient.GetAsync<PublicScheme>(new DocumentPath<PublicScheme>(id.Value));
+            if (result.IsValid &&
+                result.Fields.Value<Version>(new Field(nameof(Version))) == result.Source.Version())
+            {
+                return new AggregateSnapshot<PublicScheme, PublicSchemeId>(result.Source,
+                    result.Fields.Value<DateTime>(new Field(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp))));
+            }
+            return new AggregateSnapshot<PublicScheme, PublicSchemeId>(new PublicScheme(true), DateTime.MinValue);
         }
 
-        public async Task<DomainResult> Save(PublicScheme scheme)
+        public async Task Save(AggregateSnapshot<PublicScheme, PublicSchemeId> schemeSnapshot)
         {
             var result = await this.elasticClient.UpdateAsync<PublicScheme, object>(
-                new DocumentPath<PublicScheme>(scheme.Id.Value),
+                new DocumentPath<PublicScheme>(schemeSnapshot.Aggregate.Id.Value),
                 u => u.Doc(new
                 {
-                    scheme.PublisherId,
-                    scheme.ColorScheme
+                    schemeSnapshot.Aggregate.PublisherId,
+                    schemeSnapshot.Aggregate.ColorScheme,
+                    schemeSnapshot.RequestTimestamp,
+                    Version = schemeSnapshot.Aggregate.Version()
                 }).DocAsUpsert());
-            return new DomainResult(!result.IsValid,
-                result.OriginalException,
-                result.OriginalException != null
-                    ? result.OriginalException.Message
-                    : result.ServerError?.Error.Reason);
         }
     }
 }

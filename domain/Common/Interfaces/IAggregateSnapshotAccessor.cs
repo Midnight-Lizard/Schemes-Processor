@@ -1,4 +1,5 @@
 ﻿using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Schemes.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -6,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common.Interfaces
 {
-    public interface IAggregateSnapshot<TAggregate, TAggregateId>
+    public interface IAggregateSnapshotAccessor<TAggregate, TAggregateId>
         where TAggregateId : DomainEntityId
         where TAggregate : AggregateRoot<TAggregateId>
     {
-        Task<DomainResult> Save(TAggregate aggregate);
+        Task Save(AggregateSnapshot<TAggregate, TAggregateId> aggregate);
 
-        Task<AggregateResult<TAggregate, TAggregateId>> Read(TAggregateId id);
+        Task<AggregateSnapshot<TAggregate, TAggregateId>> Read(TAggregateId id);
     }
 }

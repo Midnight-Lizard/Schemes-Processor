@@ -16,8 +16,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             public void Should_not_be_New_after_successful_Publish()
             {
                 var testScheme = new PublicScheme(true);
-                testScheme.Publish(new PublisherId(), new Guid(), new ColorScheme());
-                testScheme.IsNew.Should().BeFalse();
+                testScheme.Publish(new PublisherId(), new ColorScheme());
+                testScheme.IsNew().Should().BeFalse();
             }
 
         }

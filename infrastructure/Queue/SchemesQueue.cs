@@ -2,7 +2,7 @@
 using Confluent.Kafka.Serialization;
 using Microsoft.Extensions.Logging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
+using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         Paused = 2
     }
 
-    public class SchemesQueue : ISchemesQueue
+    public class SchemesQueue
     {
         protected QueueStatus queueStatus = QueueStatus.Stopped;
         protected Message<string, string> lastConsumedEvent;

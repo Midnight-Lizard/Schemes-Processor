@@ -11,14 +11,15 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
     public abstract class DomainEvent<TAggregateId> : DomainMessage<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        public int RequestOffset { get; protected set; }
+        public int Generation { get; set; }
 
-        public DomainEvent<TAggregateId> SetUp(TAggregateId aggregateId, Guid? correlationId = null)
+        protected DomainEvent() { }
+
+        public DomainEvent(TAggregateId aggregateId)
         {
             this.Id = Guid.NewGuid();
             this.AggregateId = aggregateId;
-            this.CorrelationId = correlationId ?? Guid.NewGuid();
-            return this;
+            //this.Version = this.LatestVersion;
         }
     }
 }

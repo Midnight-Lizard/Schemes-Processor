@@ -14,7 +14,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
     public interface IDomainEventsAccessor<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        Task<DomainEventsResult<TAggregateId>> Read(IAggregateOffset<TAggregateId> aggregateOffset);
-        Task<DomainResult> Write(DomainEvent<TAggregateId> @event);
+        Task<DomainEventsResult<TAggregateId>> GetEvents(TAggregateId aggregateId, int sinceGeneration);
+        Task<DomainResult> SaveEvent(DomainEvent<TAggregateId> @event);
     }
 }

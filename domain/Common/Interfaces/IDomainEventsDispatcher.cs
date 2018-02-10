@@ -14,6 +14,6 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
     public interface IDomainEventsDispatcher<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        Task<DomainResult> DispatchEvent(DomainEvent<TAggregateId> @event);
+        Task<DomainResult> DispatchEvent(TransportMessage<DomainEvent<TAggregateId>, TAggregateId> transportEvent);
     }
 }

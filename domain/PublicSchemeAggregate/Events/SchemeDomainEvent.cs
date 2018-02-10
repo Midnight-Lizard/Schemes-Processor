@@ -8,5 +8,10 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public abstract class SchemeDomainEvent : DomainEvent<PublicSchemeId>
     {
+        protected SchemeDomainEvent() : base() { }
+
+        public SchemeDomainEvent(PublicSchemeId aggregateId) : base(aggregateId)
+        {
+        }
     }
 }

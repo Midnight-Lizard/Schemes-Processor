@@ -21,11 +21,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         private readonly SchemePublishRequest testRequest = Substitute.For<SchemePublishRequest>();
 
         protected SchemePublishRequestHandlerSpec() : base(
-            Substitute.For<IMapper>(),
             Substitute.For<IOptions<AggregatesConfig>>(),
             Substitute.For<IMemoryCache>(),
             Substitute.For<IDomainEventsDispatcher<PublicSchemeId>>(),
-            Substitute.For<IAggregateSnapshot<PublicScheme, PublicSchemeId>>(),
+            Substitute.For<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>(),
             Substitute.For<IDomainEventsAccessor<PublicSchemeId>>())
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
@@ -44,15 +43,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.HandleDomainRequest(this.testScheme, this.testRequest, new CancellationToken());
 
-                this.testScheme.Received(1).Publish(this.testRequest.PublisherId, this.testRequest.CorrelationId, Arg.Any<IColorScheme>());
-            }
-
-           // [It(nameof(HandleDomainRequest))]
-            public void Should_map_Request_to_ColorScheme()
-            {
-                this.HandleDomainRequest(this.testScheme, this.testRequest, new CancellationToken());
-
-                this.mapper.Received(1).Map<IColorScheme, ColorScheme>(this.testRequest);
+                this.testScheme.Received(1).Publish(this.testRequest.PublisherId, Arg.Any<ColorScheme>());
             }
         }
     }

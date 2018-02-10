@@ -14,7 +14,6 @@ using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
@@ -65,7 +64,7 @@ namespace MidnightLizard.Schemes.Processor
                         nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
                 };
             });
-            services.AddTransient<IAggregateSnapshot<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
+            services.AddTransient<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
 
             services.AddMemoryCache();
             services.AddMvc();

@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
@@ -18,19 +17,18 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         AggregateRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
     {
         protected SchemePublishRequestHandler(
-            IMapper mapper,
             IOptions<AggregatesConfig> cacheConfig,
             IMemoryCache memoryCache,
             IDomainEventsDispatcher<PublicSchemeId> domainEventsDispatcher,
-            IAggregateSnapshot<PublicScheme, PublicSchemeId> schemesSnapshot,
+            IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId> schemesSnapshot,
             IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
-            base(mapper, cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
+            base(cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
         {
         }
 
         protected override void HandleDomainRequest(PublicScheme aggregate, SchemePublishRequest request, CancellationToken cancellationToken)
         {
-            aggregate.Publish(request.PublisherId, request.CorrelationId, request);
+            aggregate.Publish(request.PublisherId, request.ColorScheme);
         }
     }
 }

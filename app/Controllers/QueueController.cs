@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Infrastructure;
+using MidnightLizard.Schemes.Infrastructure.Queue;
 
 namespace MidnightLizard.Schemes.Processor.Controllers
 {
     [Route("[controller]/[action]")]
     public class QueueController : Controller
     {
-        private readonly ISchemesQueue queue;
+        private readonly SchemesQueue queue;
         private readonly IApplicationLifetime appLifetime;
 
-        public QueueController(ISchemesQueue schemesQueue, IApplicationLifetime appLifetime)
+        public QueueController(SchemesQueue schemesQueue, IApplicationLifetime appLifetime)
         {
             this.queue = schemesQueue;
             this.appLifetime = appLifetime;

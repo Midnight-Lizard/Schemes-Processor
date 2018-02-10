@@ -11,6 +11,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization
 {
     public interface IMessageDeserializer<TMessage> where TMessage : BaseMessage
     {
-        TMessage ParseMessage(string msg);
+        TMessage DeserializeMessagePayload(string payload);
     }
 }

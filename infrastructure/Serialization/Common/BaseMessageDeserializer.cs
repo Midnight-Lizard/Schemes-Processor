@@ -12,9 +12,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization
     public abstract class BaseMessageDeserializer<TMessage> :
         IMessageDeserializer<TMessage> where TMessage : BaseMessage
     {
-        public virtual TMessage ParseMessage(string msg)
+        public virtual TMessage DeserializeMessagePayload(string payload)
         {
-            return JsonConvert.DeserializeObject<TMessage>(msg, new JsonSerializerSettings
+            return JsonConvert.DeserializeObject<TMessage>(payload, new JsonSerializerSettings
             {
                 ContractResolver = MessageContractResolver.Default,
                 ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor

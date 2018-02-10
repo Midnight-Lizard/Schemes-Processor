@@ -8,16 +8,17 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.Common
 {
-    public abstract class AggregateRoot<TAggregateId> :
-        DomainEntity<TAggregateId>, IAggregateOffset<TAggregateId>, IEventSourced<TAggregateId>
+    public abstract class AggregateRoot<TAggregateId> : DomainEntity<TAggregateId>, IEventSourced<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        private readonly List<DomainEvent<TAggregateId>> events = new List<DomainEvent<TAggregateId>>();
-        public virtual int EventOffset { get; protected set; }
-        public virtual int RequestOffset { get; protected set; }
-        public virtual bool IsNew { get; protected set; }
+        private readonly List<DomainEvent<TAggregateId>> pendingEvents = new List<DomainEvent<TAggregateId>>();
 
-        public abstract void Reduce(DomainEvent<TAggregateId> @event, IMapper mapper);
+        public virtual int Generation { get; protected set; }
+        protected bool isNew;
+        public virtual bool IsNew() => isNew;
+        public abstract Version Version();
+
+        public abstract void Reduce(DomainEvent<TAggregateId> @event);
 
         public AggregateRoot() { }
 
@@ -28,29 +29,30 @@ namespace MidnightLizard.Schemes.Domain.Common
         public AggregateRoot(bool isNew)
         {
             if (!isNew) throw new ArgumentException(nameof(isNew), "Should be always new");
-            IsNew = isNew;
-        }
-
-        public virtual void ApplyEventOffset(DomainEvent<TAggregateId> @event)
-        {
-            EventOffset = @event.RequestOffset;
-            throw new Exception("TODO: RequestOffset~EventOffset");
+            this.isNew = isNew;
         }
 
         public virtual IEnumerable<DomainEvent<TAggregateId>> ReleaseEvents()
         {
-            var events = this.events.ToArray();
-            this.events.Clear();
+            var events = this.pendingEvents.ToArray();
+            this.pendingEvents.Clear();
             return events;
         }
 
-        public virtual void ReplayDomainEvents(IEnumerable<DomainEvent<TAggregateId>> events, IMapper mapper)
+        public virtual void AddDomainEvent(DomainEvent<TAggregateId> @event)
         {
-            foreach (var e in events)
+            @event.Generation = this.Generation + 1;
+            this.Reduce(@event);
+            this.Generation = @event.Generation;
+            this.pendingEvents.Add(@event);
+        }
+
+        public virtual void ReplayDomainEvents(IEnumerable<DomainEvent<TAggregateId>> events)
+        {
+            foreach (var @event in events)
             {
-                this.Reduce(e, mapper);
-                this.EventOffset = e.Offset;
-                this.RequestOffset = e.RequestOffset;
+                this.Reduce(@event);
+                this.Generation = @event.Generation;
             }
         }
     }

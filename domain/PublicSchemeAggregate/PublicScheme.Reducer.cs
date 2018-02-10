@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using MidnightLizard.Schemes.Domain.Common;
+﻿using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Messaging;
 using System;
 using System.Collections.Generic;
@@ -9,13 +8,13 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
-        public override void Reduce(DomainEvent<PublicSchemeId> @event, IMapper mapper)
+        public override void Reduce(DomainEvent<PublicSchemeId> @event)
         {
             switch (@event)
             {
                 case SchemePublishedEvent published:
-                    this.PublisherId = new PublisherAggregate.PublisherId(published.PublisherId);
-                    this.ColorScheme = mapper.Map<IColorScheme, ColorScheme>(published);
+                    this.PublisherId = published.PublisherId;
+                    this.ColorScheme = published.ColorScheme;
                     break;
 
                 default:

@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common.Messaging
 {
-    public abstract class BaseMessage : IRequest<DomainResult>, IEquatable<BaseMessage>
+    public abstract class BaseMessage : IEquatable<BaseMessage>
     {
         public Guid Id { get; protected set; }
-        public Guid CorrelationId { get; protected set; }
-        public Version Version { get; protected set; }
-        public int Offset { get; set; }
-        public abstract Version CurrentVersion { get; }
+        public abstract Version LatestVersion();
 
         public override bool Equals(object obj)
         {

@@ -17,82 +17,90 @@ using System.Threading.Tasks;
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
     public abstract class AggregateRequestHandler<TAggregate, TRequest, TAggregateId> :
-        IRequestHandler<TRequest, DomainResult>
+        IRequestHandler<TransportMessage<TRequest, TAggregateId>, DomainResult>
         where TRequest : DomainRequest<TAggregateId>
         where TAggregate : AggregateRoot<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        protected readonly IMapper mapper;
         protected readonly IOptions<AggregatesConfig> aggregatesConfig;
         protected readonly IMemoryCache memoryCache;
         protected readonly IDomainEventsDispatcher<TAggregateId> eventsDispatcher;
-        protected readonly IAggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot;
+        protected readonly IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshotAccessor;
         protected readonly IDomainEventsAccessor<TAggregateId> eventsAccessor;
 
         protected AggregateRequestHandler(
-            IMapper mapper,
             IOptions<AggregatesConfig> aggConfig,
             IMemoryCache memoryCache,
             IDomainEventsDispatcher<TAggregateId> eventsDispatcher,
-            IAggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot,
+            IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshot,
             IDomainEventsAccessor<TAggregateId> eventsAccessor)
         {
-            this.mapper = mapper;
             this.aggregatesConfig = aggConfig;
             this.memoryCache = memoryCache;
             this.eventsDispatcher = eventsDispatcher;
-            this.aggregateSnapshot = aggregateSnapshot;
+            this.aggregateSnapshotAccessor = aggregateSnapshot;
             this.eventsAccessor = eventsAccessor;
         }
 
-        protected abstract void HandleDomainRequest(TAggregate aggregate, TRequest request, CancellationToken cancellationToken);
+        protected abstract void
+            HandleDomainRequest(TAggregate aggregate, TRequest request, CancellationToken cancellationToken);
 
-        public virtual async Task<DomainResult> Handle(TRequest request, CancellationToken cancellationToken
+        public virtual async Task<DomainResult>
+            Handle(TransportMessage<TRequest, TAggregateId> transRequest, CancellationToken cancellationToken
             )
         {
-            var someResult = await this.GetAggregate(request.AggregateId);
+            var someResult = await this.GetAggregate(transRequest.Message.AggregateId);
             if (someResult.HasError) return someResult;
-            if (someResult is AggregateResult<TAggregate, TAggregateId> aggResult)
+            if (someResult is AggregateSnapshotResult<TAggregate, TAggregateId> aggregateSnapshotResult)
             {
-                var aggregate = aggResult.Aggregate;
+                var aggregateSnapshot = aggregateSnapshotResult.AggregateSnapshot;
 
-                this.HandleDomainRequest(aggregate, request, cancellationToken);
-
-                var dispatchResults = await this.DispatchDomainEvents(aggregate);
-                var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
-                if (error != null)
+                if (aggregateSnapshot.Aggregate.IsNew() || aggregateSnapshot.RequestTimestamp < transRequest.RequestTimestamp)
                 {
-                    this.memoryCache.Remove(aggregate.Id);
-                    return error;
+                    this.HandleDomainRequest(aggregateSnapshot.Aggregate, transRequest.Message, cancellationToken);
+
+                    var dispatchResults = await this.DispatchDomainEvents(aggregateSnapshot.Aggregate, transRequest);
+                    var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
+                    if (error != null)
+                    {
+                        this.memoryCache.Remove(aggregateSnapshot.Aggregate.Id);
+                        return error;
+                    }
+                    else
+                    {
+                        // TODO: check this assignment
+                        aggregateSnapshot.RequestTimestamp = transRequest.RequestTimestamp;
+                    }
                 }
                 return DomainResult.Ok;
-
             }
             return new DomainResult($"{nameof(GetAggregate)} returned a wrong type of result: {someResult?.GetType().FullName ?? "null"}");
         }
 
-        protected virtual async Task<AggregateResult<TAggregate, TAggregateId>> GetAggregateSnapshot(TAggregateId id
+        protected virtual async Task<AggregateSnapshot<TAggregate, TAggregateId>>
+            GetAggregateSnapshot(TAggregateId id
             )
         {
-            if (this.aggregatesConfig.Value.AGGREGATES_CACHE_ENABLED &&
-                this.memoryCache.TryGetValue(id, out TAggregate aggregate))
+            if (this.aggregatesConfig.Value.AGGREGATE_CACHE_ENABLED &&
+                this.memoryCache.TryGetValue(id, out AggregateSnapshot<TAggregate, TAggregateId> aggregateSnapshot))
             {
-                return new AggregateResult<TAggregate, TAggregateId>(aggregate);
+                return aggregateSnapshot;
             }
             else
             {
-                var result = await this.aggregateSnapshot.Read(id);
-                if (!result.HasError && this.aggregatesConfig.Value.AGGREGATES_CACHE_ENABLED)
+                aggregateSnapshot = await this.aggregateSnapshotAccessor.Read(id);
+                if (this.aggregatesConfig.Value.AGGREGATE_CACHE_ENABLED)
                 {
-                    this.memoryCache.Set(id, result.Aggregate, new MemoryCacheEntryOptions()
-                        .SetSlidingExpiration(TimeSpan.FromSeconds(this.aggregatesConfig.Value.AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS))
-                        .SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(this.aggregatesConfig.Value.AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS)));
+                    this.memoryCache.Set(id, aggregateSnapshot, new MemoryCacheEntryOptions()
+                        .SetSlidingExpiration(TimeSpan.FromSeconds(this.aggregatesConfig.Value.AGGREGATE_CACHE_SLIDING_EXPIRATION_SECONDS))
+                        .SetAbsoluteExpiration(DateTimeOffset.Now.AddSeconds(this.aggregatesConfig.Value.AGGREGATE_CACHE_ABSOLUTE_EXPIRATION_SECONDS)));
                 }
-                return result;
+                return aggregateSnapshot;
             }
         }
 
-        protected virtual async Task<Dictionary<DomainEvent<TAggregateId>, DomainResult>> DispatchDomainEvents(IEventSourced<TAggregateId> aggregate
+        protected virtual async Task<Dictionary<DomainEvent<TAggregateId>, DomainResult>>
+            DispatchDomainEvents(TAggregate aggregate, TransportMessage<TRequest, TAggregateId> transRequest
             )
         {
             bool hasError = false;
@@ -101,15 +109,13 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 if (!hasError)
                 {
-                    var result = await this.eventsDispatcher.DispatchEvent(@event);
+                    var result = await this.eventsDispatcher.DispatchEvent(
+                        new TransportMessage<DomainEvent<TAggregateId>, TAggregateId>(
+                            @event, transRequest.CorrelationId, transRequest.RequestTimestamp));
                     results.Add(@event, result);
                     if (result.HasError)
                     {
                         hasError = true;
-                    }
-                    else
-                    {
-                        aggregate.ApplyEventOffset(@event);
                     }
                 }
                 else
@@ -120,25 +126,23 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             return results;
         }
 
-        protected virtual async Task<DomainResult> GetAggregate(TAggregateId aggregateId
+        protected virtual async Task<DomainResult>
+            GetAggregate(TAggregateId aggregateId
             )
         {
-            var snapshotResult = await GetAggregateSnapshot(aggregateId);
-            if (snapshotResult.HasError) return snapshotResult;
+            var aggregateSnapshot = await GetAggregateSnapshot(aggregateId);
 
-            var aggregate = snapshotResult.Aggregate;
-
-            var eventsResult = await this.eventsAccessor.Read(aggregate);
+            var eventsResult = await this.eventsAccessor.GetEvents(aggregateId, 0);
             if (eventsResult.HasError) return eventsResult;
 
-            aggregate.ReplayDomainEvents(eventsResult.Events, this.mapper);
+            aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => x.Message));
 
-            if (eventsResult.Events.Count > this.aggregatesConfig.Value.AGGREGATES_MAX_EVENTS_COUNT && !aggregate.IsNew)
+            if (eventsResult.Events.Count() > this.aggregatesConfig.Value.AGGREGATE_MAX_EVENTS_COUNT && !aggregateSnapshot.Aggregate.IsNew())
             {
-                await aggregateSnapshot.Save(aggregate);
+                await this.aggregateSnapshotAccessor.Save(aggregateSnapshot);
             }
 
-            return snapshotResult;
+            return new AggregateSnapshotResult<TAggregate, TAggregateId>(aggregateSnapshot);
         }
     }
 }
