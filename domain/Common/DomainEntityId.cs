@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Domain.Common
                 return object.Equals(default(T), Value);
             }
         }
-        public T Value { get; private set; }
+        public T Value { get; protected set; }
 
         public DomainEntityId()
         {

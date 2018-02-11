@@ -10,7 +10,7 @@ using MidnightLizard.Schemes.Infrastructure.Queue;
 using MediatR;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Infrastructure.Serialization;
+using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 
 namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
 {
@@ -18,11 +18,17 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterAssemblyTypes(typeof(MessageSerializationModule).GetTypeInfo().Assembly)
+            var thisAssambly = typeof(MessageSerializationModule).GetTypeInfo().Assembly;
+            builder.RegisterAssemblyTypes(thisAssambly)
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
-                .Keyed<IMessageDeserializer<BaseMessage>>(t =>
-                    t.GetGenericArguments()[0].Name +
-                    t.GetCustomAttribute<MessageVersionAttribute>().Version.ToString());
+                .Keyed<IMessageDeserializer>(t =>
+                {
+                    return t.GetInterfaces().First().GetGenericArguments()[0].Name +
+                     t.GetCustomAttribute<MessageVersionAttribute>().Version.ToString();
+                });
+            builder.RegisterType<MessageSerializer>().AsSelf().SingleInstance();
+
+            builder.RegisterAssemblyTypes(thisAssambly).AsImplementedInterfaces();
         }
     }
 }

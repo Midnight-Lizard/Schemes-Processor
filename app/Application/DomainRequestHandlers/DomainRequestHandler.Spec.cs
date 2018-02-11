@@ -317,7 +317,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             private bool returnErrorFromGetAggregate = false;
 
             protected override Task<Dictionary<DomainEvent<PublicSchemeId>, DomainResult>> DispatchDomainEvents(
-                PublicScheme aggregate, TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId> transRequest)
+               IEventSourced<PublicSchemeId> aggregate, TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId> transRequest)
             {
                 aggregate.Should().BeSameAs(this.testScheme);
                 dispatchDomainEvents_CallCount++;

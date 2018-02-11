@@ -7,17 +7,25 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common.Messaging
 {
-    public class TransportMessage<TMessage, TAggregateId> : IRequest<DomainResult>
+    public interface ITransportMessage<out TMessage>
+        where TMessage : BaseMessage
+    {
+        TMessage Payload { get; }
+        Guid CorrelationId { get; }
+        DateTime RequestTimestamp { get; }
+    }
+
+    public class TransportMessage<TMessage, TAggregateId> : IRequest<DomainResult>, ITransportMessage<TMessage>
         where TAggregateId : DomainEntityId
         where TMessage : DomainMessage<TAggregateId>
     {
-        public TMessage Message { get; }
+        public TMessage Payload { get; }
         public Guid CorrelationId { get; }
         public DateTime RequestTimestamp { get; }
 
         public TransportMessage(TMessage message, Guid correlationId, DateTime requestTimestamp)
         {
-            Message = message;
+            Payload = message;
             CorrelationId = correlationId;
             RequestTimestamp = requestTimestamp;
         }

@@ -9,6 +9,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public class ColorScheme : ValueObject
     {
+        public static readonly ColorSchemeValidator Validator = new ColorSchemeValidator();
+
         public string colorSchemeId { get; set; }
         public string colorSchemeName { get; set; }
 
@@ -68,6 +70,9 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public int buttonGrayHue { get; set; }
         public bool buttonReplaceAllHues { get; set; }
 
+        public bool useImageHoverAnimation { get; set; }
+        public int scrollbarSize { get; set; }
+
         protected override IEnumerable<object> GetPropertyValues()
         {
             yield return colorSchemeId;
@@ -120,6 +125,9 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             yield return buttonReplaceAllHues;
             yield return linkReplaceAllHues;
             yield return textReplaceAllHues;
+
+            yield return useImageHoverAnimation;
+            yield return scrollbarSize;
         }
     }
 }

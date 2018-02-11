@@ -1,0 +1,29 @@
+﻿using MediatR;
+using MidnightLizard.Schemes.Domain.Common.Messaging;
+using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
+{
+    public abstract class AbstractMessageDeserializer<TMessage> :
+        IMessageDeserializer<TMessage> where TMessage : BaseMessage
+    {
+        public virtual ITransportMessage<TMessage> DeserializeMessagePayload(
+            string payload, JsonSerializerSettings serializerSettings, Guid correlationId, DateTime requestTimestamp)
+        {
+            var message = JsonConvert.DeserializeObject<TMessage>(payload, serializerSettings);
+            AdvanceToTheLatestVersion(message);
+            return GreateTransportMessage(message, correlationId, requestTimestamp);
+        }
+
+        public virtual void AdvanceToTheLatestVersion(TMessage message) { }
+
+        public abstract ITransportMessage<TMessage> GreateTransportMessage(
+            TMessage message, Guid correlationId, DateTime requestTimestamp);
+    }
+}

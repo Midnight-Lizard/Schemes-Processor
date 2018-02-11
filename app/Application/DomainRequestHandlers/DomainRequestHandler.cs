@@ -49,7 +49,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             Handle(TransportMessage<TRequest, TAggregateId> transRequest, CancellationToken cancellationToken
             )
         {
-            var someResult = await this.GetAggregate(transRequest.Message.AggregateId);
+            var someResult = await this.GetAggregate(transRequest.Payload.AggregateId);
             if (someResult.HasError) return someResult;
             if (someResult is AggregateSnapshotResult<TAggregate, TAggregateId> aggregateSnapshotResult)
             {
@@ -57,7 +57,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 if (aggregateSnapshot.Aggregate.IsNew() || aggregateSnapshot.RequestTimestamp < transRequest.RequestTimestamp)
                 {
-                    this.HandleDomainRequest(aggregateSnapshot.Aggregate, transRequest.Message, cancellationToken);
+                    this.HandleDomainRequest(aggregateSnapshot.Aggregate, transRequest.Payload, cancellationToken);
 
                     var dispatchResults = await this.DispatchDomainEvents(aggregateSnapshot.Aggregate, transRequest);
                     var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
@@ -99,7 +99,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         }
 
         protected virtual async Task<Dictionary<DomainEvent<TAggregateId>, DomainResult>>
-            DispatchDomainEvents(TAggregate aggregate, TransportMessage<TRequest, TAggregateId> transRequest
+            DispatchDomainEvents(IEventSourced<TAggregateId> aggregate, TransportMessage<TRequest, TAggregateId> transRequest
             )
         {
             bool hasError = false;
@@ -134,7 +134,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             var eventsResult = await this.eventsAccessor.GetEvents(aggregateId, 0);
             if (eventsResult.HasError) return eventsResult;
 
-            aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => x.Message));
+            aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => x.Payload));
 
             if (eventsResult.Events.Count() > this.aggregatesConfig.Value.AGGREGATE_MAX_EVENTS_COUNT && !aggregateSnapshot.Aggregate.IsNew())
             {

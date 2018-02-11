@@ -20,17 +20,22 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         {
             if (this.IsNew() || this.PublisherId == publisherId)
             {
-                // var validatedColorScheme = 
-                if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
+                var validationResults = ColorScheme.Validator.Validate(colorScheme);
+                if (validationResults.IsValid)
                 {
-                    AddSchemePublishedEvent(colorScheme);
-
-                    this.isNew = false;
+                    if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
+                    {
+                        AddSchemePublishedEvent(colorScheme);
+                    }
+                }
+                else
+                {
+                    // TODO: ValidationFaildEvent
                 }
             }
             else if (this.PublisherId != publisherId)
             {
-                // access denied event
+                // TODO: access denied event
             }
         }
 

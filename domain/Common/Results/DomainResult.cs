@@ -11,7 +11,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Results
         public string ErrorMessage { get; protected set; }
         public Exception Exception { get; protected set; }
 
-        public DomainResult() { }
+        protected DomainResult() { }
 
         public DomainResult(string errorMessage)
         {

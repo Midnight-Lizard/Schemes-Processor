@@ -7,13 +7,11 @@ namespace MidnightLizard.Schemes.Domain.Common.Results
 {
     public class MessageResult : DomainResult
     {
-        public BaseMessage BaseMessage { get; }
+        public ITransportMessage<BaseMessage> Message { get; }
 
-        public MessageResult() { }
-
-        public MessageResult(BaseMessage baseMessage)
+        public MessageResult(ITransportMessage<BaseMessage> message)
         {
-            BaseMessage = baseMessage;
+            Message = message;
         }
 
         public MessageResult(string errorMessage) : base(errorMessage) { }

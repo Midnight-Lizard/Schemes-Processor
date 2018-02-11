@@ -14,7 +14,7 @@ namespace MidnightLizard.Schemes.Domain.Common
         private readonly List<DomainEvent<TAggregateId>> pendingEvents = new List<DomainEvent<TAggregateId>>();
 
         public virtual int Generation { get; protected set; }
-        protected bool isNew;
+        private bool isNew;
         public virtual bool IsNew() => isNew;
         public abstract Version Version();
 
@@ -45,6 +45,7 @@ namespace MidnightLizard.Schemes.Domain.Common
             this.Reduce(@event);
             this.Generation = @event.Generation;
             this.pendingEvents.Add(@event);
+            this.isNew = false;
         }
 
         public virtual void ReplayDomainEvents(IEnumerable<DomainEvent<TAggregateId>> events)
