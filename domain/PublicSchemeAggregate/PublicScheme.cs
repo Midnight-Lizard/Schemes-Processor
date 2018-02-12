@@ -20,25 +20,43 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 
         public virtual void Publish(PublisherId publisherId, ColorScheme colorScheme)
         {
-            if (this.IsNew() || this.PublisherId == publisherId)
+            var publisherIdValidationResults = PublisherId.Validator.Validate(publisherId);
+            if (publisherIdValidationResults.IsValid)
             {
-                var validationResults = ColorScheme.Validator.Validate(colorScheme);
-                if (validationResults.IsValid)
+                if (this.IsNew() || this.PublisherId == publisherId)
                 {
-                    if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
+                    var colorSchemeValidationResults = ColorScheme.Validator.Validate(colorScheme);
+                    if (colorSchemeValidationResults.IsValid)
                     {
-                        AddSchemePublishedEvent(publisherId, colorScheme);
+                        if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
+                        {
+                            AddSchemePublishedEvent(publisherId, colorScheme);
+                        }
+                    }
+                    else
+                    {
+                        AddColorSchemeValidationFailedEvent(colorSchemeValidationResults);
                     }
                 }
-                else
+                else if (this.PublisherId != publisherId)
                 {
-                    AddColorSchemeValidationFailedEvent(validationResults);
+                    AddPublisherAccessDeniedEvent(publisherId);
                 }
             }
-            else if (this.PublisherId != publisherId)
+            else
             {
-                // TODO: access denied event
+                AddPublisherIdValidationFailedEvent(publisherIdValidationResults);
             }
+        }
+
+        private void AddPublisherIdValidationFailedEvent(ValidationResult publisherIdValidationResults)
+        {
+            this.AddDomainEvent(new PublisherIdValidationFailedEvent(this.Id, publisherIdValidationResults));
+        }
+
+        private void AddPublisherAccessDeniedEvent(PublisherId publisherId)
+        {
+            this.AddDomainEvent(new PublisherAccessDeniedEvent(this.Id, publisherId));
         }
 
         private void AddColorSchemeValidationFailedEvent(ValidationResult validationResults)

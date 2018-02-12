@@ -9,13 +9,6 @@ namespace MidnightLizard.Schemes.Domain.Common
     public class DomainEntityId<T> : DomainEntityId
         where T : IComparable, IComparable<T>, IEquatable<T>
     {
-        public bool IsDefault
-        {
-            get
-            {
-                return object.Equals(default(T), Value);
-            }
-        }
         public T Value { get; protected set; }
 
         public DomainEntityId()

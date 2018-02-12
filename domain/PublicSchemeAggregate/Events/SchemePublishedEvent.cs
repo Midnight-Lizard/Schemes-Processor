@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
+namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events
 {
     public class SchemePublishedEvent : SchemeDomainEvent
     {

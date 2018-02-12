@@ -7,6 +7,7 @@ using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Schemes.Tests;

@@ -8,6 +8,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using Autofac;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {

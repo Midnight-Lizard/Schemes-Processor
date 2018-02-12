@@ -128,6 +128,24 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 events.Should().HaveCount(1);
                 events.Should().AllBeOfType<ColorSchemeValidationFailedEvent>();
             }
+
+            [It(nameof(PublicScheme.Publish))]
+            public void Should_Release_AccessDenied_when_Publisher_is_different()
+            {
+                this.existingPublicScheme.Publish(new PublisherId(Guid.NewGuid()), this.incorrectColorScheme);
+                var events = this.existingPublicScheme.ReleaseEvents();
+                events.Should().HaveCount(1);
+                events.Should().AllBeOfType<PublisherAccessDeniedEvent>();
+            }
+
+            [It(nameof(PublicScheme.Publish))]
+            public void Should_Release_ValidationFailedEvent_when_PublisherId_is_invalid()
+            {
+                this.existingPublicScheme.Publish(new PublisherId(), this.incorrectColorScheme);
+                var events = this.existingPublicScheme.ReleaseEvents();
+                events.Should().HaveCount(1);
+                events.Should().AllBeOfType<PublisherIdValidationFailedEvent>();
+            }
         }
     }
 }
