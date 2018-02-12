@@ -1,5 +1,7 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using FluentValidation.Results;
+using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
         public ColorScheme ColorScheme { get; private set; }
 
         public PublicScheme() { }
-        public PublicScheme(bool isNew) : base(isNew) { }
+        public PublicScheme(PublicSchemeId publicSchemeId) : base(publicSchemeId) { }
 
         public virtual void Publish(PublisherId publisherId, ColorScheme colorScheme)
         {
@@ -25,12 +27,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 {
                     if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
                     {
-                        AddSchemePublishedEvent(colorScheme);
+                        AddSchemePublishedEvent(publisherId, colorScheme);
                     }
                 }
                 else
                 {
-                    // TODO: ValidationFaildEvent
+                    AddColorSchemeValidationFailedEvent(validationResults);
                 }
             }
             else if (this.PublisherId != publisherId)
@@ -39,9 +41,14 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             }
         }
 
-        private void AddSchemePublishedEvent(ColorScheme colorScheme)
+        private void AddColorSchemeValidationFailedEvent(ValidationResult validationResults)
         {
-            this.AddDomainEvent(new SchemePublishedEvent(this.Id, this.PublisherId, colorScheme));
+            this.AddDomainEvent(new ColorSchemeValidationFailedEvent(this.Id, validationResults));
+        }
+
+        private void AddSchemePublishedEvent(PublisherId publisherId, ColorScheme colorScheme)
+        {
+            this.AddDomainEvent(new SchemePublishedEvent(this.Id, publisherId, colorScheme));
         }
     }
 }

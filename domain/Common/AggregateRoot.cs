@@ -22,14 +22,10 @@ namespace MidnightLizard.Schemes.Domain.Common
 
         public AggregateRoot() { }
 
-        /// <summary>
-        /// special ctor for new instances
-        /// </summary>
-        /// <param name="isNew">true</param>
-        public AggregateRoot(bool isNew)
+        public AggregateRoot(TAggregateId aggregateId)
         {
-            if (!isNew) throw new ArgumentException(nameof(isNew), "Should be always new");
-            this.isNew = isNew;
+            Id = aggregateId;
+            this.isNew = true;
         }
 
         public virtual IEnumerable<DomainEvent<TAggregateId>> ReleaseEvents()

@@ -30,14 +30,18 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 
         public async Task<AggregateSnapshot<PublicScheme, PublicSchemeId>> Read(PublicSchemeId id)
         {
-            var result = await this.elasticClient.GetAsync<PublicScheme>(new DocumentPath<PublicScheme>(id.Value));
+            var result = await this.elasticClient
+                .GetAsync<PublicScheme>(new DocumentPath<PublicScheme>(id.Value));
+
             if (result.IsValid &&
                 result.Fields.Value<Version>(new Field(nameof(Version))) == result.Source.Version())
             {
+                var requestTimestampField = new Field(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp));
+
                 return new AggregateSnapshot<PublicScheme, PublicSchemeId>(result.Source,
-                    result.Fields.Value<DateTime>(new Field(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp))));
+                    result.Fields.Value<DateTime>(requestTimestampField));
             }
-            return new AggregateSnapshot<PublicScheme, PublicSchemeId>(new PublicScheme(true), DateTime.MinValue);
+            return new AggregateSnapshot<PublicScheme, PublicSchemeId>(new PublicScheme(id), DateTime.MinValue);
         }
 
         public async Task Save(AggregateSnapshot<PublicScheme, PublicSchemeId> schemeSnapshot)

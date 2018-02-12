@@ -19,7 +19,6 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
         {
             this.Id = Guid.NewGuid();
             this.AggregateId = aggregateId;
-            //this.Version = this.LatestVersion;
         }
     }
 }

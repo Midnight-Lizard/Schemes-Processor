@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using FluentValidation.TestHelper;
 using Xunit;
+using FluentValidation.Results;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
@@ -217,6 +218,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             public void Should_succeeed_when_Scrollbar__Size_is_in_0____50px_range(int px)
             {
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.scrollbarSize, px);
+            }
+
+            [It(nameof(ColorSchemeValidator))]
+            public void Should_fail_with_default_ColorScheme_object()
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.colorSchemeName, new ColorScheme());
             }
         }
     }
