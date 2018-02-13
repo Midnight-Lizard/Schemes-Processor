@@ -13,6 +13,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
         TMessage Payload { get; }
         Guid CorrelationId { get; }
         DateTime RequestTimestamp { get; }
+        Type DeserializerType { get; set; }
     }
 
     public class TransportMessage<TMessage, TAggregateId> : IRequest<DomainResult>, ITransportMessage<TMessage>
@@ -22,6 +23,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
         public TMessage Payload { get; }
         public Guid CorrelationId { get; }
         public DateTime RequestTimestamp { get; }
+        public Type DeserializerType { get; set; }
 
         public TransportMessage(TMessage message, Guid correlationId, DateTime requestTimestamp)
         {

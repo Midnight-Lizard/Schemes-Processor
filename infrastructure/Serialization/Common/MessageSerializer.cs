@@ -24,6 +24,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         private readonly IIndex<string, IMessageDeserializer> deserializers;
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ContractResolver = MessageContractResolver.Default,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
             Converters = new[] {
@@ -73,10 +74,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             return JsonConvert.SerializeObject(new
             {
+                transportMessage.CorrelationId,
                 Type = transportMessage.Payload.GetType().Name,
                 Version = transportMessage.Payload.LatestVersion().ToString(),
                 transportMessage.RequestTimestamp,
-                transportMessage.CorrelationId,
                 transportMessage.Payload
             }, serializerSettings);
         }

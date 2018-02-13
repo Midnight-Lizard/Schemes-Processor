@@ -18,7 +18,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             var message = JsonConvert.DeserializeObject<TMessage>(payload, serializerSettings);
             AdvanceToTheLatestVersion(message);
-            return GreateTransportMessage(message, correlationId, requestTimestamp);
+            var transMsg = GreateTransportMessage(message, correlationId, requestTimestamp);
+            transMsg.DeserializerType = this.GetType();
+            return transMsg;
         }
 
         public virtual void AdvanceToTheLatestVersion(TMessage message) { }
