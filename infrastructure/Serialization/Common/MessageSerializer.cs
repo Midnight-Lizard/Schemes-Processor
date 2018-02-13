@@ -54,12 +54,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 string key = msg.Type + msg.Version;
                 if (this.deserializers.TryGetValue(key, out var deserializer))
                 {
-
                     return new MessageResult((deserializer as IMessageDeserializer<BaseMessage>)
                         .DeserializeMessagePayload(
                             msg.Payload.Value as string, serializerSettings,
                             msg.CorrelationId, msg.RequestTimestamp));
-
                 }
                 return new MessageResult($"Deserializer for message type {msg.Type} and version {msg.Version} is not found.");
             }

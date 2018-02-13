@@ -63,6 +63,43 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         public class DeserializeSpec : MessageSerializerSpec
         {
             [It(nameof(MessageSerializer.Deserialize))]
+            public void Should_return_an_error_if_message_version_is_not_supported()
+            {
+                var json = $@"
+                {{
+                    ""CorrelationId"": ""{Guid.NewGuid()}"",
+                    ""Type"": ""{nameof(SchemePublishedEvent)}"",
+                    ""Version"": ""0.0.0"",
+                    ""RequestTimestamp"": ""{DateTime.UtcNow}"",
+                    ""Payload"": {{}}
+                }}";
+
+                var result = this.messageSerializer.Deserialize(json);
+
+                result.HasError.Should().BeTrue();
+                result.ErrorMessage.Should().Contain(nameof(SchemePublishedEvent));
+                result.ErrorMessage.Should().Contain("0.0.0");
+            }
+
+            [It(nameof(MessageSerializer.Deserialize))]
+            public void Should_return_an_error_if_message_has_incorrect_json_format()
+            {
+                var json = $@"
+                {{
+                    ""CorrelationId"": ""not a GUID"",
+                    ""Type"": ""{nameof(SchemePublishedEvent)}"",
+                    ""Version"": ""0.0.0"",
+                    ""RequestTimestamp"": ""not a DateTime"",
+                    ""Payload"": {{}}
+                }}";
+
+                var result = this.messageSerializer.Deserialize(json);
+
+                result.HasError.Should().BeTrue();
+                result.Exception.Should().NotBeNull();
+            }
+
+            [It(nameof(MessageSerializer.Deserialize))]
             public void Should_correctly_Deserialize_event()
             {
                 var te = this.testTransEvent;
