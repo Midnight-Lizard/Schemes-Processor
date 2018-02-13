@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
 {
-    [MessageVersion("1.0")]
+    [Message(Version = "1.0")]
     public class SchemePublishRequestDeserializer_v1_0 : SchemePublishRequestDeserializer_v1_1
     {
         public override void AdvanceToTheLatestVersion(SchemePublishRequest message)
@@ -23,7 +23,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [MessageVersion("1.1")]
+    [Message(Version = "1.1")]
     public class SchemePublishRequestDeserializer_v1_1 : SchemePublishRequestDeserializer_v1_2
     {
         public override void AdvanceToTheLatestVersion(SchemePublishRequest message)
@@ -40,7 +40,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [MessageVersion("1.2")]
+    [Message(Version = "1.2")]
     public class SchemePublishRequestDeserializer_v1_2 : SchemePublishRequestDeserializer_v1_3
     {
         public override void AdvanceToTheLatestVersion(SchemePublishRequest message)
@@ -53,7 +53,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [MessageVersion("1.3")]
+    [Message(Version = "1.3")]
     public class SchemePublishRequestDeserializer_v1_3 : AbstractMessageDeserializer<SchemePublishRequest>
     {
         public override ITransportMessage<SchemePublishRequest> GreateTransportMessage(

@@ -23,8 +23,9 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
                 .Keyed<IMessageDeserializer>(t =>
                 {
-                    return t.GetInterfaces().First().GetGenericArguments()[0].Name +
-                     t.GetCustomAttribute<MessageVersionAttribute>().Version.ToString();
+                    var msgAttr = t.GetCustomAttribute<MessageAttribute>();
+                    var msgType = msgAttr.Type ?? t.GetInterfaces().First().GetGenericArguments()[0].Name;
+                    return $"{msgType}{msgAttr.Version}";
                 });
             builder.RegisterType<MessageSerializer>().AsSelf().SingleInstance();
 

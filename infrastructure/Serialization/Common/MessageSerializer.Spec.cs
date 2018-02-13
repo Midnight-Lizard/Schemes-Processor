@@ -39,5 +39,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 message.HasError.Should().BeFalse();
             }
         }
+
+        public class DeserializeSpec: MessageSerializerSpec
+        {
+
+        }
     }
 }
