@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common.Messaging
 {
-    public interface ITransportMessage<out TMessage>
+    public interface ITransportMessage<out TMessage> : IRequest<DomainResult>
         where TMessage : BaseMessage
     {
         TMessage Payload { get; }
@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
         Type DeserializerType { get; set; }
     }
 
-    public class TransportMessage<TMessage, TAggregateId> : IRequest<DomainResult>, ITransportMessage<TMessage>
+    public class TransportMessage<TMessage, TAggregateId> : ITransportMessage<TMessage>
         where TAggregateId : DomainEntityId
         where TMessage : DomainMessage<TAggregateId>
     {

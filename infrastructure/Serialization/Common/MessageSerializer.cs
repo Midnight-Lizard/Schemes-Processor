@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
     public interface IMessageSerializer
     {
         string Serialize<TMessage>(ITransportMessage<TMessage> transportMessage) where TMessage : BaseMessage;
-        MessageResult Deserialize(string message);
+        MessageResult Deserialize(string message, DateTime requestTimestamp);
     }
 
     class MessageSerializer : IMessageSerializer
@@ -42,11 +42,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             public string Type { get; set; }
             public string Version { get; set; }
             public JRaw Payload { get; set; }
-            public DateTime RequestTimestamp { get; set; }
+            public DateTime? RequestTimestamp { get; set; }
             public Guid CorrelationId { get; set; }
         }
 
-        public virtual MessageResult Deserialize(string message)
+        public virtual MessageResult Deserialize(string message, DateTime requestTimestamp)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     return new MessageResult((deserializer as IMessageDeserializer<BaseMessage>)
                         .DeserializeMessagePayload(
                             msg.Payload.Value as string, serializerSettings,
-                            msg.CorrelationId, msg.RequestTimestamp));
+                            msg.CorrelationId, msg.RequestTimestamp ?? requestTimestamp));
                 }
                 return new MessageResult($"Deserializer for message type {msg.Type} and version {msg.Version} is not found.");
             }
