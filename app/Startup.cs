@@ -57,11 +57,11 @@ namespace MidnightLizard.Schemes.Processor
                         .DeserializeObject<Dictionary<string, object>>(
                             Configuration.GetValue<string>(nameof(KafkaConfig.KAFKA_REQUESTS_CONSUMER_CONFIG))),
 
-                    SCHEMES_EVENTS_TOPIC = Configuration.GetValue<string>(
-                        nameof(KafkaConfig.SCHEMES_EVENTS_TOPIC)),
+                    EVENT_TOPICS = Configuration.GetValue<string[]>(
+                        nameof(KafkaConfig.EVENT_TOPICS)),
 
-                    SCHEMES_REQUESTS_TOPIC = Configuration.GetValue<string>(
-                        nameof(KafkaConfig.SCHEMES_REQUESTS_TOPIC))
+                    REQUEST_TOPICS = Configuration.GetValue<string[]>(
+                        nameof(KafkaConfig.REQUEST_TOPICS))
                 };
             });
             services.AddTransient<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>, SchemesSnapshot>();

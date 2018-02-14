@@ -26,12 +26,14 @@ env:
   PORTAL_URL: http://midnight-lizard.online
   IDENTITY_URL: http://identity.midnight-lizard.online
   ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
-  SCHEMES_EVENTS_TOPIC: schemes-events-a
-  SCHEMES_REQUESTS_TOPIC: schemes-requests-a
   AGGREGATES_CACHE_ENABLED: true
   AGGREGATES_CACHE_SLIDING_EXPIRATION_SECONDS: 10
   AGGREGATES_CACHE_ABSOLUTE_EXPIRATION_SECONDS: 60
   AGGREGATES_MAX_EVENTS_COUNT: 10
+  EVENT_TOPICS: 
+    - schemes-events-a
+  REQUEST_TOPICS: 
+    - schemes-requests-a
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
       "group.id": "schemes-events-processor",
