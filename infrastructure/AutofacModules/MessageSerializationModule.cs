@@ -18,8 +18,9 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            var thisAssambly = typeof(MessageSerializationModule).GetTypeInfo().Assembly;
-            builder.RegisterAssemblyTypes(thisAssambly)
+            builder.RegisterType<MessageSerializer>().AsSelf().SingleInstance();
+
+            builder.RegisterAssemblyTypes(typeof(MessageSerializationModule).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
                 .Keyed<IMessageDeserializer>(t =>
                 {
@@ -27,9 +28,6 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
                     var msgType = msgAttr.Type ?? t.GetInterfaces().First().GetGenericArguments()[0].Name;
                     return $"{msgType}{msgAttr.Version}";
                 });
-            builder.RegisterType<MessageSerializer>().AsSelf().SingleInstance();
-
-            builder.RegisterAssemblyTypes(thisAssambly).AsImplementedInterfaces();
         }
     }
 }
