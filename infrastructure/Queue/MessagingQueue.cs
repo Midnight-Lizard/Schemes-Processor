@@ -1,8 +1,10 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Serialization;
+using MediatR;
 using Microsoft.Extensions.Logging;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,24 +21,42 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         Paused = 2
     }
 
-    public class SchemesQueue
+    public class MessagingQueue : IMessagingQueue
     {
         protected QueueStatus queueStatus = QueueStatus.Stopped;
         protected Message<string, string> lastConsumedEvent;
         protected Message<string, string> lastConsumedRequest;
         protected readonly TimeSpan timeout = TimeSpan.FromSeconds(1);
         protected List<TopicPartition> assignedEventsPartitions;
-        protected readonly ILogger<SchemesQueue> logger;
-        private readonly KafkaConfig kafkaConfig;
+        protected readonly ILogger<MessagingQueue> logger;
+        protected readonly KafkaConfig kafkaConfig;
+        protected readonly IMediator mediator;
+        protected readonly IMessageSerializer messageSerializer;
         protected Consumer<string, string> eventsConsumer;
         protected Consumer<string, string> requestsConsumer;
         protected CancellationToken cancellationToken;
         protected TaskCompletionSource<bool> queuePausingCompleted;
 
-        public SchemesQueue(ILogger<SchemesQueue> logger, KafkaConfig config)
+        public MessagingQueue(ILogger<MessagingQueue> logger, KafkaConfig config,
+            IMediator mediator, IMessageSerializer messageSerializer)
         {
             this.logger = logger;
             this.kafkaConfig = config;
+            this.mediator = mediator;
+            this.messageSerializer = messageSerializer;
+        }
+
+        public async Task PauseProcessing()
+        {
+            this.queuePausingCompleted = new TaskCompletionSource<bool>();
+            this.queueStatus = QueueStatus.Paused;
+            await this.queuePausingCompleted.Task;
+        }
+
+        public async Task ResumeProcessing(CancellationToken token)
+        {
+            this.queueStatus = QueueStatus.Stopped;
+            await BeginProcessing(token);
         }
 
         public async Task BeginProcessing(CancellationToken token)
@@ -71,39 +91,28 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                         this.eventsConsumer = eventsConsumer;
                         this.requestsConsumer = requestsConsumer;
 
-                        this.eventsConsumer.OnOffsetsCommitted += ConsumerOnOffsetsCommitted;
                         this.eventsConsumer.OnPartitionsAssigned += EventsConsumerOnPartitionsAssigned;
                         this.eventsConsumer.OnPartitionsRevoked += EventsConsumerOnPartitionsRevoked;
-                        this.eventsConsumer.OnMessage += EventsConsumerOnMessage;
-                        this.eventsConsumer.OnError += ConsumerOnError;
 
-                        this.requestsConsumer.OnOffsetsCommitted += ConsumerOnOffsetsCommitted;
-                        // this.requestsConsumer.OnPartitionsAssigned += RequestsConsumerOnPartitionsAssigned;
-                        // this.requestsConsumer.OnPartitionsRevoked += RequestsConsumerOnPartitionsRevoked;
-                        this.requestsConsumer.OnMessage += RequestsConsumerOnMessage;
-                        this.requestsConsumer.OnError += ConsumerOnError;
-
-                        this.eventsConsumer.Subscribe(kafkaConfig.SCHEMES_EVENTS_TOPIC);
-                        this.requestsConsumer.Subscribe(kafkaConfig.SCHEMES_REQUESTS_TOPIC);
+                        this.eventsConsumer.Subscribe(kafkaConfig.EVENT_TOPICS);
+                        this.requestsConsumer.Subscribe(kafkaConfig.REQUEST_TOPICS);
 
                         while (this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
                         {
                             if (HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
                             {
-                                this.eventsConsumer.Poll(timeout);
-                                if (this.lastConsumedEvent != null)
+                                if (this.eventsConsumer.Consume(out var @event, timeout))
                                 {
-                                    await this.eventsConsumer.CommitAsync(this.lastConsumedEvent);
-                                    this.lastConsumedEvent = null;
+                                    await this.HandleMessage(@event);
+                                    await this.eventsConsumer.CommitAsync(@event);
                                 }
                             }
                             else
                             {
-                                this.requestsConsumer.Poll(timeout);
-                                if (this.lastConsumedRequest != null)
+                                if (this.requestsConsumer.Consume(out var request, timeout))
                                 {
-                                    await this.requestsConsumer.CommitAsync(this.lastConsumedRequest);
-                                    this.lastConsumedRequest = null;
+                                    await this.HandleMessage(request);
+                                    await this.requestsConsumer.CommitAsync(request);
                                 }
                             }
                         }
@@ -111,7 +120,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError(ex, "Failed to poll consumers");
+                    this.logger.LogError(ex, "Failed to consume new messages");
                 }
                 finally
                 {
@@ -130,7 +139,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             }
         }
 
-        private bool HasNewMessages(Consumer<string, string> consumer, List<TopicPartition> partitions)
+        protected bool HasNewMessages(Consumer<string, string> consumer, List<TopicPartition> partitions)
         {
             if (partitions == null || partitions.Count == 0) return true;
             try
@@ -168,18 +177,13 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             return false;
         }
 
-        private void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
+        protected void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
         {
             this.eventsConsumer.Unassign();
             assignedEventsPartitions = null;
         }
 
-        private void RequestsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
-        {
-            this.requestsConsumer.Unassign();
-        }
-
-        private void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
+        protected void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
         {
             if (!this.cancellationToken.IsCancellationRequested)
             {
@@ -188,47 +192,53 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             }
         }
 
-        private void RequestsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
+        protected async Task HandleMessage(Message<string, string> kafkaMessage)
         {
-            if (!this.cancellationToken.IsCancellationRequested)
+            if (kafkaMessage.Error.HasError)
             {
-                this.requestsConsumer.Assign(partitions);
+                this.logger.LogError($"Failed to consume [{kafkaMessage.Value ?? "message"}] with reason: {kafkaMessage.Error.Reason}");
             }
-        }
-
-        private void ConsumerOnError(object sender, Error e)
-        {
-            this.logger.LogError($"ConsumerOnError: {e}");
-        }
-
-        private void EventsConsumerOnMessage(object sender, Message<string, string> msg)
-        {
-            this.logger.LogInformation($"ConsumerOnMessage: [{msg.Key}]=[{msg.Value}]");
-            this.lastConsumedEvent = msg;
-        }
-
-        private void RequestsConsumerOnMessage(object sender, Message<string, string> msg)
-        {
-            this.logger.LogInformation($"ConsumerOnMessage: [{msg.Key}]=[{msg.Value}]");
-            this.lastConsumedRequest = msg;
-        }
-
-        private void ConsumerOnOffsetsCommitted(object sender, CommittedOffsets offsets)
-        {
-            this.logger.LogInformation("ConsumerOnOffsetsCommitted: " + string.Join("\n", offsets.Offsets.Select(o => o.ToString())));
-        }
-
-        public async Task Pause()
-        {
-            this.queuePausingCompleted = new TaskCompletionSource<bool>();
-            this.queueStatus = QueueStatus.Paused;
-            await this.queuePausingCompleted.Task;
-        }
-
-        public async Task Resume(CancellationToken token)
-        {
-            this.queueStatus = QueueStatus.Stopped;
-            await BeginProcessing(token);
+            else
+            {
+                var deserializationResult = this.messageSerializer.Deserialize(kafkaMessage.Value, kafkaMessage.Timestamp.UtcDateTime);
+                if (!deserializationResult.HasError)
+                {
+                    var message = deserializationResult.Message;
+                    var info = JsonConvert.SerializeObject(new
+                    {
+                        CorelationId = message.CorrelationId,
+                        Id = message.Payload.Id,
+                        Type = message.Payload.GetType().Name
+                    });
+                    var handleResult = await this.mediator.Send(message);
+                    if (handleResult.HasError)
+                    {
+                        if (handleResult.Exception != null)
+                        {
+                            this.logger.LogError(handleResult.Exception, $"Failed to handle {info}");
+                        }
+                        else
+                        {
+                            this.logger.LogError($"Failed to handle {info} with error: {handleResult.ErrorMessage}");
+                        }
+                    }
+                    else
+                    {
+                        this.logger.LogInformation(info);
+                    }
+                }
+                else
+                {
+                    if (deserializationResult.Exception != null)
+                    {
+                        this.logger.LogError(deserializationResult.Exception, $"Failed to deserialize: [{kafkaMessage.Value}]");
+                    }
+                    else
+                    {
+                        this.logger.LogError($"Failed to deserialize [{kafkaMessage.Value}] with error: {deserializationResult.ErrorMessage}");
+                    }
+                }
+            }
         }
     }
 }

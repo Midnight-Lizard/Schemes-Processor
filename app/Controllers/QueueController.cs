@@ -13,10 +13,10 @@ namespace MidnightLizard.Schemes.Processor.Controllers
     [Route("[controller]/[action]")]
     public class QueueController : Controller
     {
-        private readonly SchemesQueue queue;
+        private readonly MessagingQueue queue;
         private readonly IApplicationLifetime appLifetime;
 
-        public QueueController(SchemesQueue schemesQueue, IApplicationLifetime appLifetime)
+        public QueueController(MessagingQueue schemesQueue, IApplicationLifetime appLifetime)
         {
             this.queue = schemesQueue;
             this.appLifetime = appLifetime;
@@ -31,13 +31,13 @@ namespace MidnightLizard.Schemes.Processor.Controllers
         [HttpPost]
         public async void Pause()
         {
-            await this.queue.Pause();
+            await this.queue.PauseProcessing();
         }
 
         [HttpPost]
         public async void Resume()
         {
-            await this.queue.Resume(appLifetime.ApplicationStopping);
+            await this.queue.ResumeProcessing(appLifetime.ApplicationStopping);
         }
     }
 }

@@ -18,7 +18,9 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterType<MessageSerializer>().AsSelf().SingleInstance();
+            builder.RegisterType<MessageSerializer>()
+                .As<IMessageSerializer>()
+                .SingleInstance();
 
             builder.RegisterAssemblyTypes(typeof(MessageSerializationModule).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
