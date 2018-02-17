@@ -27,7 +27,7 @@
         <PackageReference Include="FluentAssertions" Version="5.0.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
         <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-        <ProjectReference Include="..\tests\MidnightLizard.Schemes.Tests.csproj" />
+        <ProjectReference Include="..\testing\MidnightLizard.Schemes.Testing.csproj" />
       </ItemGroup>
     </When>
     <When Condition=" '$(Configuration)'!='Test' ">

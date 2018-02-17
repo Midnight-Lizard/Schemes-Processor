@@ -10,7 +10,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
-using MidnightLizard.Schemes.Tests;
+using MidnightLizard.Schemes.Testing;
 using NSubstitute;
 using System;
 using System.Collections.Generic;

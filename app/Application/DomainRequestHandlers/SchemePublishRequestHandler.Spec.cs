@@ -5,7 +5,7 @@ using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
-using MidnightLizard.Schemes.Tests;
+using MidnightLizard.Schemes.Testing;
 using NSubstitute;
 using System;
 using System.Collections.Generic;

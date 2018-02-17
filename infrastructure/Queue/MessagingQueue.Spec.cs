@@ -11,7 +11,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
-using MidnightLizard.Schemes.Tests;
+using MidnightLizard.Schemes.Testing;
 using NSubstitute;
 
 using TransEvent = MidnightLizard.Schemes.Domain.Common.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;

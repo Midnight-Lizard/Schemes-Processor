@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Xunit;
 
-namespace MidnightLizard.Schemes.Tests
+namespace MidnightLizard.Schemes.Testing
 {
     /// <summary>
     /// Xunit Theory with custom test name processing
