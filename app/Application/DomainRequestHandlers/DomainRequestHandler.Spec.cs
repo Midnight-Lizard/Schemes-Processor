@@ -44,9 +44,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         public DomainRequestHandlerSpec() : base(
             Substitute.For<IOptions<AggregatesConfig>>(),
             Substitute.For<IMemoryCache>(),
-            Substitute.For<IDomainEventsDispatcher<PublicSchemeId>>(),
+            Substitute.For<IDomainEventDispatcher<PublicSchemeId>>(),
             Substitute.For<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>(),
-            Substitute.For<IDomainEventsAccessor<PublicSchemeId>>())
+            Substitute.For<IDomainEventAccessor<PublicSchemeId>>())
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
             this.testSchemeSnapshot = new AggregateSnapshot<PublicScheme, PublicSchemeId>(

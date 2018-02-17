@@ -23,9 +23,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         protected SchemePublishRequestHandlerSpec() : base(
             Substitute.For<IOptions<AggregatesConfig>>(),
             Substitute.For<IMemoryCache>(),
-            Substitute.For<IDomainEventsDispatcher<PublicSchemeId>>(),
+            Substitute.For<IDomainEventDispatcher<PublicSchemeId>>(),
             Substitute.For<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>(),
-            Substitute.For<IDomainEventsAccessor<PublicSchemeId>>())
+            Substitute.For<IDomainEventAccessor<PublicSchemeId>>())
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
             this.testRequest.PublisherId.Returns(new PublisherId());

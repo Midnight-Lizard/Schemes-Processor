@@ -11,7 +11,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
     /// Dispatches domain events to the events queue
     /// </summary>
     /// <typeparam name="TAggregateId">Type of Aggregate ID to wich this event is related</typeparam>
-    public interface IDomainEventsDispatcher<TAggregateId>
+    public interface IDomainEventDispatcher<TAggregateId>
         where TAggregateId : DomainEntityId
     {
         Task<DomainResult> DispatchEvent(TransportMessage<DomainEvent<TAggregateId>, TAggregateId> transportEvent);

@@ -56,3 +56,11 @@ env:
       "auto.commit.interval.ms": 1000,
       "auto.offset.reset": "earliest"
     }
+  KAFKA_EVENTS_PRODUCER_CONFIG: |-
+    {
+      "bootstrap.servers": "bootstrap.kafka:9092"
+    }
+  KAFKA_REQUESTS_PRODUCER_CONFIG: |-
+    {
+      "bootstrap.servers": "bootstrap.kafka:9092"
+    }

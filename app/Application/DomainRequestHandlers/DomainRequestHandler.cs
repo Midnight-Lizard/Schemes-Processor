@@ -24,16 +24,16 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
     {
         protected readonly IOptions<AggregatesConfig> aggregatesConfig;
         protected readonly IMemoryCache memoryCache;
-        protected readonly IDomainEventsDispatcher<TAggregateId> eventsDispatcher;
+        protected readonly IDomainEventDispatcher<TAggregateId> eventsDispatcher;
         protected readonly IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshotAccessor;
-        protected readonly IDomainEventsAccessor<TAggregateId> eventsAccessor;
+        protected readonly IDomainEventAccessor<TAggregateId> eventsAccessor;
 
         protected DomainRequestHandler(
             IOptions<AggregatesConfig> aggConfig,
             IMemoryCache memoryCache,
-            IDomainEventsDispatcher<TAggregateId> eventsDispatcher,
+            IDomainEventDispatcher<TAggregateId> eventsDispatcher,
             IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshot,
-            IDomainEventsAccessor<TAggregateId> eventsAccessor)
+            IDomainEventAccessor<TAggregateId> eventsAccessor)
         {
             this.aggregatesConfig = aggConfig;
             this.memoryCache = memoryCache;

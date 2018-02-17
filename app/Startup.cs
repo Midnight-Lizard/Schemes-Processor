@@ -57,6 +57,14 @@ namespace MidnightLizard.Schemes.Processor
                         .DeserializeObject<Dictionary<string, object>>(
                             Configuration.GetValue<string>(nameof(KafkaConfig.KAFKA_REQUESTS_CONSUMER_CONFIG))),
 
+                    KAFKA_EVENTS_PRODUCER_CONFIG = JsonConvert
+                        .DeserializeObject<Dictionary<string, object>>(
+                            Configuration.GetValue<string>(nameof(KafkaConfig.KAFKA_EVENTS_PRODUCER_CONFIG))),
+
+                    KAFKA_REQUESTS_PRODUCER_CONFIG = JsonConvert
+                        .DeserializeObject<Dictionary<string, object>>(
+                            Configuration.GetValue<string>(nameof(KafkaConfig.KAFKA_REQUESTS_PRODUCER_CONFIG))),
+
                     EVENT_TOPICS = Configuration.GetValue<string[]>(
                         nameof(KafkaConfig.EVENT_TOPICS)),
 

@@ -15,7 +15,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
     public interface IMessageSerializer
     {
-        string Serialize<TMessage>(ITransportMessage<TMessage> transportMessage) where TMessage : BaseMessage;
+        string Serialize(ITransportMessage<BaseMessage> transportMessage);
         MessageResult Deserialize(string message, DateTime requestTimestamp);
     }
 
@@ -67,8 +67,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             }
         }
 
-        public virtual string Serialize<TMessage>(ITransportMessage<TMessage> transportMessage)
-            where TMessage : BaseMessage
+        public virtual string Serialize(ITransportMessage<BaseMessage> transportMessage)
         {
             return JsonConvert.SerializeObject(new
             {

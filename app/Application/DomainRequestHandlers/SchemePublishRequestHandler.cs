@@ -19,9 +19,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         protected SchemePublishRequestHandler(
             IOptions<AggregatesConfig> cacheConfig,
             IMemoryCache memoryCache,
-            IDomainEventsDispatcher<PublicSchemeId> domainEventsDispatcher,
+            IDomainEventDispatcher<PublicSchemeId> domainEventsDispatcher,
             IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId> schemesSnapshot,
-            IDomainEventsAccessor<PublicSchemeId> eventsAccessor) :
+            IDomainEventAccessor<PublicSchemeId> eventsAccessor) :
             base(cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
         {
         }
