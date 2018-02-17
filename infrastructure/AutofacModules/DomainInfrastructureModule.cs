@@ -3,6 +3,7 @@ using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
+using System.Reflection;
 
 namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
 {
@@ -10,6 +11,10 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.RegisterAssemblyTypes(typeof(DomainEventDispatcher<>).GetTypeInfo().Assembly)
+                .AsClosedTypesOf(typeof(IDomainEventDispatcher<>))
+                .SingleInstance();
+
             builder.RegisterType<MessagingQueue>()
                 .As<IMessagingQueue>()
                 .SingleInstance();

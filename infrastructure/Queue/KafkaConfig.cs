@@ -11,5 +11,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 
         public IEnumerable<string> EVENT_TOPICS { get; set; }
         public IEnumerable<string> REQUEST_TOPICS { get; set; }
+
+        public string SCHEMES_EVENTS_TOPIC { get; set; }
     }
 }

@@ -82,6 +82,7 @@ namespace MidnightLizard.Schemes.Processor
             container.Populate(services);
 
             container.RegisterModule(new MediatorModule());
+            container.RegisterModule(new DomainInfrastructureModule());
             container.RegisterModule(new MessageSerializationModule());
 
             return new AutofacServiceProvider(container.Build());
