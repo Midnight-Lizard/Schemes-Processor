@@ -1,5 +1,6 @@
 ﻿using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 using Newtonsoft.Json;
 using System;

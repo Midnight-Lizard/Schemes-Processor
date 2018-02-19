@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using MediatR;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
 using MidnightLizard.Schemes.Processor.Configuration;
 using System;
 using System.Collections.Generic;
@@ -16,7 +19,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
     public class SchemePublishRequestHandler :
         DomainRequestHandler<PublicScheme, SchemePublishRequest, PublicSchemeId>
     {
-        protected SchemePublishRequestHandler(
+        public SchemePublishRequestHandler(
             IOptions<AggregatesConfig> cacheConfig,
             IMemoryCache memoryCache,
             IDomainEventDispatcher<PublicSchemeId> domainEventsDispatcher,
