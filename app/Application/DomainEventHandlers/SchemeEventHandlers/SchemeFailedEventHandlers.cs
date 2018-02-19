@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.SchemeEventHandlers
 {
     public class ColorSchemeValidationFailedEventHandler
-        : FailedEventHandler<ColorSchemeValidationFailedEvent, PublicSchemeId>
+        : FailedDomainEventHandler<ColorSchemeValidationFailedEvent, PublicSchemeId>
     {
     }
 
     public class PublisherAccessDeniedEventHandler
-        : FailedEventHandler<PublisherAccessDeniedEvent, PublicSchemeId>
+        : FailedDomainEventHandler<PublisherAccessDeniedEvent, PublicSchemeId>
     {
     }
 
     public class PublisherIdValidationFailedEventHandler
-        : FailedEventHandler<PublisherIdValidationFailedEvent, PublicSchemeId>
+        : FailedDomainEventHandler<PublisherIdValidationFailedEvent, PublicSchemeId>
     {
     }
 

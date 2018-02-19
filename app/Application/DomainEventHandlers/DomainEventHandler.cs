@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
         where TEvent : DomainEvent<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        private readonly IDomainEventAccessor<TAggregateId> domainEventAccessor;
+        protected readonly IDomainEventAccessor<TAggregateId> domainEventAccessor;
 
         public DomainEventHandler(IDomainEventAccessor<TAggregateId> domainEventAccessor)
         {
@@ -28,20 +28,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
             var result = await this.domainEventAccessor.SaveEvent(@event);
 
             return result;
-        }
-    }
-
-    public abstract class FailedEventHandler<TEvent, TAggregateId> : DomainEventHandler<TEvent, TAggregateId>
-        where TEvent : DomainEvent<TAggregateId>
-        where TAggregateId : DomainEntityId
-    {
-        public FailedEventHandler() : base(null)
-        {
-        }
-
-        public override Task<DomainResult> Handle(TransportMessage<TEvent, TAggregateId> @event, CancellationToken cancellationToken)
-        {
-            return Task.FromResult(DomainResult.Ok);
         }
     }
 }
