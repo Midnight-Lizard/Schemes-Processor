@@ -19,7 +19,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
         private readonly TransportMessage<SchemePublishedEvent, PublicSchemeId> testTransEvent;
         private readonly DomainResult testResult = new DomainResult("test");
 
-        public DomainEventHandlerSpec() : base(Substitute.For<IDomainEventAccessor<PublicSchemeId>>())
+        public DomainEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
             this.testTransEvent = new TransportMessage<SchemePublishedEvent, PublicSchemeId>(null, new Guid(), DateTime.UtcNow);
             this.domainEventAccessor.SaveEvent(this.testTransEvent).Returns(this.testResult);

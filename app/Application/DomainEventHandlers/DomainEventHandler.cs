@@ -16,9 +16,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
         where TEvent : DomainEvent<TAggregateId>
         where TAggregateId : DomainEntityId
     {
-        protected readonly IDomainEventAccessor<TAggregateId> domainEventAccessor;
+        protected readonly IDomainEventStore<TAggregateId> domainEventAccessor;
 
-        public DomainEventHandler(IDomainEventAccessor<TAggregateId> domainEventAccessor)
+        public DomainEventHandler(IDomainEventStore<TAggregateId> domainEventAccessor)
         {
             this.domainEventAccessor = domainEventAccessor;
         }

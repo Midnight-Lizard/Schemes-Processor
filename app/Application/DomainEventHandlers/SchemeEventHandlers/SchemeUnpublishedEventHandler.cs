@@ -10,7 +10,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
 {
     public class SchemeUnpublishedEventHandler : DomainEventHandler<SchemeUnpublishedEvent, PublicSchemeId>
     {
-        public SchemeUnpublishedEventHandler(IDomainEventAccessor<PublicSchemeId> domainEventAccessor)
+        public SchemeUnpublishedEventHandler(IDomainEventStore<PublicSchemeId> domainEventAccessor)
             : base(domainEventAccessor)
         {
         }

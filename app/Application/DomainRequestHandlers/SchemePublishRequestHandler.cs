@@ -24,7 +24,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             IMemoryCache memoryCache,
             IDomainEventDispatcher<PublicSchemeId> domainEventsDispatcher,
             IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId> schemesSnapshot,
-            IDomainEventAccessor<PublicSchemeId> eventsAccessor) :
+            IDomainEventStore<PublicSchemeId> eventsAccessor) :
             base(cacheConfig, memoryCache, domainEventsDispatcher, schemesSnapshot, eventsAccessor)
         {
         }

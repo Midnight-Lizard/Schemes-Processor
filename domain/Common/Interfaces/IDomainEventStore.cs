@@ -11,7 +11,7 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
     /// Reads and writes domain events into events store
     /// </summary>
     /// <typeparam name="TAggregateId">Type of Aggregate ID events of wich this accessor processing</typeparam>
-    public interface IDomainEventAccessor<TAggregateId>
+    public interface IDomainEventStore<TAggregateId>
         where TAggregateId : DomainEntityId
     {
         Task<DomainEventsResult<TAggregateId>> GetEvents(TAggregateId aggregateId, int sinceGeneration);

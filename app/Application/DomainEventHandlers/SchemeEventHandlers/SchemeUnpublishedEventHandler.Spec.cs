@@ -22,7 +22,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
         private IMediator mediator;
         private readonly ITransEvent testTransEvent = new TransEvent(new SchemeUnpublishedEvent(null), Guid.NewGuid(), DateTime.UtcNow);
 
-        public SchemeUnpublishedEventHandlerSpec() : base(Substitute.For<IDomainEventAccessor<PublicSchemeId>>())
+        public SchemeUnpublishedEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
             this.mediator = StartupStub.Resolve<IMediator>();
         }

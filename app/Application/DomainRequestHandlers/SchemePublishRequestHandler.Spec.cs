@@ -30,7 +30,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             Substitute.For<IMemoryCache>(),
             Substitute.For<IDomainEventDispatcher<PublicSchemeId>>(),
             Substitute.For<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>(),
-            Substitute.For<IDomainEventAccessor<PublicSchemeId>>())
+            Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
             this.testRequest.PublisherId.Returns(new PublisherId());
