@@ -1,27 +1,16 @@
-﻿using Autofac;
-using Autofac.Features.Variance;
-using AutoMapper;
-using FluentAssertions;
+﻿using FluentAssertions;
 using MediatR;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
-using MidnightLizard.Schemes.Infrastructure.AutofacModules;
-using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Schemes.Testing;
 using NSubstitute;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -72,20 +61,11 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         public class MediatorSpec : SchemePublishRequestHandlerSpec
         {
             private readonly IMediator mediator;
-            private readonly ITransRequest testTransRequest = new TransRequest(
-                 new SchemePublishRequest
-                 {
-                     //Id = new Guid()
-                     //AggregateId = new PublicSchemeId(Guid.NewGuid()),
-                     PublisherId = new PublisherId(Guid.NewGuid()),
-                     ColorScheme = ColorSchemeSpec.CorrectColorScheme
-                 },
-                 Guid.NewGuid(), DateTime.UtcNow);
+            private readonly ITransRequest testTransRequest = new TransRequest(new SchemePublishRequest(), Guid.NewGuid(), DateTime.UtcNow);
 
             public MediatorSpec()
             {
-                new TestServer(new WebHostBuilder().UseStartup<StartupStub>());
-                this.mediator = StartupStub.AutofacServiceProvider.GetService(typeof(IMediator)) as IMediator;
+                this.mediator = StartupStub.Resolve<IMediator>();
             }
 
             [It(nameof(Mediator))]

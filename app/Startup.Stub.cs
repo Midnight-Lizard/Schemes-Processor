@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,7 +12,7 @@ namespace MidnightLizard.Schemes.Processor
 {
     public class StartupStub : Startup
     {
-        public static AutofacServiceProvider AutofacServiceProvider;
+        private static AutofacServiceProvider autofacServiceProvider;
 
         public StartupStub(IConfiguration configuration) : base(configuration)
         {
@@ -21,9 +23,19 @@ namespace MidnightLizard.Schemes.Processor
         {
             var container = base.ConfigureServices(services) as AutofacServiceProvider;
 
-            AutofacServiceProvider = container;
+            autofacServiceProvider = container;
 
             return container;
+        }
+
+        public static TResult Resolve<TResult>()
+        {
+            if (autofacServiceProvider == null)
+            {
+                using (new TestServer(new WebHostBuilder().UseStartup<StartupStub>())) { }
+            }
+
+            return autofacServiceProvider.GetService<TResult>();
         }
     }
 }

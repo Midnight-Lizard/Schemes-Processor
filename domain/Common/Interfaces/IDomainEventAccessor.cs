@@ -15,6 +15,6 @@ namespace MidnightLizard.Schemes.Domain.Common.Interfaces
         where TAggregateId : DomainEntityId
     {
         Task<DomainEventsResult<TAggregateId>> GetEvents(TAggregateId aggregateId, int sinceGeneration);
-        Task<DomainResult> SaveEvent(DomainEvent<TAggregateId> @event);
+        Task<DomainResult> SaveEvent(ITransportMessage<DomainEvent<TAggregateId>> @event);
     }
 }

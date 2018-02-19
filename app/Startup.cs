@@ -36,7 +36,7 @@ namespace MidnightLizard.Schemes.Processor
         public virtual IServiceProvider ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            services.AddAutoMapper();
+            //services.AddAutoMapper();
             services.Configure<AggregatesConfig>(Configuration);
 
             services.AddSingleton<ElasticSearchConfig>(x =>
