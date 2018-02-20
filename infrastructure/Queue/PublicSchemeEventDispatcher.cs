@@ -1,4 +1,5 @@
 ﻿using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 using System;
 using System.Collections.Generic;

@@ -4,6 +4,7 @@ using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.Common.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Infrastructure.Configuration;
 using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot

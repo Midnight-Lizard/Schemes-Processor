@@ -1,4 +1,4 @@
-namespace MidnightLizard.Schemes.Infrastructure.Snapshot
+namespace MidnightLizard.Schemes.Infrastructure.Configuration
 {
     public class ElasticSearchConfig
     {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MidnightLizard.Schemes.Infrastructure.Queue
+namespace MidnightLizard.Schemes.Infrastructure.Configuration
 {
     public class KafkaConfig
     {

@@ -15,6 +15,7 @@ using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
+using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
 using MidnightLizard.Schemes.Processor.AutofacModules;

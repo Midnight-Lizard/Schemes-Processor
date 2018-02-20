@@ -3,6 +3,7 @@ using Confluent.Kafka.Serialization;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 using Newtonsoft.Json;
 using System;
