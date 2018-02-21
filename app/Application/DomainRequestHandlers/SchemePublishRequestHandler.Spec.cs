@@ -37,10 +37,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.testRequest.AggregateId.Returns(this.testScheme.Id);
         }
 
-        public override async Task<DomainResult> Handle(TransRequest transRequest, CancellationToken cancellationToken)
+        public override Task<DomainResult> Handle(TransRequest transRequest, CancellationToken cancellationToken)
         {
             SchemePublishRequestHandlerSpec.handle_CallCount++;
-            return DomainResult.Ok;
+            return Task.FromResult(DomainResult.Ok);
         }
 
         public class HandleDomainRequestSpec : SchemePublishRequestHandlerSpec

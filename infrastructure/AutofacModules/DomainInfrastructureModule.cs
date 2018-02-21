@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using MidnightLizard.Schemes.Domain.Common.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
+using MidnightLizard.Schemes.Infrastructure.EventStore;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MidnightLizard.Schemes.Infrastructure.Snapshot;
 using System.Reflection;
@@ -13,6 +14,10 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
         {
             builder.RegisterAssemblyTypes(typeof(DomainEventDispatcher<>).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IDomainEventDispatcher<>))
+                .SingleInstance();
+
+            builder.RegisterAssemblyTypes(typeof(DomainEventStore<>).GetTypeInfo().Assembly)
+                .AsClosedTypesOf(typeof(IDomainEventStore<>))
                 .SingleInstance();
 
             builder.RegisterType<MessagingQueue>()

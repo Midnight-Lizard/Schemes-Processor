@@ -20,6 +20,9 @@ namespace MidnightLizard.Schemes.Domain.Common.Messaging
         where TAggregateId : DomainEntityId
         where TMessage : DomainMessage<TAggregateId>
     {
+        public Guid Id { get => this.Payload.Id; }
+        public TAggregateId AggregateId { get => this.Payload.AggregateId; }
+
         public TMessage Payload { get; }
         public Guid CorrelationId { get; }
         public DateTime RequestTimestamp { get; }

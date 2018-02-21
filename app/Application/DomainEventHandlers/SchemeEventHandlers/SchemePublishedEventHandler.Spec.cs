@@ -28,10 +28,10 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
             this.mediator = StartupStub.Resolve<IMediator>();
         }
 
-        public override async Task<DomainResult> Handle(TransEvent request, CancellationToken cancellationToken)
+        public override Task<DomainResult> Handle(TransEvent request, CancellationToken cancellationToken)
         {
             SchemePublishedEventHandlerSpec.handle_CallCount++;
-            return DomainResult.Ok;
+            return Task.FromResult(DomainResult.Ok);
         }
 
         [It(nameof(MediatR))]

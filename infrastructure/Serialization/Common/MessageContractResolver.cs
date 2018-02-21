@@ -3,6 +3,7 @@ using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -30,32 +31,24 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             var properties = base.CreateProperties(type, memberSerialization);
             if (properties != null)
             {
-                return properties.OrderBy(p => GetTypeLevel(p.DeclaringType)).ToList();
+                return properties.OrderBy(p => typeLevels.GetOrAdd(p.DeclaringType, GetTypeLevel)).ToList();
             }
             return properties;
         }
 
-        private int GetTypeLevel(Type type)
+        private static int GetTypeLevel(Type type)
         {
-            if (typeLevels.ContainsKey(type))
+            var level = 0;
+            var baseType = type.BaseType;
+            while (baseType != null && baseType.Namespace != null &&
+                baseType.Namespace.StartsWith(nameof(MidnightLizard)))
             {
-                return typeLevels[type];
+                baseType = baseType.BaseType;
+                level++;
             }
-            else
-            {
-                var level = 0;
-                var baseType = type.BaseType;
-                while (baseType != null && baseType.Namespace != null &&
-                    baseType.Namespace.StartsWith(nameof(MidnightLizard)))
-                {
-                    baseType = baseType.BaseType;
-                    level++;
-                }
-                typeLevels.Add(type, level);
-                return level;
-            }
+            return level;
         }
 
-        private static readonly Dictionary<Type, int> typeLevels = new Dictionary<Type, int>();
+        private static readonly ConcurrentDictionary<Type, int> typeLevels = new ConcurrentDictionary<Type, int>();
     }
 }

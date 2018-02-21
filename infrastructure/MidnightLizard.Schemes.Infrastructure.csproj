@@ -12,7 +12,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
-    <PackageReference Include="NEST" Version="5.6.0" />
+    <PackageReference Include="NEST" Version="6.0.1" />
   </ItemGroup>
 
   <Choose>

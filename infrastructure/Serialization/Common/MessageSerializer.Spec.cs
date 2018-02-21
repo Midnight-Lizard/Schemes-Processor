@@ -10,12 +10,12 @@ using Autofac;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using System.Reflection;
 
 using Event = MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent;
 using TransEvent = MidnightLizard.Schemes.Domain.Common.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
-using Newtonsoft.Json;
-using System.Reflection;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
