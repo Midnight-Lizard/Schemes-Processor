@@ -11,7 +11,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
-        public override Version Version() => new Version(1, 2);
+        public override Version LatestVersion() => new Version(1, 2);
         public PublisherId PublisherId { get; private set; }
         public ColorScheme ColorScheme { get; private set; }
 

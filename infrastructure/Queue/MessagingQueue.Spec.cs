@@ -36,7 +36,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             Substitute.For<IMediator>(),
             Substitute.For<IMessageSerializer>())
         {
-            this.correctMessageJson = new MessageSerializer(null).Serialize(this.correctTransEvent);
+            this.correctMessageJson = new MessageSerializer(null).SerializeMessage(this.correctTransEvent);
             this.correctKafkaMessage = this.CreateKafkaMessage(this.correctMessageJson, ErrorCode.NoError);
 
             this.messageSerializer.Deserialize(this.correctKafkaMessage.Value, this.correctKafkaMessage.Timestamp.UtcDateTime)

@@ -51,7 +51,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                 this.testTransEvent.Payload.AggregateId.ToString(),
                 Arg.Any<string>())
                 .Returns(new Message<string, string>("", 0, 0, "", "", new Timestamp(), new Error(ErrorCode.NoError)));
-            this.messageSerializer.Serialize(this.testTransEvent).Returns(this.testMessageJson);
+            this.messageSerializer.SerializeMessage(this.testTransEvent).Returns(this.testMessageJson);
         }
 
         //private readonly IDomainEventDispatcher<PublicSchemeId> eventDispatcher;
@@ -78,7 +78,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             {
                 var result = await this.DispatchEvent(testTransEvent);
 
-                this.messageSerializer.Received(1).Serialize(testTransEvent);
+                this.messageSerializer.Received(1).SerializeMessage(testTransEvent);
             }
 
             [It(nameof(DispatchEvent))]
@@ -105,7 +105,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             [It(nameof(DispatchEvent))]
             public async Task Should_return_Error_when_Exception_thrown()
             {
-                this.messageSerializer.Serialize(this.testTransEvent)
+                this.messageSerializer.SerializeMessage(this.testTransEvent)
                     .Returns(x => throw new Exception());
 
                 var result = await this.DispatchEvent(testTransEvent);

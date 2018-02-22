@@ -31,9 +31,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             elasticClient = new ElasticClient(
                 new ConnectionSettings(node)
                     .DefaultMappingFor<PublicScheme>(map => map
+                    //.InferMappingFor<PublicScheme>(map => map
                         .IdProperty(to => to.Id)
                         .IndexName("scheme-snapshot")
-                        .TypeName("scheme"))
+                        .TypeName("snapshot"))
             );
         }
 
@@ -43,7 +44,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 .GetAsync<PublicScheme>(new DocumentPath<PublicScheme>(id.Value));
 
             if (result.IsValid &&
-                result.Fields.Value<Version>(new Field(nameof(Version))) == result.Source.Version())
+                result.Fields.Value<Version>(new Field(nameof(Version))) == result.Source.LatestVersion())
             {
                 var requestTimestampField = new Field(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp));
 
@@ -59,10 +60,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 new DocumentPath<PublicScheme>(schemeSnapshot.Aggregate.Id.Value),
                 u => u.Doc(new
                 {
-                    schemeSnapshot.Aggregate.PublisherId,
-                    schemeSnapshot.Aggregate.ColorScheme,
+                    Version = schemeSnapshot.Aggregate.LatestVersion(),
                     schemeSnapshot.RequestTimestamp,
-                    Version = schemeSnapshot.Aggregate.Version()
+                    schemeSnapshot.Aggregate.PublisherId,
+                    schemeSnapshot.Aggregate.ColorScheme
                 }).DocAsUpsert());
         }
     }

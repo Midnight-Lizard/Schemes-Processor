@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Domain.Common
         public virtual int Generation { get; protected set; }
         private bool isNew;
         public virtual bool IsNew() => isNew;
-        public abstract Version Version();
+        public abstract Version LatestVersion();
 
         public abstract void Reduce(DomainEvent<TAggregateId> @event);
 

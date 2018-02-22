@@ -39,10 +39,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
         public class SerializeSpec : MessageSerializerSpec
         {
-            [It(nameof(MessageSerializer.Serialize))]
+            [It(nameof(MessageSerializer.SerializeMessage))]
             public void Should_correctly_Serialize_event()
             {
-                var json = this.messageSerializer.Serialize(this.testTransEvent);
+                var json = this.messageSerializer.SerializeMessage(this.testTransEvent);
                 var obj = JObject.Parse(json);
 
                 obj[nameof(TransEvent.CorrelationId)].ToObject<Guid>().Should().Be(this.testTransEvent.CorrelationId);

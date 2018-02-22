@@ -40,7 +40,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         {
             try
             {
-                var message = this.messageSerializer.Serialize(transportEvent);
+                var message = this.messageSerializer.SerializeMessage(transportEvent);
                 var result = await producer.ProduceAsync(this.GetEventTopicName(),
                     transportEvent.Payload.AggregateId.ToString(), message);
                 if (result.Error.HasError)

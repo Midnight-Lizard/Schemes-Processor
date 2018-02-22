@@ -15,7 +15,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
     public interface IMessageSerializer
     {
-        string Serialize(ITransportMessage<BaseMessage> transportMessage);
+        string SerializeMessage(ITransportMessage<BaseMessage> transportMessage);
+        string SerializeValue(object value);
         MessageResult Deserialize(string message, DateTime requestTimestamp = default);
     }
 
@@ -68,7 +69,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             }
         }
 
-        public virtual string Serialize(ITransportMessage<BaseMessage> transportMessage)
+        public virtual string SerializeMessage(ITransportMessage<BaseMessage> transportMessage)
         {
             return JsonConvert.SerializeObject(new
             {
@@ -78,6 +79,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 transportMessage.RequestTimestamp,
                 transportMessage.Payload
             }, this.serializerSettings);
+        }
+
+        public string SerializeValue(object value)
+        {
+            return JsonConvert.SerializeObject(value, this.serializerSettings);
         }
     }
 }

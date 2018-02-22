@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,6 +18,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             this.messageSerializer = messageSerializer;
         }
+
+        //public IPropertyMapping CreatePropertyMapping(MemberInfo memberInfo)
+        //{
+        //    return new PropertyMapping { Name = memberInfo.Name };
+        //}
 
         public object Deserialize(Type type, Stream stream)
         {
@@ -53,15 +59,27 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             SerializeAsync<T>(data, stream, formatting).GetAwaiter().GetResult();
         }
 
+        public void Serialize(object data, Stream writableStream, SerializationFormatting formatting = SerializationFormatting.Indented)
+        {
+            SerializeAsync<ITransportMessage<BaseMessage>>(data as ITransportMessage<BaseMessage>, writableStream, formatting).GetAwaiter().GetResult();
+        }
+
         public async Task SerializeAsync<T>(T data, Stream stream, SerializationFormatting formatting = SerializationFormatting.Indented, CancellationToken cancellationToken = default)
         {
-            if (data is ITransportMessage<BaseMessage> message)
+            string json = "";
+            switch (data)
             {
-                var json = this.messageSerializer.Serialize(message);
-                using (var writer = new StreamWriter(stream))
-                {
-                    await writer.WriteAsync(json);
-                }
+                case ITransportMessage<BaseMessage> message:
+                    json = this.messageSerializer.SerializeMessage(message);
+                    break;
+
+                case var obj:
+                    json = this.messageSerializer.SerializeValue(obj);
+                    break;
+            }
+            using (var writer = new StreamWriter(stream))
+            {
+                await writer.WriteAsync(json);
             }
         }
     }
