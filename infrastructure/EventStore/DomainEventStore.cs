@@ -27,34 +27,41 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             this.config = config;
             this.messageSerializer = messageSerializer;
             this.elasticClient = CreateElasticClient();
-            CheckIndices();
+            CheckIndexExists();
         }
 
-        protected virtual void CheckIndices()
+        protected virtual void CheckIndexExists()
         {
             if ((this.elasticClient.IndexExists(this.IndexName)).Exists == false)
             {
-                this.elasticClient
-                    .CreateIndex(this.IndexName, ix => ix
-                        .Mappings(map => map
-                            .Map<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(tm => tm
-                                .RoutingField(x => x.Required())
-                                .Properties(prop => prop
-                                    .Keyword(x => x.Name(nameof(Type)))
-                                    .Keyword(x => x.Name(nameof(Version)))
-                                    .Keyword(x => x.Name(n => n.CorrelationId))
-                                    .Date(x => x.Name(n => n.RequestTimestamp))
-                                    .Object<DomainEvent<TAggregateId>>(e => e
-                                        .Name(x => x.Payload)
-                                        .AutoMap()
-                                        .Properties(eProp => eProp
-                                            .Keyword(x => x.Name(n => n.Id))
-                                            .Keyword(x => x.Name(n => n.AggregateId))
-                                            .Number(x => x.Name(n => n.Generation).Type(NumberType.Integer)))))))
-                        .Settings(set => set
-                            .NumberOfShards(this.config.ELASTIC_SEARCH_SHARDS)
-                            .NumberOfReplicas(this.config.ELASTIC_SEARCH_REPLICAS)));
+                CreateIndex();
             }
+        }
+
+        protected virtual void CreateIndex()
+        {
+            this.elasticClient
+                .CreateIndex(this.IndexName, ix => ix
+                    .Mappings(map => map
+                        .Map<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(tm => tm
+                            .RoutingField(x => x.Required())
+                            .Properties(prop => prop
+                                .Keyword(x => x.Name(nameof(Type)))
+                                .Keyword(x => x.Name(nameof(Version)))
+                                .Keyword(x => x.Name(n => n.CorrelationId))
+                                .Date(x => x.Name(n => n.RequestTimestamp))
+                                .Object<DomainEvent<TAggregateId>>(e => e
+                                    .Name(x => x.Payload)
+                                    .AutoMap()
+                                    .Properties(eProp => eProp
+                                        .Keyword(x => x.Name(n => n.Id))
+                                        .Keyword(x => x.Name(n => n.AggregateId))
+                                        .Number(x => x
+                                            .Name(n => n.Generation)
+                                            .Type(NumberType.Integer)))))))
+                    .Settings(set => set
+                        .NumberOfShards(this.config.ELASTIC_SEARCH_SHARDS)
+                        .NumberOfReplicas(this.config.ELASTIC_SEARCH_REPLICAS)));
         }
 
         protected virtual ElasticClient CreateElasticClient()
@@ -68,6 +75,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         protected virtual ConnectionSettings InitMapping(ConnectionSettings connectionSettings)
         {
             return connectionSettings
+                .DefaultFieldNameInferrer(i => i)
                 .DefaultMappingFor<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(map => map
                     .IdProperty(to => to.Id)
                     .RoutingProperty(x => x.AggregateId)
