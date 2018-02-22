@@ -19,14 +19,19 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             this.messageSerializer = messageSerializer;
         }
 
-        //public IPropertyMapping CreatePropertyMapping(MemberInfo memberInfo)
-        //{
-        //    return new PropertyMapping { Name = memberInfo.Name };
-        //}
-
         public object Deserialize(Type type, Stream stream)
         {
-            return DeserializeAsync(type, stream).GetAwaiter().GetResult();
+            if (typeof(ITransportMessage<BaseMessage>).IsAssignableFrom(type))
+            {
+                using (var reader = new StreamReader(stream))
+                {
+                    return messageSerializer.Deserialize(reader.ReadToEnd(), DateTime.UtcNow);
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public T Deserialize<T>(Stream stream)
@@ -56,15 +61,23 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
         public void Serialize<T>(T data, Stream stream, SerializationFormatting formatting = SerializationFormatting.Indented)
         {
-            SerializeAsync<T>(data, stream, formatting).GetAwaiter().GetResult();
-        }
-
-        public void Serialize(object data, Stream writableStream, SerializationFormatting formatting = SerializationFormatting.Indented)
-        {
-            SerializeAsync<ITransportMessage<BaseMessage>>(data as ITransportMessage<BaseMessage>, writableStream, formatting).GetAwaiter().GetResult();
+            string json = SerializeToString(data);
+            using (var writer = new StreamWriter(stream))
+            {
+                writer.Write(json);
+            }
         }
 
         public async Task SerializeAsync<T>(T data, Stream stream, SerializationFormatting formatting = SerializationFormatting.Indented, CancellationToken cancellationToken = default)
+        {
+            string json = SerializeToString(data);
+            using (var writer = new StreamWriter(stream))
+            {
+                await writer.WriteAsync(json);
+            }
+        }
+
+        private string SerializeToString<T>(T data)
         {
             string json = "";
             switch (data)
@@ -77,10 +90,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     json = this.messageSerializer.SerializeValue(obj);
                     break;
             }
-            using (var writer = new StreamWriter(stream))
-            {
-                await writer.WriteAsync(json);
-            }
+
+            return json;
         }
     }
 }
