@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Configurations>Debug;Release;Test</Configurations>
+    <StartupObject>MidnightLizard.Schemes.Domain.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
