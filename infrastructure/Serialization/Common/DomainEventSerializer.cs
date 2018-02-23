@@ -87,7 +87,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     break;
 
                 case var obj:
-                    json = this.messageSerializer.SerializeValue(obj);
+                    json = this.messageSerializer.SerializeObject(obj);
                     break;
             }
 

@@ -16,7 +16,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
     public interface IMessageSerializer
     {
         string SerializeMessage(ITransportMessage<BaseMessage> transportMessage);
-        string SerializeValue(object value);
+        string SerializeObject(object obj);
         MessageResult Deserialize(string message, DateTime requestTimestamp = default);
     }
 
@@ -81,9 +81,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             }, this.serializerSettings);
         }
 
-        public string SerializeValue(object value)
+        public string SerializeObject(object obj)
         {
-            return JsonConvert.SerializeObject(value, this.serializerSettings);
+            return JsonConvert.SerializeObject(obj, this.serializerSettings);
         }
     }
 }
