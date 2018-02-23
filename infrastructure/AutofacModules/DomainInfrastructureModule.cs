@@ -24,7 +24,7 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
                 .As<IMessagingQueue>()
                 .SingleInstance();
 
-            builder.RegisterType<SchemesSnapshot>()
+            builder.RegisterType<SchemesSnapshotAccessor>()
                 .As<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>>()
                 .SingleInstance();
 

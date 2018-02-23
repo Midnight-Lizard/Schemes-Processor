@@ -9,29 +9,20 @@ using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
-    public class SchemesSnapshot : IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>
+    public class SchemesSnapshotAccessor : IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>
     {
         private readonly ElasticSearchConfig config;
         private readonly ElasticClient elasticClient;
 
-        public SchemesSnapshot(ElasticSearchConfig config)
+        public SchemesSnapshotAccessor(ElasticSearchConfig config)
         {
             this.config = config ?? throw new ArgumentNullException(nameof(config));
 
             var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
 
-            //elasticClient = new ElasticClient(
-            //    new ConnectionSettings(node)
-            //        .InferMappingFor<PublicScheme>(map => map
-            //            .IdProperty(to => to.Id)
-            //            .IndexName("scheme-snapshot")
-            //            .TypeName("scheme"))
-            //);
-
             elasticClient = new ElasticClient(
                 new ConnectionSettings(node)
                     .DefaultMappingFor<PublicScheme>(map => map
-                    //.InferMappingFor<PublicScheme>(map => map
                         .IdProperty(to => to.Id)
                         .IndexName("scheme-snapshot")
                         .TypeName("snapshot"))

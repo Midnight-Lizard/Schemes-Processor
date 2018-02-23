@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Autofac;
+﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
-using MidnightLizard.Schemes.Infrastructure.Queue;
-using MidnightLizard.Schemes.Infrastructure.Snapshot;
 using MidnightLizard.Schemes.Processor.AutofacModules;
 using MidnightLizard.Schemes.Processor.Configuration;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace MidnightLizard.Schemes.Processor
 {
@@ -70,10 +60,12 @@ namespace MidnightLizard.Schemes.Processor
                         nameof(KafkaConfig.EVENT_TOPICS)),
 
                     REQUEST_TOPICS = Configuration.GetValue<string[]>(
-                        nameof(KafkaConfig.REQUEST_TOPICS))
+                        nameof(KafkaConfig.REQUEST_TOPICS)),
+
+                    SCHEMES_EVENTS_TOPIC = Configuration.GetValue<string>(
+                        nameof(KafkaConfig.SCHEMES_EVENTS_TOPIC))
                 };
             });
-            services.AddTransient<IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>, SchemesSnapshot>();
 
             services.AddMemoryCache();
             services.AddMvc();
@@ -82,9 +74,9 @@ namespace MidnightLizard.Schemes.Processor
             var container = new ContainerBuilder();
             container.Populate(services);
 
-            container.RegisterModule(new MediatorModule());
-            container.RegisterModule(new DomainInfrastructureModule());
-            container.RegisterModule(new MessageSerializationModule());
+            container.RegisterModule<MediatorModule>();
+            container.RegisterModule<DomainInfrastructureModule>();
+            container.RegisterModule<MessageSerializationModule>();
 
             return new AutofacServiceProvider(container.Build());
         }
