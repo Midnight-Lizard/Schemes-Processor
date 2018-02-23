@@ -13,7 +13,7 @@ namespace MidnightLizard.Schemes.Testing
     /// </summary>
     public class ItAttribute : FactAttribute
     {
-        public ItAttribute(string it, [CallerMemberName]string should = "") : base()
+        public ItAttribute(string it, [CallerMemberName]string should = "should work") : base()
         {
             //DisplayName = Regex.Replace(Regex.Replace(Regex.Replace(
             //    displayName, @"((?:[A-Z])+[^A-Z]*)", "$1 "), "_", " "), "  ", " ")
