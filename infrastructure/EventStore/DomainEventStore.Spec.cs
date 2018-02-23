@@ -50,7 +50,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             var container = builder.Build();
             this.realMessageSerializer = container.Resolve<IMessageSerializer>();
 
-            return new ElasticClient(InitMapping(new ConnectionSettings(
+            return new ElasticClient(InitDefaultMapping(new ConnectionSettings(
                 new SingleNodeConnectionPool(new Uri("http://test.com")), new InMemoryConnection(),
                 (builtin, settings) => new DomainEventSerializer(this.realMessageSerializer))
                     .EnableDebugMode(OnRequestCompleted)
@@ -59,7 +59,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
 
         public class CreateIndexSpec : DomainEventStoreSpec
         {
-            private readonly JObject createIndexCommandSnapshot = JObject.Parse("{\r\n  \"settings\": {\r\n    \"index.number_of_replicas\": 1,\r\n    \"index.number_of_shards\": 2\r\n  },\r\n  \"mappings\": {\r\n    \"event\": {\r\n      \"_routing\": {\r\n        \"required\": true\r\n      },\r\n      \"properties\": {\r\n        \"Type\": {\r\n          \"type\": \"keyword\"\r\n        },\r\n        \"Version\": {\r\n          \"type\": \"keyword\"\r\n        },\r\n        \"CorrelationId\": {\r\n          \"type\": \"keyword\"\r\n        },\r\n        \"RequestTimestamp\": {\r\n          \"type\": \"date\"\r\n        },\r\n        \"Payload\": {\r\n          \"type\": \"object\",\r\n          \"properties\": {\r\n            \"Generation\": {\r\n              \"type\": \"integer\"\r\n            },\r\n            \"AggregateId\": {\r\n              \"type\": \"keyword\"\r\n            },\r\n            \"Id\": {\r\n              \"type\": \"keyword\"\r\n            }\r\n          }\r\n        }\r\n      }\r\n    }\r\n  }\r\n}");
+            private readonly JObject createIndexCommandSnapshot = JObject.Parse("{\"settings\":{\"index.number_of_replicas\":1,\"index.number_of_shards\":2},\"mappings\":{\"event\":{\"_routing\":{\"required\":true},\"properties\":{\"Type\":{\"type\":\"keyword\"},\"Version\":{\"type\":\"keyword\"},\"CorrelationId\":{\"type\":\"keyword\"},\"RequestTimestamp\":{\"type\":\"date\"},\"Payload\":{\"type\":\"object\",\"properties\":{\"Generation\":{\"type\":\"integer\"},\"AggregateId\":{\"type\":\"keyword\"},\"Id\":{\"type\":\"keyword\"}}}}}}}");
             private JObject createIndexCommand;
 
             protected override void OnRequestCompleted(IApiCallDetails x)
@@ -118,12 +118,12 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             protected override void OnRequestCompleted(IApiCallDetails x) { }
 
-            [It(nameof(InitMapping))]
+            [It(nameof(InitDefaultMapping))]
             public void Should_set_up_DefaultMappingFor_current_Event_type()
             {
                 var cs = Substitute.For<ConnectionSettings>(new InMemoryConnection());
 
-                this.InitMapping(cs);
+                this.InitDefaultMapping(cs);
 
                 cs.ReceivedWithAnyArgs(1)
                     .DefaultMappingFor<TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>(map => map);

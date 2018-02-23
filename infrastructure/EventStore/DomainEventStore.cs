@@ -52,7 +52,6 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                                 .Date(x => x.Name(n => n.RequestTimestamp))
                                 .Object<DomainEvent<TAggregateId>>(e => e
                                     .Name(x => x.Payload)
-                                    .AutoMap()
                                     .Properties(eProp => eProp
                                         .Keyword(x => x.Name(n => n.Id))
                                         .Keyword(x => x.Name(n => n.AggregateId))
@@ -60,19 +59,19 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                                             .Name(n => n.Generation)
                                             .Type(NumberType.Integer)))))))
                     .Settings(set => set
-                        .NumberOfShards(this.config.ELASTIC_SEARCH_SHARDS)
-                        .NumberOfReplicas(this.config.ELASTIC_SEARCH_REPLICAS)));
+                        .NumberOfShards(this.config.ELASTIC_SEARCH_EVENT_STORE_SHARDS)
+                        .NumberOfReplicas(this.config.ELASTIC_SEARCH_EVENT_STORE_REPLICAS)));
         }
 
         protected virtual ElasticClient CreateElasticClient()
         {
             var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
-            return new ElasticClient(InitMapping(new ConnectionSettings(
+            return new ElasticClient(InitDefaultMapping(new ConnectionSettings(
                 new SingleNodeConnectionPool(node),
                 (builtin, settings) => new DomainEventSerializer(messageSerializer))));
         }
 
-        protected virtual ConnectionSettings InitMapping(ConnectionSettings connectionSettings)
+        protected virtual ConnectionSettings InitDefaultMapping(ConnectionSettings connectionSettings)
         {
             return connectionSettings
                 .DefaultFieldNameInferrer(i => i)

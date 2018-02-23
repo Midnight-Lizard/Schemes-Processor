@@ -25,7 +25,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    return messageSerializer.Deserialize(reader.ReadToEnd(), DateTime.UtcNow);
+                    return messageSerializer.Deserialize(reader.ReadToEnd());
                 }
             }
             else
@@ -45,7 +45,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    return messageSerializer.Deserialize(await reader.ReadToEndAsync(), DateTime.UtcNow);
+                    return messageSerializer.Deserialize(await reader.ReadToEndAsync());
                 }
             }
             else

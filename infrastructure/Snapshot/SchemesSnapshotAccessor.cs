@@ -9,43 +9,16 @@ using Nest;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
-    public class SchemesSnapshotAccessor : IAggregateSnapshotAccessor<PublicScheme, PublicSchemeId>
+    public class SchemesSnapshotAccessor : AggregateSnapshotAccessor<PublicScheme, PublicSchemeId>
     {
-        private readonly ElasticSearchConfig config;
-        private readonly ElasticClient elasticClient;
+        protected override string IndexName => config.ELASTIC_SEARCH_SNAPSHOT_SCHEMES_INDEX_NAME;
+        protected override PublicScheme CreateNewAggregate(PublicSchemeId id) => new PublicScheme(id);
 
-        public SchemesSnapshotAccessor(ElasticSearchConfig config)
+        public SchemesSnapshotAccessor(ElasticSearchConfig config) : base(config)
         {
-            this.config = config ?? throw new ArgumentNullException(nameof(config));
-
-            var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
-
-            elasticClient = new ElasticClient(
-                new ConnectionSettings(node)
-                    .DefaultMappingFor<PublicScheme>(map => map
-                        .IdProperty(to => to.Id)
-                        .IndexName("scheme-snapshot")
-                        .TypeName("snapshot"))
-            );
         }
 
-        public async Task<AggregateSnapshot<PublicScheme, PublicSchemeId>> Read(PublicSchemeId id)
-        {
-            var result = await this.elasticClient
-                .GetAsync<PublicScheme>(new DocumentPath<PublicScheme>(id.Value));
-
-            if (result.IsValid &&
-                result.Fields.Value<Version>(new Field(nameof(Version))) == result.Source.LatestVersion())
-            {
-                var requestTimestampField = new Field(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp));
-
-                return new AggregateSnapshot<PublicScheme, PublicSchemeId>(result.Source,
-                    result.Fields.Value<DateTime>(requestTimestampField));
-            }
-            return new AggregateSnapshot<PublicScheme, PublicSchemeId>(new PublicScheme(id), DateTime.MinValue);
-        }
-
-        public async Task Save(AggregateSnapshot<PublicScheme, PublicSchemeId> schemeSnapshot)
+        public override async Task Save(AggregateSnapshot<PublicScheme, PublicSchemeId> schemeSnapshot)
         {
             var result = await this.elasticClient.UpdateAsync<PublicScheme, object>(
                 new DocumentPath<PublicScheme>(schemeSnapshot.Aggregate.Id.Value),
@@ -56,6 +29,21 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                     schemeSnapshot.Aggregate.PublisherId,
                     schemeSnapshot.Aggregate.ColorScheme
                 }).DocAsUpsert());
+        }
+
+        protected override IPromise<IMappings> ApplyAggregateMappingsOnIndex(MappingsDescriptor md)
+        {
+            return md.Map<PublicScheme>(tm => tm
+                .Properties(prop => prop
+                    .Keyword(x => x.Name(nameof(Version)))
+                    .Date(x => x.Name(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp)))
+                    .Keyword(x => x.Name(n => n.PublisherId))
+                    .Object<ColorScheme>(cs => cs
+                        .Name(x => x.ColorScheme)
+                        .AutoMap()
+                        .Properties(eProp => eProp
+                            .Keyword(x => x.Name(n => n.colorSchemeId))
+                            .Keyword(x => x.Name(n => n.colorSchemeName))))));
         }
     }
 }
