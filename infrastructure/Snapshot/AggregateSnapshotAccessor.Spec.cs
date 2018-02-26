@@ -4,7 +4,7 @@ using MidnightLizard.Schemes.Domain.Common;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
-using MidnightLizard.Schemes.Testing;
+using MidnightLizard.Testing.Utilities;
 using Nest;
 using NSubstitute;
 using System;

@@ -11,7 +11,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
-using MidnightLizard.Schemes.Testing;
+using MidnightLizard.Testing.Utilities;
 using NSubstitute;
 using System;
 using System.Collections.Generic;

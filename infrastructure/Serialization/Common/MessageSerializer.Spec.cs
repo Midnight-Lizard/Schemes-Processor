@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Testing;
+﻿using MidnightLizard.Testing.Utilities;
 using System;
 using System.Collections.Generic;
 using FluentAssertions;

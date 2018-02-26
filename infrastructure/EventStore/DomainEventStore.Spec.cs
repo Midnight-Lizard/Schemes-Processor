@@ -8,7 +8,7 @@ using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
-using MidnightLizard.Schemes.Testing;
+using MidnightLizard.Testing.Utilities;
 using Nest;
 using Newtonsoft.Json.Linq;
 using NSubstitute;

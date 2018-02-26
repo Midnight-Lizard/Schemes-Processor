@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FluentAssertions;
-using MidnightLizard.Schemes.Testing;
+using MidnightLizard.Testing.Utilities;
 using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.Common
