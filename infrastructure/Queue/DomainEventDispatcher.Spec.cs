@@ -2,10 +2,10 @@
 using Confluent.Kafka;
 using Confluent.Kafka.Serialization;
 using FluentAssertions;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using TransEvent = MidnightLizard.Schemes.Domain.Common.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.Common.Messaging.DomainEvent<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
+using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Commons.Domain.Messaging.DomainEvent<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 
 namespace MidnightLizard.Schemes.Infrastructure.Queue
 {

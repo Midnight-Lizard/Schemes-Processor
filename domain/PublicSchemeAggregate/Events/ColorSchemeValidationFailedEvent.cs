@@ -1,5 +1,5 @@
 ﻿using FluentValidation.Results;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
+using MidnightLizard.Commons.Domain.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
+using MidnightLizard.Commons.Domain.Interfaces;
 using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Processor.Controllers

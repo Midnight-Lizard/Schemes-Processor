@@ -2,8 +2,8 @@
 using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
@@ -14,15 +14,15 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-using ITransRequest = MidnightLizard.Schemes.Domain.Common.Messaging.ITransportMessage<MidnightLizard.Schemes.Domain.Common.Messaging.BaseMessage>;
-using TransRequest = MidnightLizard.Schemes.Domain.Common.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests.SchemePublishRequest, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
+using ITransRequest = MidnightLizard.Commons.Domain.Messaging.ITransportMessage<MidnightLizard.Commons.Domain.Messaging.BaseMessage>;
+using TransRequest = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests.PublishSchemeRequest, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
     public class SchemePublishRequestHandlerSpec : SchemePublishRequestHandler
     {
         private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
-        private readonly SchemePublishRequest testRequest = Substitute.For<SchemePublishRequest>();
+        private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
         private static int handle_CallCount;
 
         protected SchemePublishRequestHandlerSpec() : base(
@@ -61,7 +61,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         public class MediatorSpec : SchemePublishRequestHandlerSpec
         {
             private readonly IMediator mediator;
-            private readonly ITransRequest testTransRequest = new TransRequest(new SchemePublishRequest(), Guid.NewGuid(), DateTime.UtcNow);
+            private readonly ITransRequest testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), DateTime.UtcNow);
 
             public MediatorSpec()
             {

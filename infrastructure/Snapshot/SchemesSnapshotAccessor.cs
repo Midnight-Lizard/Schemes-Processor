@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using Nest;

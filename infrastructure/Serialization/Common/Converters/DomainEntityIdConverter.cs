@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using MidnightLizard.Commons.Domain.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

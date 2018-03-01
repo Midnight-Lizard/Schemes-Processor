@@ -1,6 +1,6 @@
 ﻿using FluentValidation.Results;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;

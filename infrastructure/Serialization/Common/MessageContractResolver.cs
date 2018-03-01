@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Domain.Common.Interfaces;
+﻿using MidnightLizard.Commons.Domain.Interfaces;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using System;

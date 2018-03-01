@@ -1,6 +1,6 @@
-﻿using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Domain.Common.Results;
+﻿using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using System;

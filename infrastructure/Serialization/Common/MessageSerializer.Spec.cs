@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using FluentAssertions;
 using System.Text;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
+using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using Autofac;
@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using System.Reflection;
 
 using Event = MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent;
-using TransEvent = MidnightLizard.Schemes.Domain.Common.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
+using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common

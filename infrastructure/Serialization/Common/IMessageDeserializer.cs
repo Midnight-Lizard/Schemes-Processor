@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Results;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;

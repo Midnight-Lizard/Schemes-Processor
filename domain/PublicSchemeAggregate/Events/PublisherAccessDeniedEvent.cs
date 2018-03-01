@@ -1,4 +1,5 @@
-﻿using MidnightLizard.Schemes.Domain.PublisherAggregate;
+﻿using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events
 {
-    public class PublisherAccessDeniedEvent : Common.Messaging.AccessDeniedEvent<PublicSchemeId>
+    public class PublisherAccessDeniedEvent : AccessDeniedEvent<PublicSchemeId>
     {
         public PublisherId PublisherId { get; protected set; }
 

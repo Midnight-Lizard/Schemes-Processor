@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
+﻿using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using System;
 using System.Collections.Generic;

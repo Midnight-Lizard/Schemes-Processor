@@ -2,10 +2,10 @@
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Interfaces;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
@@ -38,7 +38,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         private readonly DateTime testRequestTimestamp = DateTime.Now;
         private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
         private readonly AggregateSnapshot<PublicScheme, PublicSchemeId> testSchemeSnapshot;
-        private readonly SchemePublishRequest testRequest = Substitute.For<SchemePublishRequest>();
+        private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
         private readonly ICacheEntry cacheEntry = Substitute.For<ICacheEntry>();
         private readonly TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId> testTransRequest;
 

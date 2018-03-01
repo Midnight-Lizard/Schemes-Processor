@@ -1,6 +1,6 @@
 ﻿using Elasticsearch.Net;
 using FluentAssertions;
-using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;

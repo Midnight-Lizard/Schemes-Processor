@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using MidnightLizard.Schemes.Domain.Common;
+using MidnightLizard.Commons.Domain.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;

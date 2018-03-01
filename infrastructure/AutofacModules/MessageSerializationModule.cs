@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using MidnightLizard.Schemes.Infrastructure.Queue;
 using MediatR;
-using MidnightLizard.Schemes.Domain.Common.Results;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
+using MidnightLizard.Commons.Domain.Results;
+using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 
 namespace MidnightLizard.Schemes.Infrastructure.AutofacModules

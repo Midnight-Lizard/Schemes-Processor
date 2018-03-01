@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <LangVersion>Latest</LangVersion>
     <Configurations>Debug;Release;Test</Configurations>
-    <StartupObject>MidnightLizard.Schemes.Infrastructure.Program</StartupObject>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +13,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.0" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.0.0" />
     <PackageReference Include="NEST" Version="6.0.1" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using Elasticsearch.Net;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
+using MidnightLizard.Commons.Domain.Messaging;
 using System;
 using System.Collections.Generic;
 using System.IO;

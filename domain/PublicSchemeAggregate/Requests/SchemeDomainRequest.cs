@@ -1,5 +1,5 @@
-﻿using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
+﻿using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Text;

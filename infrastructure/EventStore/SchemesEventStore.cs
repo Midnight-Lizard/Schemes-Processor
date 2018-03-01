@@ -1,4 +1,4 @@
-﻿using MidnightLizard.Schemes.Domain.Common.Messaging;
+﻿using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;

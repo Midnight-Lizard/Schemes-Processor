@@ -1,8 +1,8 @@
 ﻿using Autofac.Features.Indexed;
 using MediatR;
-using MidnightLizard.Schemes.Domain.Common;
-using MidnightLizard.Schemes.Domain.Common.Messaging;
-using MidnightLizard.Schemes.Domain.Common.Results;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
