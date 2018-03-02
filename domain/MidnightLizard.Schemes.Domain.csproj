@@ -13,8 +13,9 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="FluentValidation" Version="7.5.0" />
     <PackageReference Include="MediatR" Version="4.0.1" />
-    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.0.1" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="SemanticVersioning" Version="1.0.0" />
   </ItemGroup>
 
   <Choose>

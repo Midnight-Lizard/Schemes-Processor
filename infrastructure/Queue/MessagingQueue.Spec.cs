@@ -12,6 +12,7 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using MidnightLizard.Testing.Utilities;
 using NSubstitute;
 
@@ -36,7 +37,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             Substitute.For<IMediator>(),
             Substitute.For<IMessageSerializer>())
         {
-            this.correctMessageJson = new MessageSerializer(DomainVersion.Latest, null).SerializeMessage(this.correctTransEvent);
+            this.correctMessageJson = new MessageSerializer(Latest.Version, null).SerializeMessage(this.correctTransEvent);
             this.correctKafkaMessage = this.CreateKafkaMessage(this.correctMessageJson, ErrorCode.NoError);
 
             this.messageSerializer.Deserialize(this.correctKafkaMessage.Value, this.correctKafkaMessage.Timestamp.UtcDateTime)

@@ -1,9 +1,11 @@
 ﻿using Elasticsearch.Net;
 using FluentAssertions;
 using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Versioning;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using MidnightLizard.Testing.Utilities;
 using Nest;
 using NSubstitute;
@@ -24,7 +26,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         protected override string IndexName => "test";
 
         public AggregateSnapshotAccessorSpec() : base(
-            Substitute.For<DomainVersion>(),
+            Substitute.For<DomainVersion>(Latest.Version.ToString()),
             Substitute.For<ElasticSearchConfig>())
         {
         }

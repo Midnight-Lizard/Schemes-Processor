@@ -6,6 +6,7 @@ using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using Nest;
+using MidnightLizard.Commons.Domain.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {

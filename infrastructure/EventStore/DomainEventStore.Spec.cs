@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Commons.Domain.Messaging.DomainEvent<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using ITransEvent = MidnightLizard.Commons.Domain.Messaging.ITransportMessage<MidnightLizard.Commons.Domain.Messaging.BaseMessage>;
 using JsonDiffPatchDotNet;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.EventStore
 {
@@ -47,7 +48,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(DomainVersion.Latest);
+            builder.RegisterInstance(Latest.Version);
             var container = builder.Build();
             this.realMessageSerializer = container.Resolve<IMessageSerializer>();
 

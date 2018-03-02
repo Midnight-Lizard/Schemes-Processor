@@ -16,6 +16,7 @@ using System.Reflection;
 using Event = MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent;
 using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -33,7 +34,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(DomainVersion.Latest);
+            builder.RegisterInstance(Latest.Version);
             var container = builder.Build();
             messageSerializer = container.Resolve<IMessageSerializer>();
         }
@@ -48,7 +49,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
                 obj[nameof(TransEvent.CorrelationId)].ToObject<Guid>().Should().Be(this.testTransEvent.CorrelationId);
                 obj[nameof(Type)].Value<string>().Should().Be(nameof(SchemePublishedEvent));
-                obj[nameof(Version)].Value<string>().Should().Be(DomainVersion.Latest.ToString());
+                obj[nameof(Version)].Value<string>().Should().Be(Latest.Version.ToString());
                 obj[nameof(TransEvent.RequestTimestamp)].Value<DateTime>().Should().Be(this.testTransEvent.RequestTimestamp);
 
                 var payload = obj[nameof(TransEvent.Payload)];

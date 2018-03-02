@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using MidnightLizard.Schemes.Infrastructure;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace MidnightLizard.Schemes.Processor.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterInstance(DomainVersion.Latest);
+            builder.RegisterInstance(Latest.Version);
         }
     }
 }

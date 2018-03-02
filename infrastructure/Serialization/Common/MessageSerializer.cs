@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Features.Metadata;
 using SemVer;
+using MidnightLizard.Commons.Domain.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
