@@ -33,6 +33,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
+            builder.RegisterInstance(DomainVersion.Latest);
             var container = builder.Build();
             messageSerializer = container.Resolve<IMessageSerializer>();
         }
@@ -47,7 +48,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
                 obj[nameof(TransEvent.CorrelationId)].ToObject<Guid>().Should().Be(this.testTransEvent.CorrelationId);
                 obj[nameof(Type)].Value<string>().Should().Be(nameof(SchemePublishedEvent));
-                obj[nameof(Version)].Value<string>().Should().Be(this.testTransEvent.Payload.LatestVersion().ToString());
+                obj[nameof(Version)].Value<string>().Should().Be(DomainVersion.Latest.ToString());
                 obj[nameof(TransEvent.RequestTimestamp)].Value<DateTime>().Should().Be(this.testTransEvent.RequestTimestamp);
 
                 var payload = obj[nameof(TransEvent.Payload)];
@@ -104,13 +105,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             {
                 var te = this.testTransEvent;
                 te.Payload.Generation = 3;
-                var version = typeof(Deserializers.SchemePublishedEventDeserializer_v1_0)
-                    .GetCustomAttribute<MessageAttribute>().Version;
                 var json = $@"
                 {{
                     ""CorrelationId"": ""{te.CorrelationId}"",
                     ""Type"": ""{nameof(SchemePublishedEvent)}"",
-                    ""Version"": ""{version}"",
+                    ""Version"": ""1.0.0"",
                     ""RequestTimestamp"": {JsonConvert.SerializeObject(te.RequestTimestamp)},
                     ""Payload"": {{
                         ""Id"": ""{te.Payload.Id}"",

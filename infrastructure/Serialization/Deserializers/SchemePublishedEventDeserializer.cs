@@ -54,13 +54,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [Message(Version = "1.3")]
-    public class SchemePublishedEventDeserializer_Latest : AbstractMessageDeserializer<SchemePublishedEvent>
+    [Message(Version = ">=1.3")]
+    public class SchemePublishedEventDeserializer_Latest : AbstractMessageDeserializer<SchemePublishedEvent,PublicSchemeId>
     {
-        public override ITransportMessage<SchemePublishedEvent> GreateTransportMessage(
-            SchemePublishedEvent message, Guid correlationId, DateTime requestTimestamp)
-        {
-            return new TransportMessage<SchemePublishedEvent, PublicSchemeId>(message, correlationId, requestTimestamp);
-        }
     }
 }

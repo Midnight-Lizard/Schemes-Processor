@@ -1,22 +1,24 @@
-﻿using System;
+﻿using SemVer;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
-    public class MessageAttribute : Attribute
+    public class MessageAttribute : Attribute, IMessageMetadata
     {
-        private string version;
+        public Range VersionRange { get; set; }
+
         public string Version
         {
             get
             {
-                return version;
+                return VersionRange.ToString();
             }
             set
             {
-                version = System.Version.Parse(value).ToString();
+                VersionRange = new SemVer.Range(value);
             }
         }
 

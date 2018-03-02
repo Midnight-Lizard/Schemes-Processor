@@ -11,8 +11,6 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events
     {
         public PublisherId PublisherId { get; protected set; }
 
-        public override Version LatestVersion() => new Version(1, 0);
-
         protected PublisherAccessDeniedEvent() { }
 
         public PublisherAccessDeniedEvent(PublicSchemeId aggregateId, PublisherId publisherId) : base(aggregateId)

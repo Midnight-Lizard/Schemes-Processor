@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
 {
     [Message(Version = "1.0")]
-    public class SchemePublishRequestDeserializer_v1_0 : SchemePublishRequestDeserializer_v1_1
+    public class PublishSchemeRequestDeserializer_v1_0 : PublishSchemeRequestDeserializer_v1_1
     {
         public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
@@ -25,7 +25,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
     }
 
     [Message(Version = "1.1")]
-    public class SchemePublishRequestDeserializer_v1_1 : SchemePublishRequestDeserializer_v1_2
+    public class PublishSchemeRequestDeserializer_v1_1 : PublishSchemeRequestDeserializer_v1_2
     {
         public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
@@ -42,7 +42,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
     }
 
     [Message(Version = "1.2")]
-    public class SchemePublishRequestDeserializer_v1_2 : SchemePublishRequestDeserializer_v1_3
+    public class PublishSchemeRequestDeserializer_v1_2 : PublishSchemeRequestDeserializer_Latest
     {
         public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
@@ -54,13 +54,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [Message(Version = "1.3")]
-    public class SchemePublishRequestDeserializer_v1_3 : AbstractMessageDeserializer<PublishSchemeRequest>
+    [Message(Version = ">=1.3")]
+    public class PublishSchemeRequestDeserializer_Latest : AbstractMessageDeserializer<PublishSchemeRequest, PublicSchemeId>
     {
-        public override ITransportMessage<PublishSchemeRequest> GreateTransportMessage(
-               PublishSchemeRequest message, Guid correlationId, DateTime requestTimestamp)
-        {
-            return new TransportMessage<PublishSchemeRequest, PublicSchemeId>(message, correlationId, requestTimestamp);
-        }
     }
 }

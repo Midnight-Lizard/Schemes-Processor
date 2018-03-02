@@ -14,7 +14,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         protected override string IndexName => config.ELASTIC_SEARCH_SNAPSHOT_SCHEMES_INDEX_NAME;
         protected override PublicScheme CreateNewAggregate(PublicSchemeId id) => new PublicScheme(id);
 
-        public SchemesSnapshotAccessor(ElasticSearchConfig config) : base(config)
+        public SchemesSnapshotAccessor(DomainVersion version, ElasticSearchConfig config) : base(version, config)
         {
         }
 
@@ -24,7 +24,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 new DocumentPath<PublicScheme>(schemeSnapshot.Aggregate.Id.Value),
                 u => u.Doc(new
                 {
-                    Version = schemeSnapshot.Aggregate.LatestVersion(),
+                    Version = version.ToString(),
                     schemeSnapshot.RequestTimestamp,
                     schemeSnapshot.Aggregate.PublisherId,
                     schemeSnapshot.Aggregate.ColorScheme

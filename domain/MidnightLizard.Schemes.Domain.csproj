@@ -5,13 +5,15 @@
     <LangVersion>Latest</LangVersion>
     <Configurations>Debug;Release;Test</Configurations>
     <OutputType>Library</OutputType>
+    <ApplicationIcon />
+    <StartupObject />
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="FluentValidation" Version="7.5.0" />
     <PackageReference Include="MediatR" Version="4.0.1" />
-    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.0.0" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
   </ItemGroup>
 

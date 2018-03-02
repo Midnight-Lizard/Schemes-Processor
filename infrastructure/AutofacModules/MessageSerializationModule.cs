@@ -24,12 +24,24 @@ namespace MidnightLizard.Schemes.Infrastructure.AutofacModules
 
             builder.RegisterAssemblyTypes(typeof(MessageSerializationModule).GetTypeInfo().Assembly)
                 .AsClosedTypesOf(typeof(IMessageDeserializer<>))
-                .Keyed<IMessageDeserializer>(t =>
+                .As<IMessageDeserializer>()
+                .WithMetadata(t =>
                 {
                     var msgAttr = t.GetCustomAttribute<MessageAttribute>();
-                    var msgType = msgAttr.Type ?? t.GetInterfaces().First().GetGenericArguments()[0].Name;
-                    return $"{msgType}{msgAttr.Version}";
+                    return new Dictionary<string, object>
+                    {
+                        [nameof(IMessageMetadata.Type)] = msgAttr.Type ?? t.GetInterfaces().First().GetGenericArguments()[0].Name,
+                        [nameof(IMessageMetadata.VersionRange)] = msgAttr.VersionRange
+                    };
                 });
+            //.WithMetadataFrom<MessageAttribute>();
+            //.WithMetadata<MessageAttribute>(t=>t.For<)
+            //.Keyed<IMessageDeserializer>(t =>
+            //{
+            //    var msgAttr = t.GetCustomAttribute<MessageAttribute>();
+            //    var msgType = msgAttr.Type ?? t.GetInterfaces().First().GetGenericArguments()[0].Name;
+            //    return $"{msgType}{msgAttr.Version}";
+            //});
         }
     }
 }

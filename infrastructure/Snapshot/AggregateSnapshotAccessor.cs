@@ -17,10 +17,12 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
     {
         protected abstract string IndexName { get; }
         protected readonly IElasticClient elasticClient;
+        protected readonly DomainVersion version;
         protected readonly ElasticSearchConfig config;
 
-        public AggregateSnapshotAccessor(ElasticSearchConfig config)
+        public AggregateSnapshotAccessor(DomainVersion version, ElasticSearchConfig config)
         {
+            this.version = version;
             this.config = config;
             this.elasticClient = CreateElasticClient();
             CheckIndexExists();
@@ -70,7 +72,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 .GetAsync<TAggregate>(new DocumentPath<TAggregate>(id.ToString()));
 
             if (result.IsValid &&
-                result.Fields.Value<Version>(nameof(Version)) == result.Source.LatestVersion())
+                result.Fields.Value<string>(nameof(Version)) == this.version.ToString())
             {
                 var requestTimestampField = nameof(AggregateSnapshot<TAggregate, TAggregateId>.RequestTimestamp);
 

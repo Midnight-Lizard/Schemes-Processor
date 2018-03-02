@@ -23,7 +23,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 
         protected override string IndexName => "test";
 
-        public AggregateSnapshotAccessorSpec() : base(Substitute.For<ElasticSearchConfig>())
+        public AggregateSnapshotAccessorSpec() : base(
+            Substitute.For<DomainVersion>(),
+            Substitute.For<ElasticSearchConfig>())
         {
         }
 
@@ -132,6 +134,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             public async Task Should_return_Aggregate_from_response_if_it_IsValid()
             {
                 this.testResponse.IsValid.Returns(true);
+                this.version.ToString().Returns(null as string);
 
                 var result = await this.Read(testSchemeId);
 
@@ -142,7 +145,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             public async Task Should_return_a_new_Aggregate_from_response_if_it_IsValid_but_has_different_Version()
             {
                 this.testResponse.IsValid.Returns(true);
-                this.testScheme.LatestVersion().Returns(new Version(1, 2, 3));
+                this.version.Value.Returns(new SemVer.Version("1.2.3-beta"));
 
                 var result = await this.Read(testSchemeId);
 
@@ -153,7 +156,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
             public async Task Should_call_CreateNewAggregate_if_response__IsValid_but_has_different_Version()
             {
                 this.testResponse.IsValid.Returns(true);
-                this.testScheme.LatestVersion().Returns(new Version(1, 2, 3));
+                this.version.Value.Returns(new SemVer.Version("1.2.3-beta"));
 
                 var result = await this.Read(testSchemeId);
 
