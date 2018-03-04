@@ -40,7 +40,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             {
                 KAFKA_EVENTS_PRODUCER_CONFIG = new Dictionary<string, object>
                 {
-                    ["bootstrap.servers"] = "bootstrap.kafka:9092"
+                    ["bootstrap.servers"] = "test:123"
                 }
             },
             Substitute.For<IMessageSerializer>())

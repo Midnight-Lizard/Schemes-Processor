@@ -59,6 +59,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         {
             if (this.producer is IDisposable disposable)
             {
+                this.producer = null;
                 disposable.Dispose();
             }
         }
