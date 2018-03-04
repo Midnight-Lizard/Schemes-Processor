@@ -99,10 +99,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                         this.eventsConsumer.Subscribe(kafkaConfig.EVENT_TOPICS);
                         this.requestsConsumer.Subscribe(kafkaConfig.REQUEST_TOPICS);
 
-                        while (this.thereMayBeNewMessages &&
-                            this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
+                        while (this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
                         {
-                            if (HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
+                            if (this.thereMayBeNewMessages && HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
                             {
                                 if (this.eventsConsumer.Consume(out var @event, timeout))
                                 {
