@@ -37,6 +37,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         protected Consumer<string, string> requestsConsumer;
         protected CancellationToken cancellationToken;
         protected TaskCompletionSource<bool> queuePausingCompleted;
+        private bool thereMayBeNewMessages;
 
         public MessagingQueue(ILogger<MessagingQueue> logger, KafkaConfig config,
             IMediator mediator, IMessageSerializer messageSerializer)
@@ -98,7 +99,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                         this.eventsConsumer.Subscribe(kafkaConfig.EVENT_TOPICS);
                         this.requestsConsumer.Subscribe(kafkaConfig.REQUEST_TOPICS);
 
-                        while (this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
+                        while (this.thereMayBeNewMessages &&
+                            this.queueStatus == QueueStatus.Running && !this.cancellationToken.IsCancellationRequested)
                         {
                             if (HasNewMessages(this.eventsConsumer, this.assignedEventsPartitions))
                             {
@@ -110,8 +112,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                             }
                             else
                             {
+                                this.thereMayBeNewMessages = false;
                                 if (this.requestsConsumer.Consume(out var request, timeout))
                                 {
+                                    this.thereMayBeNewMessages = true;
                                     await this.HandleMessage(request);
                                     await this.requestsConsumer.CommitAsync(request);
                                 }

@@ -1,13 +1,10 @@
-﻿using MidnightLizard.Commons.Domain.Model;
-using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
