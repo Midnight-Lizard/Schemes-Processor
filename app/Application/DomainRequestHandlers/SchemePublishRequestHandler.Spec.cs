@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
@@ -23,6 +24,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
     {
         private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
         private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
+        private readonly UserId testUserId = new UserId("test-user-id");
         private static int handle_CallCount;
 
         protected SchemePublishRequestHandlerSpec() : base(
@@ -33,7 +35,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
-            this.testRequest.PublisherId.Returns(new PublisherId());
             this.testRequest.AggregateId.Returns(this.testScheme.Id);
         }
 
@@ -52,19 +53,20 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             [It(nameof(HandleDomainRequest))]
             public void Should_call_PublicScheme__Publish_with_corresponding_parameters()
             {
-                this.HandleDomainRequest(this.testScheme, this.testRequest, new CancellationToken());
+                this.HandleDomainRequest(this.testScheme, this.testRequest, this.testUserId, new CancellationToken());
 
-                this.testScheme.Received(1).Publish(this.testRequest.PublisherId, Arg.Any<ColorScheme>());
+                this.testScheme.Received(1).Publish(new PublisherId(this.testUserId.Value), Arg.Any<ColorScheme>());
             }
         }
 
         public class MediatorSpec : SchemePublishRequestHandlerSpec
         {
             private readonly IMediator mediator;
-            private readonly ITransRequest testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), DateTime.UtcNow);
+            private readonly ITransRequest testTransRequest;
 
             public MediatorSpec()
             {
+                this.testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), DateTime.UtcNow, this.testUserId);
                 this.mediator = StartupStub.Resolve<IMediator>();
             }
 

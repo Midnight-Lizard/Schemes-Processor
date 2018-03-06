@@ -6,7 +6,7 @@ using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using Nest;
-using MidnightLizard.Commons.Domain.Versioning;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
@@ -15,7 +15,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         protected override string IndexName => config.ELASTIC_SEARCH_SNAPSHOT_SCHEMES_INDEX_NAME;
         protected override PublicScheme CreateNewAggregate(PublicSchemeId id) => new PublicScheme(id);
 
-        public SchemesSnapshotAccessor(DomainVersion version, ElasticSearchConfig config) : base(version, config)
+        public SchemesSnapshotAccessor(AppVersion version, ElasticSearchConfig config) : base(version, config)
         {
         }
 

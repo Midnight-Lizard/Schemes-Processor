@@ -18,6 +18,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
     public interface IMessageDeserializer<out TMessage> : IMessageDeserializer where TMessage : BaseMessage
     {
-        ITransportMessage<TMessage> DeserializeMessagePayload(string payload, JsonSerializerSettings serializerSettings, Guid correlationId, DateTime requestTimestamp);
+        ITransportMessage<TMessage> DeserializeMessagePayload(
+            string payload, JsonSerializerSettings serializerSettings,
+            Guid correlationId, DateTime requestTimestamp, UserId userId);
     }
 }

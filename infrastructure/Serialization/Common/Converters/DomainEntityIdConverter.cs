@@ -30,9 +30,13 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if (value is DomainEntityId<Guid> domainEntityId)
+            if (value is DomainEntityId<Guid> domainEntityIdGuid)
             {
-                writer.WriteValue(domainEntityId.Value.ToString());
+                writer.WriteValue(domainEntityIdGuid.Value.ToString());
+            }
+            else if (value is DomainEntityId<string> domainEntityIdString)
+            {
+                writer.WriteValue(domainEntityIdString.Value ?? "");
             }
         }
     }

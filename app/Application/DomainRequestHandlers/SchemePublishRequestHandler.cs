@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MidnightLizard.Schemes.Domain.PublisherAggregate;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
@@ -29,9 +30,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
         }
 
-        protected override void HandleDomainRequest(PublicScheme aggregate, PublishSchemeRequest request, CancellationToken cancellationToken)
+        protected override void HandleDomainRequest(PublicScheme aggregate, PublishSchemeRequest request, UserId userId, CancellationToken cancellationToken)
         {
-            aggregate.Publish(request.PublisherId, request.ColorScheme);
+            aggregate.Publish(new PublisherId(userId.Value), request.ColorScheme);
         }
     }
 }

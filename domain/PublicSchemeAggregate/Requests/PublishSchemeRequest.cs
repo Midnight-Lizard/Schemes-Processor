@@ -8,8 +8,6 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests
 {
     public class PublishSchemeRequest : SchemeDomainRequest
     {
-        public virtual PublisherId PublisherId { get; set; }
-
         public ColorScheme ColorScheme { get; set; }
     }
 }

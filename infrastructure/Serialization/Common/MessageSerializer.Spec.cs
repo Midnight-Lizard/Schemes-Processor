@@ -17,6 +17,7 @@ using Event = MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemeP
 using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 using MidnightLizard.Schemes.Infrastructure.Versioning;
+using MidnightLizard.Commons.Domain.Model;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -26,15 +27,15 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         private readonly TransEvent testTransEvent = new TransEvent(
                 new SchemePublishedEvent(
                     new PublicSchemeId(Guid.NewGuid()),
-                    new PublisherId(Guid.NewGuid()),
+                    new PublisherId("test-user-id"),
                     ColorSchemeSpec.CorrectColorScheme),
-                Guid.NewGuid(), DateTime.UtcNow);
+                Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 
         public MessageSerializerSpec()
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(Latest.Version);
+            builder.RegisterInstance(AppVersion.Latest);
             var container = builder.Build();
             messageSerializer = container.Resolve<IMessageSerializer>();
         }
@@ -49,7 +50,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
                 obj[nameof(TransEvent.CorrelationId)].ToObject<Guid>().Should().Be(this.testTransEvent.CorrelationId);
                 obj[nameof(Type)].Value<string>().Should().Be(nameof(SchemePublishedEvent));
-                obj[nameof(Version)].Value<string>().Should().Be(Latest.Version.ToString());
+                obj[nameof(Version)].Value<string>().Should().Be(AppVersion.Latest.ToString());
+                obj[nameof(UserId)].Value<string>().Should().Be(this.testTransEvent.UserId.Value);
                 obj[nameof(TransEvent.RequestTimestamp)].Value<DateTime>().Should().Be(this.testTransEvent.RequestTimestamp);
 
                 var payload = obj[nameof(TransEvent.Payload)];
@@ -57,7 +59,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 payload[nameof(Event.Id)].ToObject<Guid>().Should().Be(this.testTransEvent.Payload.Id);
                 payload[nameof(Event.AggregateId)].ToObject<Guid>().Should().Be(this.testTransEvent.Payload.AggregateId.Value);
                 payload[nameof(Event.Generation)].Value<int>().Should().Be(this.testTransEvent.Payload.Generation);
-                payload[nameof(Event.PublisherId)].ToObject<Guid>().Should().Be(this.testTransEvent.Payload.PublisherId.Value);
                 payload[nameof(Event.ColorScheme)].ToObject<ColorScheme>().Should().Be(this.testTransEvent.Payload.ColorScheme);
             }
         }
@@ -112,11 +113,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     ""Type"": ""{nameof(SchemePublishedEvent)}"",
                     ""Version"": ""1.0.0"",
                     ""RequestTimestamp"": {JsonConvert.SerializeObject(te.RequestTimestamp)},
+                    ""UserId"": ""{te.UserId}"",
                     ""Payload"": {{
                         ""Id"": ""{te.Payload.Id}"",
                         ""AggregateId"": ""{te.Payload.AggregateId}"",
                         ""Generation"": {te.Payload.Generation},
-                        ""PublisherId"": ""{te.Payload.PublisherId}"",
                         ""ColorScheme"": {te.Payload.ColorScheme}
                     }}
                 }}";
@@ -131,6 +132,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v1_0>();
                 msg.CorrelationId.Should().Be(te.CorrelationId);
                 msg.RequestTimestamp.Should().Be(te.RequestTimestamp);
+                msg.UserId.Should().Be(te.UserId);
 
                 msg.Payload.Should().BeOfType<SchemePublishedEvent>();
 
@@ -138,7 +140,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 e.Id.Should().Be(te.Payload.Id);
                 e.AggregateId.Should().Be(te.Payload.AggregateId);
                 e.Generation.Should().Be(te.Payload.Generation);
-                e.PublisherId.Should().Be(te.Payload.PublisherId);
                 e.ColorScheme.Should().Be(te.Payload.ColorScheme);
             }
         }

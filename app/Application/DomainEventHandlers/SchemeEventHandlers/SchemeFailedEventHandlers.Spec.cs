@@ -2,6 +2,7 @@
 using FluentValidation.Results;
 using MediatR;
 using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
@@ -20,7 +21,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
     {
         private static int handle_CallCount;
         private IMediator mediator;
-        private readonly ITransEvent testTransEvent = new TransEvent(new ColorSchemeValidationFailedEvent(null, new ValidationResult()), Guid.NewGuid(), DateTime.UtcNow);
+        private readonly ITransEvent testTransEvent = new TransEvent(new ColorSchemeValidationFailedEvent(null, new ValidationResult()), Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 
         public ColorSchemeValidationFailedEventHandlerSpec()
         {

@@ -31,9 +31,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         private readonly TransEvent testTransEvent = new TransEvent(
             new SchemePublishedEvent(
                 new PublicSchemeId(Guid.NewGuid()),
-                new PublisherId(Guid.NewGuid()),
+                new PublisherId("test-user-id"),
                 ColorSchemeSpec.CorrectColorScheme),
-            Guid.NewGuid(), DateTime.UtcNow);
+            Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 
         public DomainEventDispatcherSpec() : base(
             new KafkaConfig

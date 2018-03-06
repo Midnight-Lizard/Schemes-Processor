@@ -53,17 +53,19 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.testSchemeSnapshot = new AggregateSnapshot<PublicScheme, PublicSchemeId>(
                 this.testScheme, DateTime.MinValue);
             this.testTransRequest = new TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId>(
-                testRequest, Guid.NewGuid(), this.testRequestTimestamp);
+                testRequest, Guid.NewGuid(), this.testRequestTimestamp, new UserId("test-user-id"));
+
+            var testPublisherId = new PublisherId("test-user-id");
 
             this.testEvents = new List<DomainEvent<PublicSchemeId>>
             {
-                new SchemePublishedEvent(this.testScheme.Id, new PublisherId(), new ColorScheme()),
-                new SchemePublishedEvent(this.testScheme.Id, new PublisherId(), new ColorScheme())
+                new SchemePublishedEvent(this.testScheme.Id, testPublisherId, new ColorScheme()),
+                new SchemePublishedEvent(this.testScheme.Id, testPublisherId, new ColorScheme())
             };
 
             this.testTransEvents = this.testEvents.Select(e =>
                 new TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>(
-                    e, Guid.NewGuid(), DateTime.MinValue));
+                    e, Guid.NewGuid(), DateTime.MinValue, new UserId("test-user-id")));
 
             this.eventsAccessor.ClearReceivedCalls();
             this.aggregateSnapshotAccessor.ClearReceivedCalls();
@@ -72,7 +74,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.aggregatesConfig.ClearReceivedCalls();
         }
 
-        protected override void HandleDomainRequest(PublicScheme aggregate, DomainRequest<PublicSchemeId> request, CancellationToken cancellationToken
+        protected override void HandleDomainRequest(PublicScheme aggregate, DomainRequest<PublicSchemeId> request, UserId userId, CancellationToken cancellationToken
             )
         {
             aggregate.Should().BeSameAs(this.testScheme);
@@ -339,7 +341,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.testScheme.ReleaseEvents()
                     .Returns(this.testEvents);
 
-                this.testRequest.PublisherId.Returns(new PublisherId());
                 this.testRequest.AggregateId.Returns(x => this.testScheme.Id);
 
                 this.eventsDispatcher.DispatchEvent(Arg.Any<TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>())

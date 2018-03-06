@@ -43,7 +43,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         }
 
         protected abstract void
-            HandleDomainRequest(TAggregate aggregate, TRequest request, CancellationToken cancellationToken);
+            HandleDomainRequest(TAggregate aggregate, TRequest request, UserId userId, CancellationToken cancellationToken);
 
         public virtual async Task<DomainResult>
             Handle(TransportMessage<TRequest, TAggregateId> transRequest, CancellationToken cancellationToken
@@ -57,7 +57,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
                 if (aggregateSnapshot.Aggregate.IsNew() || aggregateSnapshot.RequestTimestamp < transRequest.RequestTimestamp)
                 {
-                    this.HandleDomainRequest(aggregateSnapshot.Aggregate, transRequest.Payload, cancellationToken);
+                    this.HandleDomainRequest(aggregateSnapshot.Aggregate, transRequest.Payload, transRequest.UserId, cancellationToken);
 
                     var dispatchResults = await this.DispatchDomainEvents(aggregateSnapshot.Aggregate, transRequest);
                     var error = dispatchResults.Values.FirstOrDefault(result => result.HasError);
@@ -110,7 +110,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 {
                     var result = await this.eventsDispatcher.DispatchEvent(
                         new TransportMessage<DomainEvent<TAggregateId>, TAggregateId>(
-                            @event, transRequest.CorrelationId, transRequest.RequestTimestamp));
+                            @event, transRequest.CorrelationId, transRequest.RequestTimestamp, transRequest.UserId));
                     results.Add(@event, result);
                     if (result.HasError)
                     {

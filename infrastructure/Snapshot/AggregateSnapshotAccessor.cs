@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MidnightLizard.Commons.Domain.Versioning;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
@@ -18,10 +18,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
     {
         protected abstract string IndexName { get; }
         protected readonly IElasticClient elasticClient;
-        protected readonly DomainVersion version;
+        protected readonly AppVersion version;
         protected readonly ElasticSearchConfig config;
 
-        public AggregateSnapshotAccessor(DomainVersion version, ElasticSearchConfig config)
+        public AggregateSnapshotAccessor(AppVersion version, ElasticSearchConfig config)
         {
             this.version = version;
             this.config = config;

@@ -23,6 +23,7 @@ using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<Midn
 using ITransEvent = MidnightLizard.Commons.Domain.Messaging.ITransportMessage<MidnightLizard.Commons.Domain.Messaging.BaseMessage>;
 using JsonDiffPatchDotNet;
 using MidnightLizard.Schemes.Infrastructure.Versioning;
+using MidnightLizard.Commons.Domain.Model;
 
 namespace MidnightLizard.Schemes.Infrastructure.EventStore
 {
@@ -32,11 +33,11 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         protected abstract void OnRequestCompleted(IApiCallDetails x);
         private IMessageSerializer realMessageSerializer;
         private readonly TransEvent testTransEvent = new TransEvent(
-                   new SchemePublishedEvent(
-                       new PublicSchemeId(Guid.NewGuid()),
-                       new PublisherId(Guid.NewGuid()),
-                       ColorSchemeSpec.CorrectColorScheme),
-                   Guid.NewGuid(), DateTime.UtcNow);
+            new SchemePublishedEvent(
+                new PublicSchemeId(Guid.NewGuid()),
+                new PublisherId("test-user-id"),
+                ColorSchemeSpec.CorrectColorScheme),
+            Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 
         public DomainEventStoreSpec() : base(
             Substitute.For<ElasticSearchConfig>(),
@@ -48,7 +49,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(Latest.Version);
+            builder.RegisterInstance(AppVersion.Latest);
             var container = builder.Build();
             this.realMessageSerializer = container.Resolve<IMessageSerializer>();
 
@@ -160,7 +161,8 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                 {
                     var body = Encoding.UTF8.GetString(x.RequestBodyInBytes);
                     var doc = JObject.Parse(body)["doc"].ToString();
-                    this.resultTransEvent = this.realMessageSerializer.Deserialize(doc).Message;
+                    var result = this.realMessageSerializer.Deserialize(doc);
+                    this.resultTransEvent = result.Message;
                 }
             }
         }

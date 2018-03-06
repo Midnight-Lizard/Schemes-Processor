@@ -5,12 +5,12 @@ using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublisherAggregate
 {
-    public class PublisherId : DomainEntityId<Guid>
+    public class PublisherId : DomainEntityId<string>
     {
-        public static DomainEntityIdValidator<Guid> Validator = new DomainEntityIdValidator<Guid>();
+        public static DomainEntityIdValidator<string> Validator = new DomainEntityIdValidator<string>();
 
-        public PublisherId() { }
+        protected PublisherId() { }
 
-        public PublisherId(Guid id) : base(id) { }
+        public PublisherId(string id) : base(id) { }
     }
 }

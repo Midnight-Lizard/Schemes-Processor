@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using MidnightLizard.Commons.Domain.Interfaces;
 using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
@@ -21,7 +22,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
 
         public DomainEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
-            this.testTransEvent = new TransportMessage<SchemePublishedEvent, PublicSchemeId>(null, new Guid(), DateTime.UtcNow);
+            this.testTransEvent = new TransportMessage<SchemePublishedEvent, PublicSchemeId>(null, new Guid(), DateTime.UtcNow, new UserId("test-user-id"));
             this.domainEventAccessor.SaveEvent(this.testTransEvent).Returns(this.testResult);
         }
 

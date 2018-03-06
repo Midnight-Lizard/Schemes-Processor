@@ -12,7 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac.Features.Metadata;
 using SemVer;
-using MidnightLizard.Commons.Domain.Versioning;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -25,7 +25,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
     class MessageSerializer : IMessageSerializer
     {
-        private readonly DomainVersion version;
+        private readonly AppVersion version;
         private readonly IEnumerable<Meta<Lazy<IMessageDeserializer>>> deserializers;
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
@@ -39,7 +39,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         };
 
         public MessageSerializer(
-            DomainVersion version,
+            AppVersion version,
             IEnumerable<Meta<Lazy<IMessageDeserializer>>> deserializers)
         {
             this.version = version;
@@ -48,6 +48,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
         private class Deserializable
         {
+            public UserId UserId { get; set; }
             public Guid CorrelationId { get; set; }
             public string Type { get; set; }
             public string Version { get; set; }
@@ -59,7 +60,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             try
             {
-                var msg = JsonConvert.DeserializeObject<Deserializable>(message);
+                var msg = JsonConvert.DeserializeObject<Deserializable>(message, this.serializerSettings);
                 var deserializer = this.deserializers.FirstOrDefault(x =>
                     x.Metadata[nameof(IMessageMetadata.Type)] as string == msg.Type &&
                     (x.Metadata[nameof(IMessageMetadata.VersionRange)] as Range).IsSatisfied(msg.Version));
@@ -68,7 +69,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     return new MessageResult((deserializer.Value.Value as IMessageDeserializer<BaseMessage>)
                         .DeserializeMessagePayload(
                             msg.Payload.Value as string, this.serializerSettings,
-                            msg.CorrelationId, msg.RequestTimestamp ?? requestTimestamp));
+                            msg.CorrelationId, msg.RequestTimestamp ?? requestTimestamp,
+                            msg.UserId));
                 }
                 return new MessageResult($"Deserializer for message type {msg.Type} and version {msg.Version} is not found.");
             }
@@ -86,6 +88,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 Type = transportMessage.Payload.GetType().Name,
                 Version = this.version.ToString(),
                 transportMessage.RequestTimestamp,
+                transportMessage.UserId,
                 transportMessage.Payload
             }, this.serializerSettings);
         }
