@@ -27,7 +27,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
+        protected override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
         {
             // in version 1.1 scrollbar size and image hover options are added
             var cs = message.ColorScheme;
@@ -39,14 +39,14 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
     }
 
     [Message(Version = "1.2")]
-    public class SchemePublishedEventDeserializer_v1_2 : SchemePublishedEventDeserializer_Latest
+    public class SchemePublishedEventDeserializer_v1_2 : SchemePublishedEventDeserializer_v1_3
     {
         public override void StartAdvancingToTheLatestVersion(SchemePublishedEvent message)
         {
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
+        protected override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
         {
             // in version 1.2 button component is added
             var cs = message.ColorScheme;
@@ -61,14 +61,14 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
     }
 
     [Message(Version = ">=1.3")]
-    public class SchemePublishedEventDeserializer_Latest : AbstractMessageDeserializer<SchemePublishedEvent, PublicSchemeId>
+    public class SchemePublishedEventDeserializer_v1_3 : AbstractMessageDeserializer<SchemePublishedEvent, PublicSchemeId>
     {
         public override void StartAdvancingToTheLatestVersion(SchemePublishedEvent message)
         {
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
+        protected override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
         {
             // in version 1.3 option to ignore color hues is added
             var cs = message.ColorScheme;

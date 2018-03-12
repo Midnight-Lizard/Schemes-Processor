@@ -30,6 +30,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
         public abstract void StartAdvancingToTheLatestVersion(TMessage message);
 
-        public virtual void AdvanceToTheLatestVersion(TMessage message) { }
+        protected virtual void AdvanceToTheLatestVersion(TMessage message) { }
     }
 }

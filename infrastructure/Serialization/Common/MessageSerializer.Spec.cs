@@ -122,7 +122,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     }}
                 }}";
                 new Deserializers.SchemePublishedEventDeserializer_v1_0()
-                    .AdvanceToTheLatestVersion(te.Payload);
+                    .StartAdvancingToTheLatestVersion(te.Payload);
 
                 var result = this.messageSerializer.Deserialize(json, DateTime.UtcNow);
 

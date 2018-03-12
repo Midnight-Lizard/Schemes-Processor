@@ -27,7 +27,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
+        protected override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
             // in version 1.1 scrollbar size and image hover options are added
             var cs = message.ColorScheme;
@@ -46,7 +46,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
+        protected override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
             // in version 1.2 button component is added
             var cs = message.ColorScheme;
@@ -68,7 +68,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             base.AdvanceToTheLatestVersion(message);
         }
 
-        public override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
+        protected override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
         {
             // in version 1.3 option to ignore color hues is added
             var cs = message.ColorScheme;
