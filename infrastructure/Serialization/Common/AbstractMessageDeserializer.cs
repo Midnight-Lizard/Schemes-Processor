@@ -21,12 +21,14 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             string payload, JsonSerializerSettings serializerSettings, Guid correlationId, DateTime requestTimestamp, UserId userId)
         {
             var message = JsonConvert.DeserializeObject<TMessage>(payload, serializerSettings);
-            AdvanceToTheLatestVersion(message);
+            StartAdvancingToTheLatestVersion(message);
             return new TransportMessage<TMessage, TAggregateId>(message, correlationId, requestTimestamp, userId)
             {
                 DeserializerType = this.GetType()
             };
         }
+
+        public abstract void StartAdvancingToTheLatestVersion(TMessage message);
 
         public virtual void AdvanceToTheLatestVersion(TMessage message) { }
     }
