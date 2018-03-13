@@ -3,13 +3,13 @@
 #===========================================#
 FROM microsoft/aspnetcore-build:2-jessie as dotnet-build
 ARG DOTNET_CONFIG=Release
-COPY *.sln /build/
-COPY /app/MidnightLizard.Schemes.Processor.csproj /build/app/
-COPY /domain/MidnightLizard.Schemes.Domain.csproj /build/domain/
-COPY /infrastructure/MidnightLizard.Schemes.Infrastructure.csproj /build/infrastructure/
 WORKDIR /build
+COPY *.sln .
+COPY /app/MidnightLizard.Schemes.Processor.csproj ./app/
+COPY /domain/MidnightLizard.Schemes.Domain.csproj ./domain/
+COPY /infrastructure/MidnightLizard.Schemes.Infrastructure.csproj ./infrastructure/
 RUN dotnet restore
-COPY . /build/
+COPY . .
 RUN dotnet publish app -c ${DOTNET_CONFIG} -o ./results
 
 #===========================================#
