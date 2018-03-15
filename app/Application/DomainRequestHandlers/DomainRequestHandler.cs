@@ -134,7 +134,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             var eventsResult = await this.eventsAccessor.GetEvents(aggregateId, 0);
             if (eventsResult.HasError) return eventsResult;
 
-            aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => x.Payload));
+            aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => (x.Payload, x.UserId)));
 
             if (eventsResult.Events.Count() > this.aggregatesConfig.Value.AGGREGATE_MAX_EVENTS_COUNT && !aggregateSnapshot.Aggregate.IsNew())
             {

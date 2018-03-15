@@ -5,7 +5,6 @@ using FluentAssertions;
 using System.Text;
 using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using Autofac;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
@@ -27,7 +26,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         private readonly TransEvent testTransEvent = new TransEvent(
                 new SchemePublishedEvent(
                     new PublicSchemeId(Guid.NewGuid()),
-                    new PublisherId("test-user-id"),
                     ColorSchemeSpec.CorrectColorScheme),
                 Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 

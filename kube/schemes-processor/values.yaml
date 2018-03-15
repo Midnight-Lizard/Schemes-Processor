@@ -22,9 +22,6 @@ service:
   externalPort: 80
   internalPort: 80
 env:
-  ASPNETCORE_ENVIRONMENT: Production
-  PORTAL_URL: http://midnight-lizard.online
-  IDENTITY_URL: http://identity.midnight-lizard.online
   ELASTIC_SEARCH_CLIENT_URL: http://ml-es-elasticsearch-client.default.svc.cluster.local:9200
   ELASTIC_SEARCH_EVENT_STORE_SCHEMES_INDEX_NAME: schemes-event-store
   ELASTIC_SEARCH_SNAPSHOT_SCHEMES_INDEX_NAME: schemes-snapshot

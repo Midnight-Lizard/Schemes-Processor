@@ -15,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
 {
-    public class FailedDomainEventHandlerSpec : FailedDomainEventHandler<PublisherAccessDeniedEvent, PublicSchemeId>
+    public class FailedDomainEventHandlerSpec : FailedDomainEventHandler<AccessDeniedEvent<PublicSchemeId>, PublicSchemeId>
     {
-        private readonly TransportMessage<PublisherAccessDeniedEvent, PublicSchemeId> testTransEvent;
+        private readonly TransportMessage<AccessDeniedEvent<PublicSchemeId>, PublicSchemeId> testTransEvent;
 
         public FailedDomainEventHandlerSpec()
         {
-            this.testTransEvent = new TransportMessage<PublisherAccessDeniedEvent, PublicSchemeId>(
+            this.testTransEvent = new TransportMessage<AccessDeniedEvent<PublicSchemeId>, PublicSchemeId>(
                 null, new Guid(), DateTime.UtcNow, new UserId("test-user-id"));
         }
 

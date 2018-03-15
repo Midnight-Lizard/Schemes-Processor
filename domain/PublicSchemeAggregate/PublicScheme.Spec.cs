@@ -1,11 +1,12 @@
-﻿using MidnightLizard.Schemes.Domain.PublisherAggregate;
-using MidnightLizard.Testing.Utilities;
+﻿using MidnightLizard.Testing.Utilities;
 using System;
 using System.Collections.Generic;
 using NSubstitute;
 using FluentAssertions;
 using System.Text;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
+using MidnightLizard.Commons.Domain.Model;
+using MidnightLizard.Commons.Domain.Messaging;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
@@ -16,7 +17,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             private readonly ColorScheme incorrectColorScheme = new ColorScheme();
             private readonly PublicScheme newPublicScheme;
             private readonly PublicScheme existingPublicScheme;
-            private readonly PublisherId testPublisherId = new PublisherId("test-user-id");
+            private readonly UserId testPublisherId = new UserId("test-user-id");
             private readonly PublicSchemeId testPublicSchemeId = new PublicSchemeId(Guid.NewGuid());
 
             public PiblishSpec()
@@ -47,16 +48,16 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             [It(nameof(PublicScheme.Publish))]
             public void Should_Release_AccessDenied_when_Publisher_is_different()
             {
-                this.existingPublicScheme.Publish(new PublisherId("different-user-id"), this.incorrectColorScheme);
+                this.existingPublicScheme.Publish(new UserId("different-user-id"), this.incorrectColorScheme);
                 var events = this.existingPublicScheme.ReleaseEvents();
                 events.Should().HaveCount(1);
-                events.Should().AllBeOfType<PublisherAccessDeniedEvent>();
+                events.Should().AllBeOfType<SchemeAccessDeniedEvent>();
             }
 
             [It(nameof(PublicScheme.Publish))]
             public void Should_Release_ValidationFailedEvent_when_PublisherId_is_invalid()
             {
-                this.existingPublicScheme.Publish(new PublisherId(null), this.incorrectColorScheme);
+                this.existingPublicScheme.Publish(new UserId(null), this.incorrectColorScheme);
                 var events = this.existingPublicScheme.ReleaseEvents();
                 events.Should().HaveCount(1);
                 events.Should().AllBeOfType<PublisherIdValidationFailedEvent>();

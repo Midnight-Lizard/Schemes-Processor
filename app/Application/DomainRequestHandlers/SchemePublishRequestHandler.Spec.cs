@@ -7,7 +7,6 @@ using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Testing.Utilities;
 using NSubstitute;
@@ -55,7 +54,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.HandleDomainRequest(this.testScheme, this.testRequest, this.testUserId, new CancellationToken());
 
-                this.testScheme.Received(1).Publish(new PublisherId(this.testUserId.Value), Arg.Any<ColorScheme>());
+                this.testScheme.Received(1).Publish(this.testUserId, Arg.Any<ColorScheme>());
             }
         }
 

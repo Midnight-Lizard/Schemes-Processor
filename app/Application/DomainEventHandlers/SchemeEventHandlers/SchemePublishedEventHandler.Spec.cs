@@ -22,7 +22,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
     {
         private static int handle_CallCount;
         private IMediator mediator;
-        private readonly ITransEvent testTransEvent = new TransEvent(new SchemePublishedEvent(null, null, null), Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+        private readonly ITransEvent testTransEvent = new TransEvent(new SchemePublishedEvent(null, null), Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
 
         public SchemePublishedEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {

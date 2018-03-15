@@ -4,7 +4,6 @@ using FluentAssertions;
 using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
@@ -31,18 +30,17 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
     {
         protected override string IndexName => "test";
         protected abstract void OnRequestCompleted(IApiCallDetails x);
+        private readonly UserId testUserId = new UserId("test-user-id");
         private IMessageSerializer realMessageSerializer;
-        private readonly TransEvent testTransEvent = new TransEvent(
-            new SchemePublishedEvent(
-                new PublicSchemeId(Guid.NewGuid()),
-                new PublisherId("test-user-id"),
-                ColorSchemeSpec.CorrectColorScheme),
-            Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+        private readonly TransEvent testTransEvent;
 
         public DomainEventStoreSpec() : base(
             Substitute.For<ElasticSearchConfig>(),
             Substitute.For<IMessageSerializer>())
         {
+            testTransEvent = new TransEvent(
+               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
+               Guid.NewGuid(), DateTime.UtcNow, testUserId);
         }
 
         protected override ElasticClient CreateElasticClient()
@@ -129,7 +127,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                 this.InitDefaultMapping(cs);
 
                 cs.ReceivedWithAnyArgs(1)
-                    .DefaultMappingFor<TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>(map => map);
+                    .DefaultMappingFor<ITransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>(map => map);
             }
         }
 
@@ -144,13 +142,13 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
 
                 this.resultTransEvent.CorrelationId.Should().Be(this.testTransEvent.CorrelationId);
                 this.resultTransEvent.RequestTimestamp.Should().Be(this.testTransEvent.RequestTimestamp);
+                this.resultTransEvent.UserId.Should().Be(this.testUserId);
 
                 var testPayload = this.testTransEvent.Payload as SchemePublishedEvent;
                 var resultPayload = this.resultTransEvent.Payload as SchemePublishedEvent;
 
                 resultPayload.AggregateId.Should().Be(testPayload.AggregateId);
                 resultPayload.Id.Should().Be(testPayload.Id);
-                resultPayload.PublisherId.Should().Be(testPayload.PublisherId);
                 resultPayload.Generation.Should().Be(testPayload.Generation);
                 resultPayload.ColorScheme.Should().Be(testPayload.ColorScheme);
             }

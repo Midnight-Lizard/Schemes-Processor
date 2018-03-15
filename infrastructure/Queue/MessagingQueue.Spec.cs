@@ -10,7 +10,6 @@ using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 using MidnightLizard.Schemes.Infrastructure.Versioning;
@@ -23,12 +22,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 {
     public class MessagingQueueSpec : MessagingQueue
     {
-        private readonly TransEvent correctTransEvent = new TransEvent(
-            new SchemePublishedEvent(
-                new PublicSchemeId(Guid.NewGuid()),
-                new PublisherId("test-user-id"),
-                ColorSchemeSpec.CorrectColorScheme),
-            Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+        private readonly UserId testUserId = new UserId("test-user-id");
+        private readonly TransEvent correctTransEvent;
         private readonly string correctMessageJson;
         private readonly Message<string, string> correctKafkaMessage;
 
@@ -38,6 +33,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             Substitute.For<IMediator>(),
             Substitute.For<IMessageSerializer>())
         {
+            this.correctTransEvent = new TransEvent(
+               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
+               Guid.NewGuid(), DateTime.UtcNow, testUserId);
+
             this.correctMessageJson = new MessageSerializer(AppVersion.Latest, null).SerializeMessage(this.correctTransEvent);
             this.correctKafkaMessage = this.CreateKafkaMessage(this.correctMessageJson, ErrorCode.NoError);
 

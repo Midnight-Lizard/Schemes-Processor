@@ -8,7 +8,6 @@ using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
@@ -27,13 +26,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
     public class DomainEventDispatcherSpec : DomainEventDispatcher<PublicSchemeId>
     {
         private readonly string testMessageJson = "{Type:\"Test\"}";
+        private readonly UserId testUserId = new UserId("test-user-id");
         private int GetEventTopicName_CallCount = 0;
-        private readonly TransEvent testTransEvent = new TransEvent(
-            new SchemePublishedEvent(
-                new PublicSchemeId(Guid.NewGuid()),
-                new PublisherId("test-user-id"),
-                ColorSchemeSpec.CorrectColorScheme),
-            Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+        private readonly TransEvent testTransEvent;
 
         public DomainEventDispatcherSpec() : base(
             new KafkaConfig
@@ -45,6 +40,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             },
             Substitute.For<IMessageSerializer>())
         {
+            testTransEvent = new TransEvent(
+               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
+               Guid.NewGuid(), DateTime.UtcNow, testUserId);
             this.producer = Substitute.For<ISerializingProducer<string, string>>();
             this.producer.ProduceAsync(
                 this.GetEventTopicName(),

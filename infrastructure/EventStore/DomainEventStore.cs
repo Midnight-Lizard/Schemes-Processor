@@ -43,7 +43,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             this.elasticClient
                 .CreateIndex(this.IndexName, ix => ix
                     .Mappings(map => map
-                        .Map<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(tm => tm
+                        .Map<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(tm => tm
                             .RoutingField(x => x.Required())
                             .Properties(prop => prop
                                 .Keyword(x => x.Name(nameof(Type)))
@@ -75,24 +75,24 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             return connectionSettings
                 .DefaultFieldNameInferrer(i => i)
-                .DefaultMappingFor<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(map => map
-                    .IdProperty(to => to.Id)
-                    .RoutingProperty(x => x.AggregateId)
-                    .IndexName(this.IndexName)
-                    .TypeName("event"));
+                .DefaultMappingFor<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(map => map
+                     .IdProperty(to => to.Id)
+                     .RoutingProperty(x => x.AggregateId)
+                     .IndexName(this.IndexName)
+                     .TypeName("event"));
         }
 
         public async Task<DomainEventsResult<TAggregateId>> GetEvents(TAggregateId aggregateId, int sinceGeneration)
         {
-            var results = await this.elasticClient.SearchAsync<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(s => s
-                .Routing(aggregateId.ToString())
-                .Query(q => q
-                    .Bool(cs => cs
-                        .Filter(f =>
-                            f.Term(t => t.Payload.AggregateId, aggregateId) &&
-                            f.Range(r => r
-                                .Field(m => m.Payload.Generation)
-                                .GreaterThan(sinceGeneration))))));
+            var results = await this.elasticClient.SearchAsync<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(s => s
+               .Routing(aggregateId.ToString())
+               .Query(q => q
+                   .Bool(cs => cs
+                       .Filter(f =>
+                           f.Term(t => t.Payload.AggregateId, aggregateId) &&
+                           f.Range(r => r
+                               .Field(m => m.Payload.Generation)
+                               .GreaterThan(sinceGeneration))))));
             if (results.IsValid)
             {
                 return new DomainEventsResult<TAggregateId>(results.Documents);
@@ -102,8 +102,8 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
 
         public async Task<DomainResult> SaveEvent(ITransportMessage<DomainEvent<TAggregateId>> @event)
         {
-            var result = await this.elasticClient.UpdateAsync<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>, object>(
-                new DocumentPath<TransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(@event.Payload.Id),
+            var result = await this.elasticClient.UpdateAsync<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>, object>(
+                new DocumentPath<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(@event.Payload.Id),
                 u => u
                     .Routing(@event.Payload.AggregateId.ToString())
                     .Doc(@event)

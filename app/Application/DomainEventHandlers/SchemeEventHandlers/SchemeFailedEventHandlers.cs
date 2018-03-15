@@ -16,8 +16,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
     {
     }
 
-    public class PublisherAccessDeniedEventHandler
-        : FailedDomainEventHandler<PublisherAccessDeniedEvent, PublicSchemeId>
+    public class SchemeAccessDeniedEventHandler
+        : FailedDomainEventHandler<SchemeAccessDeniedEvent, PublicSchemeId>
     {
     }
 

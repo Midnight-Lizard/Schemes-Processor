@@ -9,7 +9,6 @@ using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests;
-using MidnightLizard.Schemes.Domain.PublisherAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using MidnightLizard.Testing.Utilities;
 using NSubstitute;
@@ -41,6 +40,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
         private readonly ICacheEntry cacheEntry = Substitute.For<ICacheEntry>();
         private readonly TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId> testTransRequest;
+        private readonly UserId testPublisherId = new UserId("test-user-id");
 
         public DomainRequestHandlerSpec() : base(
             Substitute.For<IOptions<AggregatesConfig>>(),
@@ -53,19 +53,17 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.testSchemeSnapshot = new AggregateSnapshot<PublicScheme, PublicSchemeId>(
                 this.testScheme, DateTime.MinValue);
             this.testTransRequest = new TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId>(
-                testRequest, Guid.NewGuid(), this.testRequestTimestamp, new UserId("test-user-id"));
-
-            var testPublisherId = new PublisherId("test-user-id");
+                testRequest, Guid.NewGuid(), this.testRequestTimestamp, this.testPublisherId);
 
             this.testEvents = new List<DomainEvent<PublicSchemeId>>
             {
-                new SchemePublishedEvent(this.testScheme.Id, testPublisherId, new ColorScheme()),
-                new SchemePublishedEvent(this.testScheme.Id, testPublisherId, new ColorScheme())
+                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme()),
+                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme())
             };
 
             this.testTransEvents = this.testEvents.Select(e =>
                 new TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>(
-                    e, Guid.NewGuid(), DateTime.MinValue, new UserId("test-user-id")));
+                    e, Guid.NewGuid(), DateTime.MinValue, this.testPublisherId));
 
             this.eventsAccessor.ClearReceivedCalls();
             this.aggregateSnapshotAccessor.ClearReceivedCalls();
@@ -289,8 +287,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 var result = await this.GetAggregate(testScheme.Id);
 
-                this.testScheme.Received(1).ReplayDomainEvents(Arg.Is<IEnumerable<DomainEvent<PublicSchemeId>>>(events =>
-                    events.All(e => this.testEvents.Contains(e))));
+                this.testScheme.Received(1).ReplayDomainEvents(Arg.Is<IEnumerable<(DomainEvent<PublicSchemeId>, UserId)>>(events =>
+                     events.All(e => this.testEvents.Contains(e.Item1))));
             }
 
             [It(nameof(GetAggregate))]

@@ -17,6 +17,7 @@ kubectl config set-context minikube
 docker push $IMAGE
 ./helm-deploy.sh -i $IMAGE -r $PROJ -c ../kube/$PROJ \
     -s env.ASPNETCORE_ENVIRONMENT=Development \
+    -s env.AGGREGATES_MAX_EVENTS_COUNT=1 \
     -s livenessProbe.initialDelaySeconds=90 \
     -s livenessProbe.periodSeconds=90 \
     -s livenessProbe.timeoutSeconds=60 \

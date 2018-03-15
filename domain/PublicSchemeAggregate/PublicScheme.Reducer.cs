@@ -9,12 +9,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
     public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
-        public override void Reduce(DomainEvent<PublicSchemeId> @event)
+        public override void Reduce(DomainEvent<PublicSchemeId> @event, UserId publisherId)
         {
             switch (@event)
             {
                 case SchemePublishedEvent published:
-                    this.PublisherId = published.PublisherId;
+                    this.PublisherId = publisherId;
                     this.ColorScheme = published.ColorScheme;
                     break;
 

@@ -25,13 +25,14 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    return messageSerializer.Deserialize(reader.ReadToEnd());
+                    var result = messageSerializer.Deserialize(reader.ReadToEnd());
+                    if (!result.HasError)
+                    {
+                        return result.Message;
+                    }
                 }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public T Deserialize<T>(Stream stream)
@@ -45,13 +46,14 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             {
                 using (var reader = new StreamReader(stream))
                 {
-                    return messageSerializer.Deserialize(await reader.ReadToEndAsync());
+                    var result = messageSerializer.Deserialize(await reader.ReadToEndAsync());
+                    if (!result.HasError)
+                    {
+                        return result.Message;
+                    }
                 }
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         public async Task<T> DeserializeAsync<T>(Stream stream, CancellationToken cancellationToken = default)

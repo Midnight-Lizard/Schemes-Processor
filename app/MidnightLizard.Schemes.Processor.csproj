@@ -7,10 +7,6 @@
     <StartupObject>MidnightLizard.Schemes.Processor.Program</StartupObject>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Test|AnyCPU'">
-    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
-  </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -21,7 +17,7 @@
     <PackageReference Include="MediatR" Version="4.0.1" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="4.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
-    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.1.2" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.2.0" />
     <PackageReference Include="SemanticVersioning" Version="1.0.0" />
   </ItemGroup>
 

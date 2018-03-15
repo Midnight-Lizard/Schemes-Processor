@@ -7,11 +7,35 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "command": "dotnet",
-            "type": "process",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "command": "dotnet build",
+            "type": "shell",
             "args": [
-                "build",
-                "${workspaceFolder}/app/MidnightLizard.Schemes.Commander.csproj"
+                "-c Test"
+            ],
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "shared"
+            },
+            "command": "dotnet test",
+            "type": "shell",
+            "args": [
+                "-c Test"
             ],
             "problemMatcher": "$msCompile"
         }
