@@ -42,7 +42,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         {
             testTransEvent = new TransEvent(
                new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
-               Guid.NewGuid(), DateTime.UtcNow, testUserId);
+               Guid.NewGuid(), testUserId, DateTime.UtcNow, DateTime.UtcNow);
             this.producer = Substitute.For<ISerializingProducer<string, string>>();
             this.producer.ProduceAsync(
                 this.GetEventTopicName(),

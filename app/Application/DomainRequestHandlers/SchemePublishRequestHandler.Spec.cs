@@ -65,7 +65,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             public MediatorSpec()
             {
-                this.testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), DateTime.UtcNow, this.testUserId);
+                this.testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), this.testUserId, DateTime.UtcNow, DateTime.UtcNow);
                 this.mediator = StartupStub.Resolve<IMediator>();
             }
 

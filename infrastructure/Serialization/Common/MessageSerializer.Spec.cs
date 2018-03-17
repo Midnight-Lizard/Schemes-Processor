@@ -27,7 +27,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 new SchemePublishedEvent(
                     new PublicSchemeId(Guid.NewGuid()),
                     ColorSchemeSpec.CorrectColorScheme),
-                Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+                Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
 
         public MessageSerializerSpec()
         {
@@ -51,6 +51,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 obj[nameof(Version)].Value<string>().Should().Be(AppVersion.Latest.ToString());
                 obj[nameof(UserId)].Value<string>().Should().Be(this.testTransEvent.UserId.Value);
                 obj[nameof(TransEvent.RequestTimestamp)].Value<DateTime>().Should().Be(this.testTransEvent.RequestTimestamp);
+                obj[nameof(TransEvent.EventTimestamp)].Value<DateTime?>().Should().Be(this.testTransEvent.EventTimestamp);
 
                 var payload = obj[nameof(TransEvent.Payload)];
 
@@ -111,6 +112,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     ""Type"": ""{nameof(SchemePublishedEvent)}"",
                     ""Version"": ""1.0.0"",
                     ""RequestTimestamp"": {JsonConvert.SerializeObject(te.RequestTimestamp)},
+                    ""EventTimestamp"": {JsonConvert.SerializeObject(te.EventTimestamp)},
                     ""UserId"": ""{te.UserId}"",
                     ""Payload"": {{
                         ""Id"": ""{te.Payload.Id}"",
@@ -130,6 +132,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v1_0>();
                 msg.CorrelationId.Should().Be(te.CorrelationId);
                 msg.RequestTimestamp.Should().Be(te.RequestTimestamp);
+                msg.EventTimestamp.Should().Be(te.EventTimestamp);
                 msg.UserId.Should().Be(te.UserId);
 
                 msg.Payload.Should().BeOfType<SchemePublishedEvent>();

@@ -20,7 +20,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
     {
         string SerializeMessage(ITransportMessage<BaseMessage> transportMessage);
         string SerializeObject(object obj);
-        MessageResult Deserialize(string message, DateTime requestTimestamp = default);
+        MessageResult Deserialize(string message, DateTime messageTimestamp = default);
     }
 
     class MessageSerializer : IMessageSerializer
@@ -53,10 +53,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             public string Type { get; set; }
             public string Version { get; set; }
             public DateTime? RequestTimestamp { get; set; }
+            public DateTime? EventTimestamp { get; set; }
             public JRaw Payload { get; set; }
         }
 
-        public virtual MessageResult Deserialize(string message, DateTime requestTimestamp = default)
+        public virtual MessageResult Deserialize(string message, DateTime messageTimestamp = default)
         {
             try
             {
@@ -69,8 +70,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                     return new MessageResult((deserializer.Value.Value as IMessageDeserializer<BaseMessage>)
                         .DeserializeMessagePayload(
                             msg.Payload.Value as string, this.serializerSettings,
-                            msg.CorrelationId, msg.RequestTimestamp ?? requestTimestamp,
-                            msg.UserId));
+                            msg.CorrelationId, msg.UserId,
+                            msg.RequestTimestamp ?? messageTimestamp,
+                            msg.EventTimestamp ?? messageTimestamp));
                 }
                 return new MessageResult($"Deserializer for message type {msg.Type} and version {msg.Version} is not found.");
             }
@@ -88,6 +90,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 Type = transportMessage.Payload.GetType().Name,
                 Version = this.version.ToString(),
                 transportMessage.RequestTimestamp,
+                transportMessage.EventTimestamp,
                 transportMessage.UserId,
                 transportMessage.Payload
             }, this.serializerSettings);

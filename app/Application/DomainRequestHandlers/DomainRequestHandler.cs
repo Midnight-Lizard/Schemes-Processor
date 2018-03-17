@@ -110,7 +110,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 {
                     var result = await this.eventsDispatcher.DispatchEvent(
                         new TransportMessage<DomainEvent<TAggregateId>, TAggregateId>(
-                            @event, transRequest.CorrelationId, transRequest.RequestTimestamp, transRequest.UserId));
+                            @event, transRequest.CorrelationId, transRequest.UserId, transRequest.RequestTimestamp));
                     results.Add(@event, result);
                     if (result.HasError)
                     {

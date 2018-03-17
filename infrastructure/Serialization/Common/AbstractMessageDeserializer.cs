@@ -18,11 +18,11 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         where TAggregateId : DomainEntityId
     {
         public virtual ITransportMessage<TMessage> DeserializeMessagePayload(
-            string payload, JsonSerializerSettings serializerSettings, Guid correlationId, DateTime requestTimestamp, UserId userId)
+            string payload, JsonSerializerSettings serializerSettings, Guid correlationId, UserId userId, DateTime requestTimestamp, DateTime eventTimestamp)
         {
             var message = JsonConvert.DeserializeObject<TMessage>(payload, serializerSettings);
             StartAdvancingToTheLatestVersion(message);
-            return new TransportMessage<TMessage, TAggregateId>(message, correlationId, requestTimestamp, userId)
+            return new TransportMessage<TMessage, TAggregateId>(message, correlationId, userId, requestTimestamp, eventTimestamp)
             {
                 DeserializerType = this.GetType()
             };

@@ -53,7 +53,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.testSchemeSnapshot = new AggregateSnapshot<PublicScheme, PublicSchemeId>(
                 this.testScheme, DateTime.MinValue);
             this.testTransRequest = new TransportMessage<DomainRequest<PublicSchemeId>, PublicSchemeId>(
-                testRequest, Guid.NewGuid(), this.testRequestTimestamp, this.testPublisherId);
+                testRequest, Guid.NewGuid(), this.testPublisherId, this.testRequestTimestamp, this.testRequestTimestamp);
 
             this.testEvents = new List<DomainEvent<PublicSchemeId>>
             {
@@ -63,7 +63,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             this.testTransEvents = this.testEvents.Select(e =>
                 new TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>(
-                    e, Guid.NewGuid(), DateTime.MinValue, this.testPublisherId));
+                    e, Guid.NewGuid(), this.testPublisherId, DateTime.MinValue, DateTime.MinValue));
 
             this.eventsAccessor.ClearReceivedCalls();
             this.aggregateSnapshotAccessor.ClearReceivedCalls();

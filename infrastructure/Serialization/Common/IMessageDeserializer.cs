@@ -20,6 +20,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
     {
         ITransportMessage<TMessage> DeserializeMessagePayload(
             string payload, JsonSerializerSettings serializerSettings,
-            Guid correlationId, DateTime requestTimestamp, UserId userId);
+            Guid correlationId, UserId userId, DateTime requestTimestamp, DateTime eventTimestamp);
     }
 }

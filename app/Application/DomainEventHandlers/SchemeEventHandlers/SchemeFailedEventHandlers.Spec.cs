@@ -21,7 +21,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
     {
         private static int handle_CallCount;
         private IMediator mediator;
-        private readonly ITransEvent testTransEvent = new TransEvent(new ColorSchemeValidationFailedEvent(null, new ValidationResult()), Guid.NewGuid(), DateTime.UtcNow, new UserId("test-user-id"));
+        private readonly ITransEvent testTransEvent = new TransEvent(new ColorSchemeValidationFailedEvent(null, new ValidationResult()), Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow);
 
         public ColorSchemeValidationFailedEventHandlerSpec()
         {

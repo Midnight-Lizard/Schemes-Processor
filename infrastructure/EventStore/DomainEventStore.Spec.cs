@@ -40,7 +40,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             testTransEvent = new TransEvent(
                new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
-               Guid.NewGuid(), DateTime.UtcNow, testUserId);
+               Guid.NewGuid(), testUserId, DateTime.UtcNow, DateTime.UtcNow);
         }
 
         protected override ElasticClient CreateElasticClient()

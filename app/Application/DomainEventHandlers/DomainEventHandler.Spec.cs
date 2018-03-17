@@ -22,7 +22,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers
 
         public DomainEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
-            this.testTransEvent = new TransportMessage<SchemePublishedEvent, PublicSchemeId>(null, new Guid(), DateTime.UtcNow, new UserId("test-user-id"));
+            this.testTransEvent = new TransportMessage<SchemePublishedEvent, PublicSchemeId>(null, new Guid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow);
             this.domainEventAccessor.SaveEvent(this.testTransEvent).Returns(this.testResult);
         }
 

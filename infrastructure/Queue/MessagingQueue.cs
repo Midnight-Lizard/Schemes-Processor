@@ -210,8 +210,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                     var message = deserializationResult.Message;
                     var info = JsonConvert.SerializeObject(new
                     {
-                        CorelationId = message.CorrelationId,
-                        Id = message.Payload.Id,
+                        message.CorrelationId,
+                        message.Payload.Id,
                         Type = message.Payload.GetType().Name
                     });
                     var handleResult = await this.mediator.Send(message);
