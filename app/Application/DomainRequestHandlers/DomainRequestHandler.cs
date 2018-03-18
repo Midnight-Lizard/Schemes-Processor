@@ -68,6 +68,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                     }
                     else
                     {
+                        // in case this aggregate will stay in memory until next request
                         aggregateSnapshot.RequestTimestamp = transRequest.RequestTimestamp;
                     }
                 }
@@ -135,6 +136,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             if (eventsResult.HasError) return eventsResult;
 
             aggregateSnapshot.Aggregate.ReplayDomainEvents(eventsResult.Events.Select(x => (x.Payload, x.UserId)));
+
+            aggregateSnapshot.RequestTimestamp = eventsResult.Events.Max(e => e.RequestTimestamp);
 
             if (eventsResult.Events.Count() > this.aggregatesConfig.Value.AGGREGATE_MAX_EVENTS_COUNT && !aggregateSnapshot.Aggregate.IsNew())
             {
