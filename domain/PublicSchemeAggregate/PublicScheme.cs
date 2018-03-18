@@ -27,7 +27,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                     var colorSchemeValidationResults = ColorScheme.Validator.Validate(colorScheme);
                     if (colorSchemeValidationResults.IsValid)
                     {
-                        if (this.IsNew() || !colorScheme.Equals(this.ColorScheme))
+                        if (this.IsNew() || colorScheme != this.ColorScheme)
                         {
                             AddSchemePublishedEvent(publisherId, colorScheme);
                         }

@@ -37,6 +37,14 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             }
 
             [It(nameof(PublicScheme.Publish))]
+            public void Should_not_Release_any_new_Events_if_ColorScheme_is_the_same()
+            {
+                this.existingPublicScheme.Publish(this.testPublisherId, ColorSchemeSpec.CorrectColorScheme);
+                var events = this.existingPublicScheme.ReleaseEvents();
+                events.Should().HaveCount(0);
+            }
+
+            [It(nameof(PublicScheme.Publish))]
             public void Should_Release_ValidationFailedEvent_when_ColorScheme_is_invalid()
             {
                 this.existingPublicScheme.Publish(this.testPublisherId, this.incorrectColorScheme);

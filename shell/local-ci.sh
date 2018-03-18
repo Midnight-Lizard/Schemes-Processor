@@ -22,5 +22,5 @@ docker push $IMAGE
     -s livenessProbe.periodSeconds=90 \
     -s livenessProbe.timeoutSeconds=60 \
     -s readinessProbe.initialDelaySeconds=20 \
-    -s readinessProbe.periodSeconds=10 \
-    -s readinessProbe.timeoutSeconds=20
+    -s readinessProbe.periodSeconds=30 \
+    -s readinessProbe.timeoutSeconds=30

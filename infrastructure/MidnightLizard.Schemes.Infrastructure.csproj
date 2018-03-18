@@ -14,7 +14,7 @@
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
     <PackageReference Include="Confluent.Kafka" Version="0.11.3" />
-    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.2.4" />
+    <PackageReference Include="MidnightLizard.Commons.Domain" Version="1.2.5" />
     <PackageReference Include="NEST" Version="6.0.2" />
     <PackageReference Include="SemanticVersioning" Version="1.0.0" />
   </ItemGroup>
