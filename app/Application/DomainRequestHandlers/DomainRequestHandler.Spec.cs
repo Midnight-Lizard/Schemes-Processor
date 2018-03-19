@@ -434,6 +434,9 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 this.testSchemeSnapshot.RequestTimestamp = DateTime.Now;
+                this.eventsAccessor.GetEvents(this.testScheme.Id, 0)
+                   .Returns(new DomainEventsResult<PublicSchemeId>(
+                       new List<TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>()));
 
                 var result = await this.Handle(this.testTransRequest, new CancellationToken());
 
