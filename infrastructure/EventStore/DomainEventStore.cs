@@ -50,6 +50,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                                 .Keyword(x => x.Name(nameof(Version)))
                                 .Keyword(x => x.Name(n => n.CorrelationId))
                                 .Date(x => x.Name(n => n.RequestTimestamp))
+                                .Date(x => x.Name(n => n.EventTimestamp))
                                 .Object<DomainEvent<TAggregateId>>(e => e
                                     .Name(x => x.Payload)
                                     .Properties(eProp => eProp
@@ -86,6 +87,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             var results = await this.elasticClient.SearchAsync<ITransportMessage<DomainEvent<TAggregateId>, TAggregateId>>(s => s
                .Routing(aggregateId.ToString())
+               .Sort(ss => ss.Ascending(x => x.Payload.Generation))
                .Query(q => q
                    .Bool(cs => cs
                        .Filter(f =>

@@ -60,7 +60,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
 
         public class CreateIndexSpec : DomainEventStoreSpec
         {
-            private readonly JObject createIndexCommandSnapshot = JObject.Parse("{\"settings\":{\"index.number_of_replicas\":1,\"index.number_of_shards\":2},\"mappings\":{\"event\":{\"_routing\":{\"required\":true},\"properties\":{\"Type\":{\"type\":\"keyword\"},\"Version\":{\"type\":\"keyword\"},\"CorrelationId\":{\"type\":\"keyword\"},\"RequestTimestamp\":{\"type\":\"date\"},\"Payload\":{\"type\":\"object\",\"properties\":{\"Generation\":{\"type\":\"integer\"},\"AggregateId\":{\"type\":\"keyword\"},\"Id\":{\"type\":\"keyword\"}}}}}}}");
+            private readonly JObject createIndexCommandSnapshot = JObject.Parse("{\"settings\":{\"index.number_of_replicas\":1,\"index.number_of_shards\":2},\"mappings\":{\"event\":{\"_routing\":{\"required\":true},\"properties\":{\"Type\":{\"type\":\"keyword\"},\"Version\":{\"type\":\"keyword\"},\"CorrelationId\":{\"type\":\"keyword\"},\"RequestTimestamp\":{\"type\":\"date\"},\"EventTimestamp\":{\"type\":\"date\"},\"Payload\":{\"type\":\"object\",\"properties\":{\"Generation\":{\"type\":\"integer\"},\"AggregateId\":{\"type\":\"keyword\"},\"Id\":{\"type\":\"keyword\"}}}}}}}");
             private JObject createIndexCommand;
 
             protected override void OnRequestCompleted(IApiCallDetails x)
