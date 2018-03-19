@@ -65,7 +65,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 new TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>(
                     e, Guid.NewGuid(), this.testPublisherId, DateTime.MinValue, DateTime.MinValue));
 
-            this.eventsAccessor.ClearReceivedCalls();
+            this.eventStrore.ClearReceivedCalls();
             this.aggregateSnapshotAccessor.ClearReceivedCalls();
             this.eventsDispatcher.ClearReceivedCalls();
             this.memoryCache.ClearReceivedCalls();
@@ -254,7 +254,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.aggregateSnapshotAccessor.Read(testScheme.Id)
                     .Returns(x => this.testSchemeSnapshot);
 
-                this.eventsAccessor.GetEvents(this.testScheme.Id, 0)
+                this.eventStrore.GetEvents(this.testScheme.Id, 0)
                     .Returns(x => eventsReadResult);
 
                 this.memoryCache.CreateEntry(this.testScheme.Id)
@@ -350,7 +350,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 this.memoryCache.CreateEntry(this.testScheme.Id)
                     .Returns(this.cacheEntry);
 
-                this.eventsAccessor.GetEvents(this.testScheme.Id, 0)
+                this.eventStrore.GetEvents(this.testScheme.Id, 0)
                     .Returns(new DomainEventsResult<PublicSchemeId>(this.testTransEvents));
 
                 this.aggregateSnapshotAccessor.Read(this.testScheme.Id)
@@ -434,7 +434,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 )
             {
                 this.testSchemeSnapshot.RequestTimestamp = DateTime.Now;
-                this.eventsAccessor.GetEvents(this.testScheme.Id, 0)
+                this.eventStrore.GetEvents(this.testScheme.Id, 0)
                    .Returns(new DomainEventsResult<PublicSchemeId>(
                        new List<TransportMessage<DomainEvent<PublicSchemeId>, PublicSchemeId>>()));
 

@@ -26,7 +26,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         protected readonly IMemoryCache memoryCache;
         protected readonly IDomainEventDispatcher<TAggregateId> eventsDispatcher;
         protected readonly IAggregateSnapshotAccessor<TAggregate, TAggregateId> aggregateSnapshotAccessor;
-        protected readonly IDomainEventStore<TAggregateId> eventsAccessor;
+        protected readonly IDomainEventStore<TAggregateId> eventStrore;
 
         protected DomainRequestHandler(
             IOptions<AggregatesConfig> aggConfig,
@@ -39,7 +39,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             this.memoryCache = memoryCache;
             this.eventsDispatcher = eventsDispatcher;
             this.aggregateSnapshotAccessor = aggregateSnapshot;
-            this.eventsAccessor = eventsAccessor;
+            this.eventStrore = eventsAccessor;
         }
 
         protected abstract void
@@ -132,7 +132,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             var aggregateSnapshot = await GetAggregateSnapshot(aggregateId);
 
-            var eventsResult = await this.eventsAccessor.GetEvents(aggregateId, 0);
+            var eventsResult = await this.eventStrore.GetEvents(aggregateId, 0);
             if (eventsResult.HasError) return eventsResult;
 
             if (eventsResult.Events.Count() > 0)
