@@ -2,6 +2,7 @@
 using FluentValidation.Results;
 using MediatR;
 using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
@@ -19,29 +20,31 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
 {
     public class ColorSchemeValidationFailedEventHandlerSpec : ColorSchemeValidationFailedEventHandler
     {
-        private static int handle_CallCount;
+        private  int handle_CallCount;
         private IMediator mediator;
         private readonly ITransEvent testTransEvent = new TransEvent(new ColorSchemeValidationFailedEvent(null, new ValidationResult()), Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow);
 
         public ColorSchemeValidationFailedEventHandlerSpec()
         {
-            this.mediator = StartupStub.Resolve<IMediator>();
+            this.mediator = StartupStub.Resolve<IMediator,
+               IRequestHandler<TransportMessage<ColorSchemeValidationFailedEvent, PublicSchemeId>, DomainResult>>
+               ((x) => this);
         }
 
         public override Task<DomainResult> Handle(TransEvent request, CancellationToken cancellationToken)
         {
-            ColorSchemeValidationFailedEventHandlerSpec.handle_CallCount++;
+            this.handle_CallCount++;
             return Task.FromResult(DomainResult.Ok);
         }
 
         [It(nameof(MediatR))]
         public async Task Should_handle_Event()
         {
-            ColorSchemeValidationFailedEventHandlerSpec.handle_CallCount = 0;
+            this.handle_CallCount = 0;
 
             var result = await this.mediator.Send(this.testTransEvent);
 
-            ColorSchemeValidationFailedEventHandlerSpec.handle_CallCount.Should().Be(1);
+            this.handle_CallCount.Should().Be(1);
         }
     }
 }

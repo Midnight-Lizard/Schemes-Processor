@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
@@ -24,7 +25,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
         private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
         private readonly UserId testUserId = new UserId("test-user-id");
-        private static int handle_CallCount;
 
         protected SchemePublishRequestHandlerSpec() : base(
             Substitute.For<IOptions<AggregatesConfig>>(),
@@ -35,12 +35,6 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
             this.testRequest.AggregateId.Returns(this.testScheme.Id);
-        }
-
-        public override Task<DomainResult> Handle(TransRequest transRequest, CancellationToken cancellationToken)
-        {
-            SchemePublishRequestHandlerSpec.handle_CallCount++;
-            return Task.FromResult(DomainResult.Ok);
         }
 
         public class HandleDomainRequestSpec : SchemePublishRequestHandlerSpec
@@ -62,21 +56,31 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             private readonly IMediator mediator;
             private readonly ITransRequest testTransRequest;
+            private int handle_CallCount;
 
             public MediatorSpec()
             {
                 this.testTransRequest = new TransRequest(new PublishSchemeRequest(), Guid.NewGuid(), this.testUserId, DateTime.UtcNow, DateTime.UtcNow);
-                this.mediator = StartupStub.Resolve<IMediator>();
+
+                this.mediator = StartupStub.Resolve<IMediator,
+                    IRequestHandler<TransportMessage<PublishSchemeRequest, PublicSchemeId>, DomainResult>>
+                    ((x) => this);
+            }
+
+            public override Task<DomainResult> Handle(TransRequest transRequest, CancellationToken cancellationToken)
+            {
+                this.handle_CallCount++;
+                return Task.FromResult(DomainResult.Ok);
             }
 
             [It(nameof(Mediator))]
             public async Task Should_handle_Request()
             {
-                SchemePublishRequestHandlerSpec.handle_CallCount = 0;
+                this.handle_CallCount = 0;
 
                 var result = await this.mediator.Send(testTransRequest);
 
-                SchemePublishRequestHandlerSpec.handle_CallCount.Should().Be(1);
+                this.handle_CallCount.Should().Be(1);
             }
         }
     }

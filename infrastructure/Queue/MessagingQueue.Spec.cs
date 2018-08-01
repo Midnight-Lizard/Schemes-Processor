@@ -108,7 +108,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 
                 await this.HandleMessage(this.correctKafkaMessage);
 
-                await this.mediator.DidNotReceiveWithAnyArgs().Send(default);
+                await this.mediator.DidNotReceiveWithAnyArgs().Send(default(TransEvent));
             }
 
             [It(nameof(HandleMessage))]

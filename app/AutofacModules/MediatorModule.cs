@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core;
 using Autofac.Features.Variance;
-//using FluentValidation;
 using MediatR;
 using MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers;
 using System.Collections.Generic;
@@ -35,18 +34,18 @@ namespace MidnightLizard.Schemes.Processor.AutofacModules
             //    .AsImplementedInterfaces();
 
 
-            builder.Register<SingleInstanceFactory>(context =>
-            {
-                var componentContext = context.Resolve<IComponentContext>();
-                return t => componentContext.TryResolve(t, out var o) ? o : null;
-            });
+            //builder.Register<SingleInstanceFactory>(context =>
+            //{
+            //    var componentContext = context.Resolve<IComponentContext>();
+            //    return t => componentContext.TryResolve(t, out var o) ? o : null;
+            //});
 
-            builder.Register<MultiInstanceFactory>(context =>
-            {
-                var componentContext = context.Resolve<IComponentContext>();
-                return t => (IEnumerable<object>)componentContext
-                    .Resolve(typeof(IEnumerable<>).MakeGenericType(t));
-            });
+            //builder.Register<MultiInstanceFactory>(context =>
+            //{
+            //    var componentContext = context.Resolve<IComponentContext>();
+            //    return t => (IEnumerable<object>)componentContext
+            //        .Resolve(typeof(IEnumerable<>).MakeGenericType(t));
+            //});
 
             //builder.RegisterGeneric(typeof(LoggingBehavior<,>)).As(typeof(IPipelineBehavior<,>));
             //builder.RegisterGeneric(typeof(ValidatorBehavior<,>)).As(typeof(IPipelineBehavior<,>));

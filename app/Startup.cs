@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using MidnightLizard.Schemes.Processor.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MidnightLizard.Schemes.Processor
 {
@@ -28,6 +30,7 @@ namespace MidnightLizard.Schemes.Processor
         {
             services.AddOptions();
             //services.AddAutoMapper();
+            services.AddMediatR();
             services.Configure<AggregatesConfig>(Configuration);
 
             services.AddSingleton<ElasticSearchConfig>(x =>
@@ -79,7 +82,7 @@ namespace MidnightLizard.Schemes.Processor
             var container = new ContainerBuilder();
             container.Populate(services);
 
-            container.RegisterModule<MediatorModule>();
+            //container.RegisterModule<MediatorModule>();
             container.RegisterModule<DomainInfrastructureModule>();
             container.RegisterModule<MessageSerializationModule>();
             container.RegisterModule<VersionModule>();
