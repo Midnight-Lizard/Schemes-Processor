@@ -25,6 +25,4 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
         : FailedDomainEventHandler<PublisherIdValidationFailedEvent, PublicSchemeId>
     {
     }
-
-
 }

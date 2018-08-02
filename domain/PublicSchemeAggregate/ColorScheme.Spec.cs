@@ -233,7 +233,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGraySaturation, -1);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGrayHue, -1);
                 validator.ShouldHaveValidationErrorFor(cs => cs.scrollbarSize, -1);
-
+                // v9.3
                 validator.ShouldHaveValidationErrorFor(cs => cs.backgroundHueGravity, -1);
                 validator.ShouldHaveValidationErrorFor(cs => cs.borderHueGravity, -2);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonHueGravity, -3);
@@ -274,7 +274,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonContrast, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonLightnessLimit, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGraySaturation, value);
-
+                // v9.3
                 validator.ShouldHaveValidationErrorFor(cs => cs.backgroundHueGravity, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.borderHueGravity, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonHueGravity, value);
@@ -314,7 +314,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonContrast, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonLightnessLimit, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonGraySaturation, value);
-
+                // v9.3
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.backgroundHueGravity, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.borderHueGravity, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonHueGravity, value);
