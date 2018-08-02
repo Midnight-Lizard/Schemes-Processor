@@ -10,6 +10,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
     {
         public Range VersionRange { get; set; }
 
+        /// <summary>
+        /// SemVer range syntax
+        /// </summary>
         public string Version
         {
             get

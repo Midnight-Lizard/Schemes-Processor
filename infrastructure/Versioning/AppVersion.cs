@@ -19,6 +19,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Versioning
             return Value?.ToString();
         }
 
-        public static AppVersion Latest { get; } = new AppVersion("1.3.0");
+        public static AppVersion Latest { get; } = new AppVersion("9.3.0");
     }
 }

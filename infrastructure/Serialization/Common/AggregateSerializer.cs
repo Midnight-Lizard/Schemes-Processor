@@ -1,6 +1,7 @@
 ﻿using Elasticsearch.Net;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using System;
 using System.IO;
 using System.Threading;
@@ -15,8 +16,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ContractResolver = MessageContractResolver.Default,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            Converters = new[] {
-                    new DomainEntityIdConverter()
+            Converters = new JsonConverter[] {
+                    new DomainEntityIdConverter(),
+                    new StringEnumConverter(camelCaseText: true)
                 }
         };
 

@@ -17,7 +17,6 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 colorSchemeId = "almondRipe",
                 colorSchemeName = "Almond Ripe",
                 runOnThisSite = true,
-                restoreColorsOnCopy = false,
                 blueFilter = 5,
                 useDefaultSchedule = true,
                 scheduleStartHour = 0,
@@ -66,6 +65,19 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 buttonGraySaturation = 30,
                 buttonLightnessLimit = 30,
                 buttonSaturationLimit = 90,
+
+                // v9.3
+                doNotInvertContent = false,
+                mode = ColorSchemeMode.Auto,
+                modeAutoSwitchLimit = 5000,
+                includeMatches = "http://test.com/*",
+                excludeMatches = null,
+                backgroundHueGravity = 0,
+                buttonHueGravity = 0,
+                textHueGravity = 0,
+                linkHueGravity = 80,
+                borderHueGravity = 0,
+                scrollbarStyle = "true",
             };
         }
 
@@ -103,6 +115,34 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldHaveValidationErrorFor(cs => cs.colorSchemeName, new string('*', 51));
             }
 
+            [InlineData("simple"), InlineData("modern")]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_fail_when_scrollbarStyle_is_out_of_range(string value)
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.scrollbarStyle, value);
+            }
+
+            [InlineData("true"), InlineData("false")]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_succeed_when_scrollbarStyle_is_in_range(string value)
+            {
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.scrollbarStyle, value);
+            }
+
+            [InlineData((ColorSchemeMode)5), InlineData((ColorSchemeMode)10)]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_fail_when_mode_is_out_of_range(ColorSchemeMode value)
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.mode, value);
+            }
+
+            [InlineData(ColorSchemeMode.Auto), InlineData(ColorSchemeMode.Complex), InlineData(ColorSchemeMode.Simple)]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_succeed_when_mode_is_in_range(ColorSchemeMode value)
+            {
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.mode, value);
+            }
+
             [It(nameof(ColorSchemeValidator))]
             public void Should_fail_when_colorSchemeId_is_too_long()
             {
@@ -135,6 +175,20 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.scrollbarGrayHue, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.textGrayHue, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.textSelectionHue, value);
+            }
+
+            [InlineData(10001), InlineData(20000)]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_fail_when_modeAutoSwitchLimit_is_out_of_range(int value)
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.modeAutoSwitchLimit, value);
+            }
+
+            [InlineData(0), InlineData(1500), InlineData(3500), InlineData(6500), InlineData(9999), InlineData(10000)]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_succeed_when_modeAutoSwitchLimit_is_in_0____10000_range(int value)
+            {
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.modeAutoSwitchLimit, value);
             }
 
             [It(nameof(ColorSchemeValidator))]
@@ -179,6 +233,13 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGraySaturation, -1);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGrayHue, -1);
                 validator.ShouldHaveValidationErrorFor(cs => cs.scrollbarSize, -1);
+
+                validator.ShouldHaveValidationErrorFor(cs => cs.backgroundHueGravity, -1);
+                validator.ShouldHaveValidationErrorFor(cs => cs.borderHueGravity, -2);
+                validator.ShouldHaveValidationErrorFor(cs => cs.buttonHueGravity, -3);
+                validator.ShouldHaveValidationErrorFor(cs => cs.linkHueGravity, -4);
+                validator.ShouldHaveValidationErrorFor(cs => cs.textHueGravity, -5);
+                validator.ShouldHaveValidationErrorFor(cs => cs.modeAutoSwitchLimit, -6);
             }
 
             [InlineData(101), InlineData(110), InlineData(200), InlineData(999)]
@@ -213,6 +274,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonContrast, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonLightnessLimit, value);
                 validator.ShouldHaveValidationErrorFor(cs => cs.buttonGraySaturation, value);
+
+                validator.ShouldHaveValidationErrorFor(cs => cs.backgroundHueGravity, value);
+                validator.ShouldHaveValidationErrorFor(cs => cs.borderHueGravity, value);
+                validator.ShouldHaveValidationErrorFor(cs => cs.buttonHueGravity, value);
+                validator.ShouldHaveValidationErrorFor(cs => cs.linkHueGravity, value);
+                validator.ShouldHaveValidationErrorFor(cs => cs.textHueGravity, value);
             }
 
             [InlineData(0), InlineData(30), InlineData(60), InlineData(100)]
@@ -247,6 +314,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonContrast, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonLightnessLimit, value);
                 validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonGraySaturation, value);
+
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.backgroundHueGravity, value);
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.borderHueGravity, value);
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.buttonHueGravity, value);
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.linkHueGravity, value);
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.textHueGravity, value);
             }
 
             [InlineData(25), InlineData(36), InlineData(48), InlineData(72)]
@@ -283,6 +356,37 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             public void Should_fail_with_default_ColorScheme_object()
             {
                 validator.ShouldHaveValidationErrorFor(cs => cs.colorSchemeName, new ColorScheme());
+            }
+
+            [InlineData(".*"), InlineData(".+"), InlineData(".?")]
+            [InlineData("sftp://test.com/*")]
+            [InlineData("*://test.*/*")]
+            [InlineData("http://test.com")]
+            [InlineData("http:/test.com/")]
+            [InlineData("file://C:/test.html")]
+            [InlineData("file://x/C:/test.html")]
+            [InlineData("test.com/*")]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_fail_with_incorrect_match_patterns(string value)
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.includeMatches, value);
+                validator.ShouldHaveValidationErrorFor(cs => cs.excludeMatches, value);
+            }
+
+            [InlineData("*"), InlineData("*://*/*"), InlineData("<all_urls>")]
+            [InlineData("ftp://test.com/*")]
+            [InlineData("http://test.com/*")]
+            [InlineData("http://test.com/")]
+            [InlineData("HTTP://TEST.COM/TEST")]
+            [InlineData("https://test.com/*?param=2")]
+            [InlineData("file:///C:/test.html")]
+            [InlineData("*://*.test.com/*")]
+            [InlineData("*://*.test.com/*test*")]
+            [Its(nameof(ColorSchemeValidator))]
+            public void Should_succeed_with_correct_match_patterns(string value)
+            {
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.includeMatches, value);
+                validator.ShouldNotHaveValidationErrorFor(cs => cs.excludeMatches, value);
             }
         }
     }

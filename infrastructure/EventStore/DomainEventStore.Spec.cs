@@ -160,6 +160,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
                     var body = Encoding.UTF8.GetString(x.RequestBodyInBytes);
                     var doc = JObject.Parse(body)["doc"].ToString();
                     var result = this.realMessageSerializer.Deserialize(doc);
+                    result.HasError.Should().BeFalse(result.ErrorMessage);
                     this.resultTransEvent = result.Message;
                 }
             }

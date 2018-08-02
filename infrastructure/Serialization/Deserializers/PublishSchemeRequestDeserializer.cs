@@ -60,8 +60,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [Message(Version = ">=1.3")]
-    public class PublishSchemeRequestDeserializer_v1_3 : AbstractMessageDeserializer<PublishSchemeRequest, PublicSchemeId>
+    [Message(Version = "1.3")]
+    public class PublishSchemeRequestDeserializer_v1_3 : PublishSchemeRequestDeserializer_v9_3
     {
         public override void StartAdvancingToTheLatestVersion(PublishSchemeRequest message)
         {
@@ -73,6 +73,34 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             // in version 1.3 option to ignore color hues is added
             var cs = message.ColorScheme;
             cs.linkReplaceAllHues = true;
+
+            base.AdvanceToTheLatestVersion(message);
+        }
+    }
+
+    [Message(Version = ">=9.3")]
+    public class PublishSchemeRequestDeserializer_v9_3 : AbstractMessageDeserializer<PublishSchemeRequest, PublicSchemeId>
+    {
+        public override void StartAdvancingToTheLatestVersion(PublishSchemeRequest message)
+        {
+            base.AdvanceToTheLatestVersion(message);
+        }
+
+        protected override void AdvanceToTheLatestVersion(PublishSchemeRequest message)
+        {
+            var cs = message.ColorScheme;
+
+            cs.doNotInvertContent = false;
+            cs.mode = ColorSchemeMode.Auto;
+            cs.modeAutoSwitchLimit = 5000;
+            cs.includeMatches = null;
+            cs.excludeMatches = null;
+            cs.backgroundHueGravity = 0;
+            cs.buttonHueGravity = 0;
+            cs.textHueGravity = 0;
+            cs.linkHueGravity = 80;
+            cs.borderHueGravity = 0;
+            cs.scrollbarStyle = "true";
 
             base.AdvanceToTheLatestVersion(message);
         }

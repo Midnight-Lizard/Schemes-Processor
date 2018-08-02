@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Autofac.Features.Metadata;
 using SemVer;
 using MidnightLizard.Schemes.Infrastructure.Versioning;
+using Newtonsoft.Json.Converters;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -33,8 +34,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
             DateTimeZoneHandling = DateTimeZoneHandling.Utc,
             ContractResolver = MessageContractResolver.Default,
             ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor,
-            Converters = new[] {
-                    new DomainEntityIdConverter()
+            Converters = new JsonConverter[] {
+                    new DomainEntityIdConverter(),
+                    new StringEnumConverter(camelCaseText: true)
                 }
         };
 

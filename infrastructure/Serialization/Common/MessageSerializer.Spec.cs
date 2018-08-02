@@ -110,7 +110,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 {{
                     ""CorrelationId"": ""{te.CorrelationId}"",
                     ""Type"": ""{nameof(SchemePublishedEvent)}"",
-                    ""Version"": ""1.0.0"",
+                    ""Version"": ""9.3.5"",
                     ""RequestTimestamp"": {JsonConvert.SerializeObject(te.RequestTimestamp)},
                     ""EventTimestamp"": {JsonConvert.SerializeObject(te.EventTimestamp)},
                     ""UserId"": ""{te.UserId}"",
@@ -121,7 +121,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                         ""ColorScheme"": {te.Payload.ColorScheme}
                     }}
                 }}";
-                new Deserializers.SchemePublishedEventDeserializer_v1_0()
+                new Deserializers.SchemePublishedEventDeserializer_v9_3()
                     .StartAdvancingToTheLatestVersion(te.Payload);
 
                 var result = this.messageSerializer.Deserialize(json, DateTime.UtcNow);
@@ -129,7 +129,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 result.HasError.Should().BeFalse();
 
                 var msg = result.Message;
-                msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v1_0>();
+                msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v9_3>();
                 msg.CorrelationId.Should().Be(te.CorrelationId);
                 msg.RequestTimestamp.Should().Be(te.RequestTimestamp);
                 msg.EventTimestamp.Should().Be(te.EventTimestamp);
