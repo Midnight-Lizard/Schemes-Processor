@@ -104,6 +104,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             }
 
             [It(nameof(ColorSchemeValidator))]
+            public void Should_fail_when_scrollbarStyle_is_empty()
+            {
+                validator.ShouldHaveValidationErrorFor(cs => cs.scrollbarStyle, string.Empty);
+            }
+
+            [It(nameof(ColorSchemeValidator))]
             public void Should_fail_when_colorSchemeId_is_empty()
             {
                 validator.ShouldHaveValidationErrorFor(cs => cs.colorSchemeId, string.Empty);
