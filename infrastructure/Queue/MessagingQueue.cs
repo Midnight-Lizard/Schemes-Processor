@@ -38,6 +38,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         protected CancellationToken cancellationToken;
         protected TaskCompletionSource<bool> queuePausingCompleted;
         private bool thereMayBeNewMessages;
+        private int errorCount = 0;
+        private readonly int maxErrorCount = 10;
 
         public MessagingQueue(ILogger<MessagingQueue> logger, KafkaConfig config,
             IMediator mediator, IMessageSerializer messageSerializer)
@@ -46,6 +48,24 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             this.kafkaConfig = config;
             this.mediator = mediator;
             this.messageSerializer = messageSerializer;
+        }
+
+        public bool CheckStatus()
+        {
+            if (this.queueStatus == QueueStatus.Running || this.errorCount < this.maxErrorCount)
+            {
+                switch (this.queueStatus)
+                {
+                    case QueueStatus.Paused:
+                        this.ResumeProcessing(this.cancellationToken);
+                        break;
+                    case QueueStatus.Stopped:
+                        this.BeginProcessing(this.cancellationToken);
+                        break;
+                }
+                return true;
+            }
+            return false;
         }
 
         public async Task PauseProcessing()
@@ -125,6 +145,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                 catch (Exception ex)
                 {
                     this.logger.LogError(ex, "Failed to consume new messages");
+                    this.errorCount++;
                 }
                 finally
                 {
