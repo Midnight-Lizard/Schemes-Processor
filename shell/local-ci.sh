@@ -13,7 +13,7 @@ docker build -t $IMAGE \
         && rm -rf /var/lib/apt/lists/* \
         && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg" \
     ../
-kubectl config set-context minikube
+kubectl config use-context minikube
 docker push $IMAGE
 ./helm-deploy.sh -i $IMAGE -r $PROJ -c ../kube/$PROJ \
     -s env.ASPNETCORE_ENVIRONMENT=Development \
