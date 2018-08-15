@@ -47,6 +47,40 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 AddPublisherIdValidationFailedEvent(publisherId, publisherIdValidationResults);
             }
         }
+        public virtual void Unpublish(UserId publisherId)
+        {
+            var publisherIdValidationResults = new DomainEntityIdValidator<string>().Validate(publisherId);
+            if (publisherIdValidationResults.IsValid)
+            {
+                if (this.IsNew())
+                {
+                    AddSchemeNotFoundEvent(publisherId);
+                }
+                else if (this.PublisherId == publisherId)
+                {
+
+                    AddSchemeUnpublishedEvent(publisherId);
+                }
+                else if (this.PublisherId != publisherId)
+                {
+                    AddPublisherAccessDeniedEvent(publisherId);
+                }
+            }
+            else
+            {
+                AddPublisherIdValidationFailedEvent(publisherId, publisherIdValidationResults);
+            }
+        }
+
+        private void AddSchemeNotFoundEvent(UserId publisherId)
+        {
+            // ignoring - since there is no such scheme - no need to delete it
+        }
+
+        private void AddSchemeUnpublishedEvent(UserId publisherId)
+        {
+             this.AddDomainEvent(new SchemeUnpublishedEvent(this.Id), publisherId);
+        }
 
         private void AddPublisherIdValidationFailedEvent(UserId publisherId, ValidationResult publisherIdValidationResults)
         {
