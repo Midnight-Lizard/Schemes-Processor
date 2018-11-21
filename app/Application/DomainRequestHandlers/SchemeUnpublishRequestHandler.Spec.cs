@@ -73,7 +73,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
                 return Task.FromResult(DomainResult.Ok);
             }
 
-            [It(nameof(Mediator))]
+            [It(nameof(MediatR))]
             public async Task Should_handle_Request()
             {
                 this.handle_CallCount = 0;
