@@ -1,19 +1,16 @@
-﻿using Autofac.Features.Indexed;
-using MediatR;
-using MidnightLizard.Commons.Domain.Model;
+﻿using Autofac.Features.Metadata;
 using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using SemVer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Autofac.Features.Metadata;
-using SemVer;
-using MidnightLizard.Schemes.Infrastructure.Versioning;
-using Newtonsoft.Json.Converters;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -24,7 +21,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         MessageResult Deserialize(string message, DateTime messageTimestamp = default);
     }
 
-    class MessageSerializer : IMessageSerializer
+    internal class MessageSerializer : IMessageSerializer
     {
         private readonly AppVersion version;
         private readonly IEnumerable<Meta<Lazy<IMessageDeserializer>>> deserializers;
@@ -63,8 +60,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             try
             {
-                var msg = JsonConvert.DeserializeObject<Deserializable>(message, this.serializerSettings);
-                var deserializer = this.deserializers.FirstOrDefault(x =>
+                Deserializable msg = JsonConvert.DeserializeObject<Deserializable>(message, this.serializerSettings);
+                Meta<Lazy<IMessageDeserializer>> deserializer = this.deserializers.FirstOrDefault(x =>
                     x.Metadata[nameof(IMessageMetadata.Type)] as string == msg.Type &&
                     (x.Metadata[nameof(IMessageMetadata.VersionRange)] as Range).IsSatisfied(msg.Version));
                 if (deserializer != null)
