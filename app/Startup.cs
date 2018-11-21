@@ -26,7 +26,7 @@ namespace MidnightLizard.Schemes.Processor
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual IServiceProvider ConfigureServices(IServiceCollection services)
+        public virtual void /*IServiceProvider*/ ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
             //services.AddAutoMapper();
@@ -77,17 +77,13 @@ namespace MidnightLizard.Schemes.Processor
 
             services.AddMemoryCache();
             services.AddMvc();
+        }
 
-            // Autofac - last part!
-            var container = new ContainerBuilder();
-            container.Populate(services);
-
-            //container.RegisterModule<MediatorModule>();
-            container.RegisterModule<DomainInfrastructureModule>();
-            container.RegisterModule<MessageSerializationModule>();
-            container.RegisterModule<VersionModule>();
-
-            return new AutofacServiceProvider(container.Build());
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.RegisterModule<DomainInfrastructureModule>();
+            builder.RegisterModule<MessageSerializationModule>();
+            builder.RegisterModule<VersionModule>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
