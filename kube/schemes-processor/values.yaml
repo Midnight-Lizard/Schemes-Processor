@@ -11,11 +11,6 @@ readinessProbe:
   periodSeconds: 20
   timeoutSeconds: 5
 replicaCount: 1
-antiAffinity:
-  weight: 80
-  apps:
-    - portal
-    - identity
 service:
   name: schemes-processor
   type: NodePort
