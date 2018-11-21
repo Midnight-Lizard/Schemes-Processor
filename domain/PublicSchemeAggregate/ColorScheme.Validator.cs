@@ -63,6 +63,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 
             RuleFor(cs => cs.includeMatches).Matches(regExp);
             RuleFor(cs => cs.excludeMatches).Matches(regExp);
+            RuleFor(cs => cs.includeMatches).Length(0, 4000);
+            RuleFor(cs => cs.excludeMatches).Length(0, 4000);
 
             RuleFor(cs => cs.backgroundHueGravity).InclusiveBetween(0, 100);
             RuleFor(cs => cs.buttonHueGravity).InclusiveBetween(0, 100);
