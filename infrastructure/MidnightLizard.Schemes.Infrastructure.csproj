@@ -29,7 +29,7 @@
     <When Condition=" '$(Configuration)'!='Test' ">
       <ItemGroup>
         <Compile Remove="**/*.Spec.cs" />
-        <PackageReference Include="Microsoft.Extensions.Logging" Version="2.0.1" />
+        <Compile Remove="**/*.Stub.cs" />
       </ItemGroup>
     </When>
   </Choose>

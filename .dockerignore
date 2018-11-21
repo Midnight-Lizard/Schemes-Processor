@@ -3,6 +3,7 @@
 **/.vscode
 **/.vs
 **/.git
+**/launchSettings.json
 **/Dockerfile
 **/node_modules/
 **/dist/
