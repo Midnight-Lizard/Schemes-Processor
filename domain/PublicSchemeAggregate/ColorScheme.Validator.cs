@@ -74,6 +74,9 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             RuleFor(cs => cs.scrollbarStyle).NotEmpty().Matches("^(?:true|false)$");
             RuleFor(cs => cs.modeAutoSwitchLimit).InclusiveBetween(0, 10000);
             RuleFor(cs => cs.mode).IsInEnum();
+
+            // v 10.1
+            RuleFor(cs => cs.maxBackgroundImageSize).InclusiveBetween(0, 1000);
         }
     }
 }

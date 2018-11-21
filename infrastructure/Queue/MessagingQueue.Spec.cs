@@ -37,7 +37,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
                Guid.NewGuid(), testUserId, DateTime.UtcNow, DateTime.UtcNow);
 
-            this.correctMessageJson = new MessageSerializer(AppVersion.Latest, null).SerializeMessage(this.correctTransEvent);
+            this.correctMessageJson = new MessageSerializer(SchemaVersion.Latest, null).SerializeMessage(this.correctTransEvent);
             this.correctKafkaMessage = this.CreateKafkaMessage(this.correctMessageJson, ErrorCode.NoError);
 
             this.messageSerializer.Deserialize(this.correctKafkaMessage.Value, this.correctKafkaMessage.Timestamp.UtcDateTime)

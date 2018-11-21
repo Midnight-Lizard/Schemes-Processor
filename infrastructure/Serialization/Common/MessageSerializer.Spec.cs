@@ -1,22 +1,16 @@
-﻿using MidnightLizard.Testing.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using Autofac;
 using FluentAssertions;
-using System.Text;
-using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
-using Autofac;
-using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using Newtonsoft.Json.Linq;
+using MidnightLizard.Schemes.Infrastructure.AutofacModules;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
+using MidnightLizard.Testing.Utilities;
 using Newtonsoft.Json;
-using System.Reflection;
-
+using Newtonsoft.Json.Linq;
+using System;
 using Event = MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent;
 using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
-using MidnightLizard.Schemes.Infrastructure.Serialization.Common.Converters;
-using MidnightLizard.Schemes.Infrastructure.Versioning;
-using MidnightLizard.Commons.Domain.Model;
 
 namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
@@ -33,9 +27,9 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(AppVersion.Latest);
+            builder.RegisterInstance(SchemaVersion.Latest);
             var container = builder.Build();
-            messageSerializer = container.Resolve<IMessageSerializer>();
+            this.messageSerializer = container.Resolve<IMessageSerializer>();
         }
 
         public class SerializeSpec : MessageSerializerSpec
@@ -48,7 +42,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
                 obj[nameof(TransEvent.CorrelationId)].ToObject<Guid>().Should().Be(this.testTransEvent.CorrelationId);
                 obj[nameof(Type)].Value<string>().Should().Be(nameof(SchemePublishedEvent));
-                obj[nameof(Version)].Value<string>().Should().Be(AppVersion.Latest.ToString());
+                obj[nameof(Version)].Value<string>().Should().Be(SchemaVersion.Latest.ToString());
                 obj[nameof(UserId)].Value<string>().Should().Be(this.testTransEvent.UserId.Value);
                 obj[nameof(TransEvent.RequestTimestamp)].Value<DateTime>().Should().Be(this.testTransEvent.RequestTimestamp);
                 obj[nameof(TransEvent.EventTimestamp)].Value<DateTime?>().Should().Be(this.testTransEvent.EventTimestamp);
@@ -110,7 +104,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                 {{
                     ""CorrelationId"": ""{te.CorrelationId}"",
                     ""Type"": ""{nameof(SchemePublishedEvent)}"",
-                    ""Version"": ""9.3.5"",
+                    ""Version"": ""{SchemaVersion.Latest}"",
                     ""RequestTimestamp"": {JsonConvert.SerializeObject(te.RequestTimestamp)},
                     ""EventTimestamp"": {JsonConvert.SerializeObject(te.EventTimestamp)},
                     ""UserId"": ""{te.UserId}"",
@@ -121,15 +115,13 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
                         ""ColorScheme"": {te.Payload.ColorScheme}
                     }}
                 }}";
-                new Deserializers.SchemePublishedEventDeserializer_v9_3()
-                    .StartAdvancingToTheLatestVersion(te.Payload);
 
                 var result = this.messageSerializer.Deserialize(json, DateTime.UtcNow);
 
                 result.HasError.Should().BeFalse();
 
                 var msg = result.Message;
-                msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v9_3>();
+                msg.DeserializerType.Should().Be<Deserializers.SchemePublishedEventDeserializer_v10_1>();
                 msg.CorrelationId.Should().Be(te.CorrelationId);
                 msg.RequestTimestamp.Should().Be(te.RequestTimestamp);
                 msg.EventTimestamp.Should().Be(te.EventTimestamp);

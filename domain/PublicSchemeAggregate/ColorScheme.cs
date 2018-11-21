@@ -75,6 +75,8 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 
         public int backgroundImageLightnessLimit { get; set; }
         public int backgroundImageSaturationLimit { get; set; }
+        public int maxBackgroundImageSize { get; set; }
+        public bool hideBigBackgroundImages { get; set; }
 
         public int scrollbarSaturationLimit { get; set; }
         public int scrollbarContrast { get; set; }
@@ -150,6 +152,10 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
             yield return linkHueGravity; //+
             yield return borderHueGravity; //+
             yield return scrollbarStyle; //+
+
+            // v 10.1
+            yield return hideBigBackgroundImages;
+            yield return maxBackgroundImageSize;
         }
     }
 }

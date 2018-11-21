@@ -47,7 +47,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         {
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
-            builder.RegisterInstance(AppVersion.Latest);
+            builder.RegisterInstance(SchemaVersion.Latest);
             var container = builder.Build();
             this.realMessageSerializer = container.Resolve<IMessageSerializer>();
 

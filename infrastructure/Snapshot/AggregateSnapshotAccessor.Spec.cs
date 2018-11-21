@@ -25,7 +25,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         protected override string IndexName => "test";
 
         public AggregateSnapshotAccessorSpec() : base(
-            Substitute.For<AppVersion>(AppVersion.Latest.ToString()),
+            Substitute.For<SchemaVersion>(SchemaVersion.Latest.ToString()),
             Substitute.For<ElasticSearchConfig>())
         {
         }

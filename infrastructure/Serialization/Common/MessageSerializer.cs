@@ -23,7 +23,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 
     internal class MessageSerializer : IMessageSerializer
     {
-        private readonly AppVersion version;
+        private readonly SchemaVersion version;
         private readonly IEnumerable<Meta<Lazy<IMessageDeserializer>>> deserializers;
         private readonly JsonSerializerSettings serializerSettings = new JsonSerializerSettings
         {
@@ -38,7 +38,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
         };
 
         public MessageSerializer(
-            AppVersion version,
+            SchemaVersion version,
             IEnumerable<Meta<Lazy<IMessageDeserializer>>> deserializers)
         {
             this.version = version;

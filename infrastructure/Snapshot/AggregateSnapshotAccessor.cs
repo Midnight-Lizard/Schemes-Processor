@@ -18,10 +18,10 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
     {
         protected abstract string IndexName { get; }
         protected readonly IElasticClient elasticClient;
-        protected readonly AppVersion version;
+        protected readonly SchemaVersion version;
         protected readonly ElasticSearchConfig config;
 
-        public AggregateSnapshotAccessor(AppVersion version, ElasticSearchConfig config)
+        public AggregateSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config)
         {
             this.version = version;
             this.config = config;

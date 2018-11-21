@@ -60,7 +60,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [Message(Version = "1.3")]
+    [Message(Version = ">=1.3 <9.3")]
     public class SchemePublishedEventDeserializer_v1_3 : SchemePublishedEventDeserializer_v9_3
     {
         public override void StartAdvancingToTheLatestVersion(SchemePublishedEvent message)
@@ -78,8 +78,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
         }
     }
 
-    [Message(Version = ">=9.3")]
-    public class SchemePublishedEventDeserializer_v9_3 : AbstractMessageDeserializer<SchemePublishedEvent, PublicSchemeId>
+    [Message(Version = ">=9.3 <10.1")]
+    public class SchemePublishedEventDeserializer_v9_3 : SchemePublishedEventDeserializer_v10_1
     {
         public override void StartAdvancingToTheLatestVersion(SchemePublishedEvent message)
         {
@@ -101,6 +101,25 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Deserializers
             cs.linkHueGravity = 80;
             cs.borderHueGravity = 0;
             cs.scrollbarStyle = "true";
+
+            base.AdvanceToTheLatestVersion(message);
+        }
+    }
+
+    [Message(Version = ">=10.1")]
+    public class SchemePublishedEventDeserializer_v10_1 : AbstractMessageDeserializer<SchemePublishedEvent, PublicSchemeId>
+    {
+        public override void StartAdvancingToTheLatestVersion(SchemePublishedEvent message)
+        {
+            base.AdvanceToTheLatestVersion(message);
+        }
+
+        protected override void AdvanceToTheLatestVersion(SchemePublishedEvent message)
+        {
+            var cs = message.ColorScheme;
+
+            cs.hideBigBackgroundImages = true;
+            cs.maxBackgroundImageSize = 500;
 
             base.AdvanceToTheLatestVersion(message);
         }

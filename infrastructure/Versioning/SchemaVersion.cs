@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace MidnightLizard.Schemes.Infrastructure.Versioning
 {
-    public class AppVersion
+    public class SchemaVersion
     {
-        public AppVersion(string version)
+        public SchemaVersion(string version)
         {
             Value = new SemVer.Version(version);
         }
@@ -19,6 +19,6 @@ namespace MidnightLizard.Schemes.Infrastructure.Versioning
             return Value?.ToString();
         }
 
-        public static AppVersion Latest { get; } = new AppVersion("9.3.0");
+        public static SchemaVersion Latest { get; } = new SchemaVersion("10.1.5");
     }
 }

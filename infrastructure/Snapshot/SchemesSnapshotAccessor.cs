@@ -15,7 +15,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         protected override string IndexName => config.ELASTIC_SEARCH_SNAPSHOT_SCHEMES_INDEX_NAME;
         protected override PublicScheme CreateNewAggregate(PublicSchemeId id) => new PublicScheme(id);
 
-        public SchemesSnapshotAccessor(AppVersion version, ElasticSearchConfig config) : base(version, config)
+        public SchemesSnapshotAccessor(SchemaVersion version, ElasticSearchConfig config) : base(version, config)
         {
         }
 

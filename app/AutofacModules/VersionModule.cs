@@ -12,7 +12,7 @@ namespace MidnightLizard.Schemes.Processor.AutofacModules
     {
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterInstance(AppVersion.Latest);
+            builder.RegisterInstance(SchemaVersion.Latest);
         }
     }
 }
