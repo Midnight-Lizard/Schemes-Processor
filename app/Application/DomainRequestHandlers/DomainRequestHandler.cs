@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
-using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Interfaces;
 using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Results;
-using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Processor.Configuration;
 using System;
 using System.Collections.Generic;
@@ -50,7 +48,11 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             )
         {
             var someResult = await this.GetAggregate(transRequest.Payload.AggregateId);
-            if (someResult.HasError) return someResult;
+            if (someResult.HasError)
+            {
+                return someResult;
+            }
+
             if (someResult is AggregateSnapshotResult<TAggregate, TAggregateId> aggregateSnapshotResult)
             {
                 var aggregateSnapshot = aggregateSnapshotResult.AggregateSnapshot;
@@ -103,7 +105,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             DispatchDomainEvents(IEventSourced<TAggregateId> aggregate, TransportMessage<TRequest, TAggregateId> transRequest
             )
         {
-            bool hasError = false;
+            var hasError = false;
             var results = new Dictionary<DomainEvent<TAggregateId>, DomainResult>();
             foreach (var @event in aggregate.ReleaseEvents())
             {
@@ -130,10 +132,13 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             GetAggregate(TAggregateId aggregateId
             )
         {
-            var aggregateSnapshot = await GetAggregateSnapshot(aggregateId);
+            var aggregateSnapshot = await this.GetAggregateSnapshot(aggregateId);
 
             var eventsResult = await this.eventStrore.GetEvents(aggregateId, 0);
-            if (eventsResult.HasError) return eventsResult;
+            if (eventsResult.HasError)
+            {
+                return eventsResult;
+            }
 
             if (eventsResult.Events.Count() > 0)
             {

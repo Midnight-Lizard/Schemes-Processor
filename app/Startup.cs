@@ -29,7 +29,6 @@ namespace MidnightLizard.Schemes.Processor
         public virtual void /*IServiceProvider*/ ConfigureServices(IServiceCollection services)
         {
             services.AddOptions();
-            //services.AddAutoMapper();
             services.AddMediatR();
             services.Configure<AggregatesConfig>(Configuration);
 
