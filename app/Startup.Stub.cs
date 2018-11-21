@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Threading;
 
 namespace MidnightLizard.Schemes.Processor
 {
@@ -16,6 +15,7 @@ namespace MidnightLizard.Schemes.Processor
         public static TResult Resolve<TResult>()
         {
             return new WebHostBuilder().UseStartup<StartupStub>()
+                .ConfigureServices(x => x.AddAutofac())
                 .Build().Services.GetService<TResult>();
         }
 
@@ -25,7 +25,7 @@ namespace MidnightLizard.Schemes.Processor
             return new WebHostBuilder().UseStartup<StartupStub>()
                 .ConfigureServices(services =>
                 {
-                    services.AddScoped<TService>(withServiceFactory);
+                    services.AddAutofac().AddScoped<TService>(withServiceFactory);
                 }).Build().Services.GetService<TResult>();
         }
     }
