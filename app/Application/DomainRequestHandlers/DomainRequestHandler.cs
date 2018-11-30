@@ -134,7 +134,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             var aggregateSnapshot = await this.GetAggregateSnapshot(aggregateId);
 
-            var eventsResult = await this.eventStrore.GetEvents(aggregateId, 0);
+            var eventsResult = await this.eventStrore.GetEvents(aggregateId, aggregateSnapshot.Aggregate.Generation);
             if (eventsResult.HasError)
             {
                 return eventsResult;
