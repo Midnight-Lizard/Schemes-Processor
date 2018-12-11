@@ -204,14 +204,25 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 
         protected void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
         {
-            // this.eventsConsumer.Unassign();
+            this.eventsConsumer.Unassign();
             assignedEventsPartitions = null;
         }
 
         protected void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
         {
-            // this.eventsConsumer.Assign(partitions);
-            assignedEventsPartitions = partitions;
+            if (!this.cancellationToken.IsCancellationRequested)
+            {
+                try
+                {
+                    this.eventsConsumer.Assign(partitions);
+                    assignedEventsPartitions = partitions;
+                }
+                catch (Exception ex)
+                {
+                    this.logger.LogError(ex, "Failed to sssign partitions to events consumer");
+                    this.errorCount++;
+                }
+            }
         }
 
         protected async Task HandleMessage(Message<string, string> kafkaMessage)
