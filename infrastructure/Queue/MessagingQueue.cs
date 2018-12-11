@@ -204,7 +204,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 
         protected void EventsConsumerOnPartitionsRevoked(object sender, List<TopicPartition> partitions)
         {
-            this.eventsConsumer.Unassign();
+            // this.eventsConsumer.Unassign();
             assignedEventsPartitions = null;
         }
 
@@ -212,7 +212,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
         {
             if (!this.cancellationToken.IsCancellationRequested)
             {
-                this.eventsConsumer.Assign(partitions);
+                // this.eventsConsumer.Assign(partitions);
                 assignedEventsPartitions = partitions;
             }
         }
