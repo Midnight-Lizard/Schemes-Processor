@@ -219,7 +219,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
                 }
                 catch (Exception ex)
                 {
-                    this.logger.LogError(ex, "Failed to sssign partitions to events consumer");
+                    this.logger.LogError(ex, "Failed to assign partitions to events consumer");
                     this.errorCount++;
                 }
             }
