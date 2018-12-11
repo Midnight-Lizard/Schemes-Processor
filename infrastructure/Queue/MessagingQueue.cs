@@ -210,11 +210,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
 
         protected void EventsConsumerOnPartitionsAssigned(object sender, List<TopicPartition> partitions)
         {
-            if (!this.cancellationToken.IsCancellationRequested)
-            {
-                // this.eventsConsumer.Assign(partitions);
-                assignedEventsPartitions = partitions;
-            }
+            // this.eventsConsumer.Assign(partitions);
+            assignedEventsPartitions = partitions;
         }
 
         protected async Task HandleMessage(Message<string, string> kafkaMessage)
