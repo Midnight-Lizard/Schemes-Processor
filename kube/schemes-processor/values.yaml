@@ -39,7 +39,7 @@ env:
     ]
   KAFKA_EVENTS_CONSUMER_CONFIG: |-
     {
-      "group.id": "schemes-events-processor-v2",
+      "group.id": "schemes-events-processor-v3",
       "bootstrap.servers": "bootstrap.kafka:9092",
       "partition.assignment.strategy": "range",
       "enable.auto.commit": false,
@@ -48,7 +48,7 @@ env:
     }
   KAFKA_REQUESTS_CONSUMER_CONFIG: |-
     {
-      "group.id": "schemes-requests-processor-v2",
+      "group.id": "schemes-requests-processor-v3",
       "bootstrap.servers": "bootstrap.kafka:9092",
       "partition.assignment.strategy": "range",
       "enable.auto.commit": false,
