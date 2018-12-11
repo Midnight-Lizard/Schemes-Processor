@@ -99,7 +99,7 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             {
                 return new DomainEventsResult<TAggregateId>(results.Documents);
             }
-            return new DomainEventsResult<TAggregateId>(results.IsValid, results.OriginalException, results.ServerError?.Error?.Reason);
+            return new DomainEventsResult<TAggregateId>(true, results.OriginalException, results.ServerError?.Error?.Reason);
         }
 
         public async Task<DomainResult> SaveEvent(ITransportMessage<DomainEvent<TAggregateId>> @event)
