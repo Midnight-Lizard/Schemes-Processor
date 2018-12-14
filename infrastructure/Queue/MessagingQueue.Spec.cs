@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Confluent.Kafka;
+﻿using Confluent.Kafka;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Internal;
@@ -15,13 +11,15 @@ using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
 using MidnightLizard.Schemes.Infrastructure.Versioning;
 using MidnightLizard.Testing.Utilities;
 using NSubstitute;
-
+using System;
+using System.Threading.Tasks;
 using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events.SchemePublishedEvent, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 
 namespace MidnightLizard.Schemes.Infrastructure.Queue
 {
     public class MessagingQueueSpec : MessagingQueue
     {
+        private readonly string description = "test description";
         private readonly UserId testUserId = new UserId("test-user-id");
         private readonly TransEvent correctTransEvent;
         private readonly string correctMessageJson;
@@ -34,8 +32,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Queue
             Substitute.For<IMessageSerializer>())
         {
             this.correctTransEvent = new TransEvent(
-               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
-               Guid.NewGuid(), testUserId, DateTime.UtcNow, DateTime.UtcNow);
+               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme, this.description),
+               Guid.NewGuid(), this.testUserId, DateTime.UtcNow, DateTime.UtcNow);
 
             this.correctMessageJson = new MessageSerializer(SchemaVersion.Latest, null).SerializeMessage(this.correctTransEvent);
             this.correctKafkaMessage = this.CreateKafkaMessage(this.correctMessageJson, ErrorCode.NoError);

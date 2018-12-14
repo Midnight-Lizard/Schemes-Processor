@@ -1,20 +1,17 @@
-﻿using MidnightLizard.Commons.Domain.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events
+﻿namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events
 {
     public class SchemePublishedEvent : SchemeDomainEvent
     {
+        public string Description { get; set; }
         public ColorScheme ColorScheme { get; private set; }
 
         protected SchemePublishedEvent() { }
 
-        public SchemePublishedEvent(PublicSchemeId aggregateId, ColorScheme colorScheme)
+        public SchemePublishedEvent(PublicSchemeId aggregateId, ColorScheme colorScheme, string description)
             : base(aggregateId)
         {
-            ColorScheme = colorScheme;
+            this.ColorScheme = colorScheme;
+            this.Description = description;
         }
     }
 }

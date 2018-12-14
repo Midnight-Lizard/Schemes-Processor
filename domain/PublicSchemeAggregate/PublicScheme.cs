@@ -1,75 +1,92 @@
 ﻿using FluentValidation.Results;
-using MidnightLizard.Commons.Domain.Messaging;
 using MidnightLizard.Commons.Domain.Model;
-using MidnightLizard.Commons.Domain.Results;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
+
     public partial class PublicScheme : AggregateRoot<PublicSchemeId>
     {
+        private const int maxDescriptionLength = 2000;
         public UserId PublisherId { get; private set; }
+        public string Description { get; private set; }
         public ColorScheme ColorScheme { get; private set; }
 
         public PublicScheme() { }
         public PublicScheme(PublicSchemeId publicSchemeId) : base(publicSchemeId) { }
 
-        public virtual void Publish(UserId publisherId, ColorScheme colorScheme)
+        public virtual void Publish(UserId publisherId, ColorScheme colorScheme, string description)
         {
-            var publisherIdValidationResults = new DomainEntityIdValidator<string>().Validate(publisherId);
-            if (publisherIdValidationResults.IsValid)
+            if (this.PublisherIsValid(publisherId) &&
+                this.DescriptionIsValid(publisherId, description) &&
+                this.ColorSchemeIsValid(publisherId, colorScheme))
             {
-                if (this.IsNew() || this.PublisherId == publisherId)
+                if (this.IsNew() ||
+                    description != this.Description ||
+                    colorScheme != this.ColorScheme)
                 {
-                    var colorSchemeValidationResults = ColorScheme.Validator.Validate(colorScheme);
-                    if (colorSchemeValidationResults.IsValid)
-                    {
-                        if (this.IsNew() || colorScheme != this.ColorScheme)
-                        {
-                            AddSchemePublishedEvent(publisherId, colorScheme);
-                        }
-                    }
-                    else
-                    {
-                        AddColorSchemeValidationFailedEvent(publisherId, colorSchemeValidationResults);
-                    }
+                    this.AddSchemePublishedEvent(publisherId, colorScheme, description);
                 }
-                else if (this.PublisherId != publisherId)
-                {
-                    AddPublisherAccessDeniedEvent(publisherId);
-                }
-            }
-            else
-            {
-                AddPublisherIdValidationFailedEvent(publisherId, publisherIdValidationResults);
             }
         }
+
         public virtual void Unpublish(UserId publisherId)
         {
-            var publisherIdValidationResults = new DomainEntityIdValidator<string>().Validate(publisherId);
-            if (publisherIdValidationResults.IsValid)
+            if (this.PublisherIsValid(publisherId))
             {
                 if (this.IsNew())
                 {
-                    AddSchemeNotFoundEvent(publisherId);
+                    this.AddSchemeNotFoundEvent(publisherId);
                 }
-                else if (this.PublisherId == publisherId)
+                else
                 {
+                    this.AddSchemeUnpublishedEvent(publisherId);
+                }
+            }
+        }
 
-                    AddSchemeUnpublishedEvent(publisherId);
-                }
-                else if (this.PublisherId != publisherId)
-                {
-                    AddPublisherAccessDeniedEvent(publisherId);
-                }
-            }
-            else
+        private bool PublisherIsValid(UserId publisherId)
+        {
+            var publisherIdValidationResults = new DomainEntityIdValidator<string>().Validate(publisherId);
+            if (!publisherIdValidationResults.IsValid)
             {
-                AddPublisherIdValidationFailedEvent(publisherId, publisherIdValidationResults);
+                this.AddDomainEvent(new PublisherIdValidationFailedEvent(this.Id, publisherIdValidationResults), publisherId);
+                return false;
             }
+
+            if (!this.IsNew() && this.PublisherId != publisherId)
+            {
+                this.AddDomainEvent(new SchemeAccessDeniedEvent(this.Id), publisherId);
+                return false;
+            }
+
+            return true;
+        }
+
+        private bool ColorSchemeIsValid(UserId publisherId, ColorScheme colorScheme)
+        {
+            var colorSchemeValidationResults = ColorScheme.Validator.Validate(colorScheme);
+            if (!colorSchemeValidationResults.IsValid)
+            {
+                this.AddDomainEvent(new ColorSchemeValidationFailedEvent(this.Id, colorSchemeValidationResults),
+                    publisherId);
+                return false;
+            }
+            return true;
+        }
+
+        private bool DescriptionIsValid(UserId publisherId, string description)
+        {
+            if (description != null && description.Length > maxDescriptionLength)
+            {
+                var error = new ValidationResult(new[] {
+                    new ValidationFailure(nameof(PublicScheme.Description),
+                    $"Public scheme description should not be longer than {maxDescriptionLength} symbols.")
+                });
+                this.AddDomainEvent(new PublicSchemeDescriptionValidationFailedEvent(this.Id, error), publisherId);
+                return false;
+            }
+            return true;
         }
 
         private void AddSchemeNotFoundEvent(UserId publisherId)
@@ -79,27 +96,12 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 
         private void AddSchemeUnpublishedEvent(UserId publisherId)
         {
-             this.AddDomainEvent(new SchemeUnpublishedEvent(this.Id), publisherId);
+            this.AddDomainEvent(new SchemeUnpublishedEvent(this.Id), publisherId);
         }
 
-        private void AddPublisherIdValidationFailedEvent(UserId publisherId, ValidationResult publisherIdValidationResults)
+        private void AddSchemePublishedEvent(UserId publisherId, ColorScheme colorScheme, string description)
         {
-            this.AddDomainEvent(new PublisherIdValidationFailedEvent(this.Id, publisherIdValidationResults), publisherId);
-        }
-
-        private void AddPublisherAccessDeniedEvent(UserId publisherId)
-        {
-            this.AddDomainEvent(new SchemeAccessDeniedEvent(this.Id), publisherId);
-        }
-
-        private void AddColorSchemeValidationFailedEvent(UserId publisherId, ValidationResult validationResults)
-        {
-            this.AddDomainEvent(new ColorSchemeValidationFailedEvent(this.Id, validationResults), publisherId);
-        }
-
-        private void AddSchemePublishedEvent(UserId publisherId, ColorScheme colorScheme)
-        {
-            this.AddDomainEvent(new SchemePublishedEvent(this.Id, colorScheme), publisherId);
+            this.AddDomainEvent(new SchemePublishedEvent(this.Id, colorScheme, description), publisherId);
         }
     }
 }

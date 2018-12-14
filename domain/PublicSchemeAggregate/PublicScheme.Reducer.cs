@@ -1,9 +1,6 @@
-﻿using MidnightLizard.Commons.Domain.Model;
-using MidnightLizard.Commons.Domain.Messaging;
+﻿using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
 {
@@ -16,6 +13,7 @@ namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate
                 case SchemePublishedEvent published:
                     this.PublisherId = publisherId;
                     this.ColorScheme = published.ColorScheme;
+                    this.Description = published.Description;
                     break;
 
                 default:

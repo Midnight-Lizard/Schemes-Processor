@@ -22,6 +22,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 {
     public class SchemePublishRequestHandlerSpec : SchemePublishRequestHandler
     {
+        private readonly string description = "test description";
         private readonly PublicScheme testScheme = Substitute.For<PublicScheme>();
         private readonly PublishSchemeRequest testRequest = Substitute.For<PublishSchemeRequest>();
         private readonly UserId testUserId = new UserId("test-user-id");
@@ -35,6 +36,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
         {
             this.testScheme.Id.Returns(new PublicSchemeId());
             this.testRequest.AggregateId.Returns(this.testScheme.Id);
+            this.testRequest.Description.Returns(this.description);
+            this.testRequest.ColorScheme.Returns(ColorSchemeSpec.CorrectColorScheme);
         }
 
         public class HandleDomainRequestSpec : SchemePublishRequestHandlerSpec
@@ -48,7 +51,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.HandleDomainRequest(this.testScheme, this.testRequest, this.testUserId, new CancellationToken());
 
-                this.testScheme.Received(1).Publish(this.testUserId, Arg.Any<ColorScheme>());
+                this.testScheme.Received(1).Publish(this.testUserId, ColorSchemeSpec.CorrectColorScheme, this.description);
             }
         }
 
@@ -78,7 +81,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
             {
                 this.handle_CallCount = 0;
 
-                var result = await this.mediator.Send(testTransRequest);
+                var result = await this.mediator.Send(this.testTransRequest);
 
                 this.handle_CallCount.Should().Be(1);
             }

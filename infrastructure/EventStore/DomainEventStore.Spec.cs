@@ -1,28 +1,24 @@
 ﻿using Autofac;
 using Elasticsearch.Net;
 using FluentAssertions;
+using JsonDiffPatchDotNet;
 using MidnightLizard.Commons.Domain.Messaging;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate;
 using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Schemes.Infrastructure.AutofacModules;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using MidnightLizard.Testing.Utilities;
 using Nest;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Commons.Domain.Messaging.DomainEvent<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 using ITransEvent = MidnightLizard.Commons.Domain.Messaging.ITransportMessage<MidnightLizard.Commons.Domain.Messaging.BaseMessage>;
-using JsonDiffPatchDotNet;
-using MidnightLizard.Schemes.Infrastructure.Versioning;
-using MidnightLizard.Commons.Domain.Model;
+using TransEvent = MidnightLizard.Commons.Domain.Messaging.TransportMessage<MidnightLizard.Commons.Domain.Messaging.DomainEvent<MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>, MidnightLizard.Schemes.Domain.PublicSchemeAggregate.PublicSchemeId>;
 
 namespace MidnightLizard.Schemes.Infrastructure.EventStore
 {
@@ -33,14 +29,16 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
         private readonly UserId testUserId = new UserId("test-user-id");
         private IMessageSerializer realMessageSerializer;
         private readonly TransEvent testTransEvent;
+        private readonly string description = "test description";
 
         public DomainEventStoreSpec() : base(
             Substitute.For<ElasticSearchConfig>(),
             Substitute.For<IMessageSerializer>())
         {
-            testTransEvent = new TransEvent(
-               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()), ColorSchemeSpec.CorrectColorScheme),
-               Guid.NewGuid(), testUserId, DateTime.UtcNow, DateTime.UtcNow);
+            this.testTransEvent = new TransEvent(
+               new SchemePublishedEvent(new PublicSchemeId(Guid.NewGuid()),
+                   ColorSchemeSpec.CorrectColorScheme, this.description),
+               Guid.NewGuid(), this.testUserId, DateTime.UtcNow, DateTime.UtcNow);
         }
 
         protected override ElasticClient CreateElasticClient()
@@ -51,10 +49,10 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             var container = builder.Build();
             this.realMessageSerializer = container.Resolve<IMessageSerializer>();
 
-            return new ElasticClient(InitDefaultMapping(new ConnectionSettings(
+            return new ElasticClient(this.InitDefaultMapping(new ConnectionSettings(
                 new SingleNodeConnectionPool(new Uri("http://test.com")), new InMemoryConnection(),
                 (builtin, settings) => new DomainEventSerializer(this.realMessageSerializer))
-                    .EnableDebugMode(OnRequestCompleted)
+                    .EnableDebugMode(this.OnRequestCompleted)
             ));
         }
 
@@ -75,10 +73,10 @@ namespace MidnightLizard.Schemes.Infrastructure.EventStore
             public void Should_issue_correct_CreateIndex_command()
             {
                 this.CreateIndex();
-                if (!JToken.DeepEquals(createIndexCommand, createIndexCommandSnapshot))
+                if (!JToken.DeepEquals(this.createIndexCommand, this.createIndexCommandSnapshot))
                 {
                     new JsonDiffPatch()
-                        .Diff(createIndexCommandSnapshot, createIndexCommand)
+                        .Diff(this.createIndexCommandSnapshot, this.createIndexCommand)
                         .ToString().Should().BeEmpty();
                 }
             }

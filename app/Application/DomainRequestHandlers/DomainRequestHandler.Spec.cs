@@ -56,8 +56,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
             this.testEvents = new List<DomainEvent<PublicSchemeId>>
             {
-                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme()),
-                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme())
+                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme(), null),
+                new SchemePublishedEvent(this.testScheme.Id, new ColorScheme(), null)
             };
 
             this.testTransEvents = this.testEvents.Select(e =>

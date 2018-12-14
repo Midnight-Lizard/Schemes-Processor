@@ -1,12 +1,8 @@
-﻿using MidnightLizard.Commons.Domain.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests
+﻿namespace MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Requests
 {
     public class PublishSchemeRequest : SchemeDomainRequest
     {
-        public ColorScheme ColorScheme { get; set; }
+        public virtual string Description { get; private set; }
+        public virtual ColorScheme ColorScheme { get; private set; }
     }
 }

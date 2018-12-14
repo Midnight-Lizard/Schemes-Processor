@@ -16,15 +16,19 @@ namespace MidnightLizard.Schemes.Infrastructure.Serialization.Common
 {
     public class MessageSerializerSpec
     {
+        private readonly string description = "test description";
         private readonly IMessageSerializer messageSerializer;
-        private readonly TransEvent testTransEvent = new TransEvent(
-                new SchemePublishedEvent(
-                    new PublicSchemeId(Guid.NewGuid()),
-                    ColorSchemeSpec.CorrectColorScheme),
-                Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
+        private readonly TransEvent testTransEvent;
 
         public MessageSerializerSpec()
         {
+            this.testTransEvent = new TransEvent(
+                new SchemePublishedEvent(
+                    new PublicSchemeId(Guid.NewGuid()),
+                    ColorSchemeSpec.CorrectColorScheme,
+                    this.description),
+                Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow.AddHours(1));
+
             var builder = new ContainerBuilder();
             builder.RegisterModule<MessageSerializationModule>();
             builder.RegisterInstance(SchemaVersion.Latest);

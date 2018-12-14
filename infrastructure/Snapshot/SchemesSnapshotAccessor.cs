@@ -28,7 +28,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                     Version = version.ToString(),
                     schemeSnapshot.RequestTimestamp,
                     schemeSnapshot.Aggregate.PublisherId,
-                    schemeSnapshot.Aggregate.ColorScheme
+                    schemeSnapshot.Aggregate.ColorScheme,
+                    schemeSnapshot.Aggregate.Description
                 }).DocAsUpsert());
         }
 
@@ -39,6 +40,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                     .Keyword(x => x.Name(nameof(Version)))
                     .Date(x => x.Name(nameof(AggregateSnapshot<PublicScheme, PublicSchemeId>.RequestTimestamp)))
                     .Keyword(x => x.Name(n => n.PublisherId))
+                    .Keyword(x => x.Name(n => n.Description))
                     .Object<ColorScheme>(cs => cs
                         .Name(x => x.ColorScheme)
                         .AutoMap()

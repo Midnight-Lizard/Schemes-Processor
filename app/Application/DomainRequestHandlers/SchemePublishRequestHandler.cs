@@ -31,7 +31,7 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainRequestHandlers
 
         protected override void HandleDomainRequest(PublicScheme aggregate, PublishSchemeRequest request, UserId userId, CancellationToken cancellationToken)
         {
-            aggregate.Publish(userId, request.ColorScheme);
+            aggregate.Publish(userId, request.ColorScheme, request.Description);
         }
     }
 }

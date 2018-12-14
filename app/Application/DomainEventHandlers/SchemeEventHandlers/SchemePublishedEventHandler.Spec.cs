@@ -9,8 +9,6 @@ using MidnightLizard.Schemes.Domain.PublicSchemeAggregate.Events;
 using MidnightLizard.Testing.Utilities;
 using NSubstitute;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -22,8 +20,8 @@ namespace MidnightLizard.Schemes.Processor.Application.DomainEventHandlers.Schem
     public class SchemePublishedEventHandlerSpec : SchemePublishedEventHandler
     {
         private int handle_CallCount;
-        private IMediator mediator;
-        private readonly ITransEvent testTransEvent = new TransEvent(new SchemePublishedEvent(null, null), Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow);
+        private readonly IMediator mediator;
+        private readonly ITransEvent testTransEvent = new TransEvent(new SchemePublishedEvent(null, null, null), Guid.NewGuid(), new UserId("test-user-id"), DateTime.UtcNow, DateTime.UtcNow);
 
         public SchemePublishedEventHandlerSpec() : base(Substitute.For<IDomainEventStore<PublicSchemeId>>())
         {
