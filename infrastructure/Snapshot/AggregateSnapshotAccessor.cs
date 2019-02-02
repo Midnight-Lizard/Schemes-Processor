@@ -1,14 +1,12 @@
 ﻿using Elasticsearch.Net;
-using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Commons.Domain.Interfaces;
+using MidnightLizard.Commons.Domain.Model;
 using MidnightLizard.Schemes.Infrastructure.Configuration;
 using MidnightLizard.Schemes.Infrastructure.Serialization.Common;
+using MidnightLizard.Schemes.Infrastructure.Versioning;
 using Nest;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MidnightLizard.Schemes.Infrastructure.Versioning;
 
 namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 {
@@ -25,15 +23,15 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         {
             this.version = version;
             this.config = config;
-            this.elasticClient = CreateElasticClient();
-            CheckIndexExists();
+            this.elasticClient = this.CreateElasticClient();
+            this.CheckIndexExists();
         }
 
         protected virtual void CheckIndexExists()
         {
             if ((this.elasticClient.IndexExists(this.IndexName)).Exists == false)
             {
-                CreateIndex();
+                this.CreateIndex();
             }
         }
 
@@ -41,7 +39,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
         {
             this.elasticClient
                 .CreateIndex(this.IndexName, ix => ix
-                    .Mappings(ApplyAggregateMappingsOnIndex)
+                    .Mappings(this.ApplyAggregateMappingsOnIndex)
                     .Settings(set => set
                         .NumberOfShards(this.config.ELASTIC_SEARCH_SNAPSHOT_SHARDS)
                         .NumberOfReplicas(this.config.ELASTIC_SEARCH_SNAPSHOT_REPLICAS)));
@@ -51,8 +49,8 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
 
         protected virtual IElasticClient CreateElasticClient()
         {
-            var node = new Uri(config.ELASTIC_SEARCH_CLIENT_URL);
-            return new ElasticClient(ApplyAggregateMappingsOnConnection(new ConnectionSettings(
+            var node = new Uri(this.config.ELASTIC_SEARCH_CLIENT_URL);
+            return new ElasticClient(this.ApplyAggregateMappingsOnConnection(new ConnectionSettings(
                 new SingleNodeConnectionPool(node),
                 (builtin, settings) => new AggregateSerializer())));
         }
@@ -80,7 +78,7 @@ namespace MidnightLizard.Schemes.Infrastructure.Snapshot
                 return new AggregateSnapshot<TAggregate, TAggregateId>(result.Source,
                     result.Fields.Value<DateTime>(requestTimestampField));
             }
-            return new AggregateSnapshot<TAggregate, TAggregateId>(CreateNewAggregate(id), DateTime.MinValue);
+            return new AggregateSnapshot<TAggregate, TAggregateId>(this.CreateNewAggregate(id), DateTime.MinValue);
         }
 
         protected abstract TAggregate CreateNewAggregate(TAggregateId id);
